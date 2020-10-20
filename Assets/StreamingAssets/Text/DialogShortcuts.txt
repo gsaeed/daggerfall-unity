@@ -34,9 +34,9 @@ GameSetupSaveAndClose,     S
 GameSetupExit,             E
 
 -- Book Reader
-BookPageUp,		PageUp
+BookPageUp,			PageUp
 BookPageDown,		PageDown
-BookLineUp,		UpArrow
+BookLineUp,			UpArrow
 BookLineDown,		DownArrow
 BookPageRight,		RightArrow
 BookPageLeft,		LeftArrow
@@ -62,12 +62,12 @@ HUDToggle,            Shift-F10
 ToggleRetroPP,        Shift-F11
 
 -- Debugger
-DebuggerToggle,       Shift-Tab
-DebuggerPrevQuest,    LeftBracket
-DebuggerNextQuest,    RightBracket
-DebuggerActiveQuestToggle, Shift-Q
-DebuggerPrevMarker,   Shift-LeftBracket
-DebuggerNextMarker,   Shift-RightBracket
+DebuggerToggle,       		Shift-Tab
+DebuggerPrevQuest,    		LeftBracket
+DebuggerNextQuest,    		RightBracket
+DebuggerActiveQuestToggle, 	Shift-Q
+DebuggerPrevMarker,   		Shift-LeftBracket
+DebuggerNextMarker,   		Shift-RightBracket
 
 -- Rest menu
 RestForAWhile,        F
@@ -299,3 +299,4 @@ ExtAutomapMaxZoom1,                                      Ctrl-PageUp
 ExtAutomapMinZoom1,                                      Ctrl-PageDown
 ExtAutomapMinZoom2,                                      Ctrl-KeypadPlus
 ExtAutomapMaxZoom2,                                      Ctrl-KeypadMinus
+
