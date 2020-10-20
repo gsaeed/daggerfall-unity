@@ -48,6 +48,8 @@ namespace DaggerfallWorkshop.Game.Items
         /// T, 3, 1
         /// U, 3, 2
         /// </summary>
+        ///
+
         public static LootChanceMatrix[] DefaultLootTables = {
             new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
             new LootChanceMatrix() {key = "A", MinGold = 1, MaxGold = 10, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 5, WP = 5, MI = 2, CL = 4, BK = 0, M2 = 2, RL = 0 },
@@ -172,7 +174,11 @@ namespace DaggerfallWorkshop.Game.Items
             chance = matrix.WP;
             while (Dice100.SuccessRoll((int)chance))
             {
-                items.Add(ItemBuilder.CreateRandomWeapon(playerEntity.Level));
+                int bonusRoll = RollForBonus(playerEntity.Level, (int)chance);
+                if (bonusRoll > 0)
+                    items.Add(ItemBuilder.CreateRandomWeapon(bonusRoll));
+                else
+                    items.Add(ItemBuilder.CreateRandomWeapon(playerEntity.Level));
                 chance *= 0.5f;
             }
 
@@ -180,16 +186,24 @@ namespace DaggerfallWorkshop.Game.Items
             chance = matrix.AM;
             while (Dice100.SuccessRoll((int)chance))
             {
-                items.Add(ItemBuilder.CreateRandomArmor(playerEntity.Level, playerEntity.Gender, playerEntity.Race));
+                int bonusRoll = RollForBonus(playerEntity.Level, (int)chance);
+                if (bonusRoll > 0)
+                    items.Add(ItemBuilder.CreateRandomArmor(bonusRoll, playerEntity.Gender, playerEntity.Race));
+                else
+                    items.Add(ItemBuilder.CreateRandomArmor(playerEntity.Level, playerEntity.Gender, playerEntity.Race));
                 chance *= 0.5f;
             }
 
             // Random ingredients
-            RandomIngredient(matrix.C1 * playerEntity.Level, ItemGroups.CreatureIngredients1, items);
-            RandomIngredient(matrix.C2 * playerEntity.Level, ItemGroups.CreatureIngredients2, items);
+            int ingBonRoll = RollForBonus(playerEntity.Level, (int)chance);
+            if (ingBonRoll <= 0)
+                ingBonRoll = playerEntity.Level;
+
+                RandomIngredient(matrix.C1 * ingBonRoll, ItemGroups.CreatureIngredients1, items);
+            RandomIngredient(matrix.C2 * ingBonRoll, ItemGroups.CreatureIngredients2, items);
             RandomIngredient(matrix.C3, ItemGroups.CreatureIngredients3, items);
-            RandomIngredient(matrix.P1 * playerEntity.Level, ItemGroups.PlantIngredients1, items);
-            RandomIngredient(matrix.P2 * playerEntity.Level, ItemGroups.PlantIngredients2, items);
+            RandomIngredient(matrix.P1 * ingBonRoll, ItemGroups.PlantIngredients1, items);
+            RandomIngredient(matrix.P2 * ingBonRoll, ItemGroups.PlantIngredients2, items);
             RandomIngredient(matrix.M1, ItemGroups.MiscellaneousIngredients1, items);
             RandomIngredient(matrix.M2, ItemGroups.MiscellaneousIngredients2, items);
 
@@ -197,7 +211,11 @@ namespace DaggerfallWorkshop.Game.Items
             chance = matrix.MI;
             while (Dice100.SuccessRoll((int)chance))
             {
-                items.Add(ItemBuilder.CreateRandomMagicItem(playerEntity.Level, playerEntity.Gender, playerEntity.Race));
+                int bonusRoll = RollForBonus(playerEntity.Level, (int)chance);
+                if (bonusRoll > 0)
+                    items.Add(ItemBuilder.CreateRandomMagicItem(bonusRoll, playerEntity.Gender, playerEntity.Race));
+                else
+                    items.Add(ItemBuilder.CreateRandomMagicItem(playerEntity.Level, playerEntity.Gender, playerEntity.Race));
                 chance *= 0.5f;
             }
 
@@ -237,6 +255,29 @@ namespace DaggerfallWorkshop.Game.Items
                 targetItems.Add(ItemBuilder.CreateRandomIngredient(ingredientGroup));
                 chance *= 0.5f;
             }
+        }
+
+        static int RollForBonus(int playerlevel, int chanceSuccess)
+        {
+            float tier = 0;
+            int chanceMultiplier = Random.Range(1, 11) - 7;
+            if (chanceMultiplier < 1)
+                chanceMultiplier = 1;
+
+            chanceSuccess *= chanceMultiplier;
+            if (Dice100.SuccessRoll(chanceSuccess))
+            {
+                tier = (float)Random.Range(1, 101);
+                if (tier < 100)
+                    tier = tier % 4 + 1;
+            }
+            else
+                tier = 0f;
+
+            tier = Mathf.Round(tier + (float)playerlevel);
+            if (tier > 100f)
+                tier = 100f;
+            return (int)tier;
         }
 
         #endregion
