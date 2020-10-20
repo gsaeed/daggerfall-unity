@@ -39,6 +39,7 @@ BookPageDown,		PageDown
 BookLineUp,			UpArrow
 BookLineDown,		DownArrow
 BookPageRight,		RightArrow
+BookPageLeft,		LeftArrow
 
 -- Main menu
 MainMenuLoad,         L
@@ -65,6 +66,7 @@ HUDToggle,            Shift-F10
 ToggleRetroPP,        Shift-F11
 
 -- Debugger
+DebuggerActiveQuestToggle, 	Ctrl-Shift-Q
 DebuggerToggle,       Ctrl-Shift-D
 DebuggerPrevQuest,    Ctrl-Shift-LeftArrow
 DebuggerNextQuest,    Ctrl-Shift-RightArrow
