@@ -49,7 +49,11 @@ namespace DaggerfallWorkshop.Game.UserInterface
         ulong[] allQuests;
         int currentQuestIndex;
         Quest currentQuest;
+
         int currentMarkerIndex = -1;
+
+        bool activeQuestToggle = false;
+
 
         DisplayState displayState = DisplayState.Nothing;
 
@@ -166,11 +170,16 @@ namespace DaggerfallWorkshop.Game.UserInterface
             else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerNextQuest).IsDownWith(keyModifiers))
                 MoveNextQuest();
 
+
             // Change marker selection
             if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerPrevMarker).IsDownWith(keyModifiers))
                 MovePreviousMarker();
             else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerNextMarker).IsDownWith(keyModifiers))
                 MoveNextMarker();
+
+            else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerActiveQuestToggle).IsDownWith(keyModifiers))
+                ToggleActiveQuestView();
+
         }
 
         private void QuestMachine_OnTick()
@@ -488,6 +497,8 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 currentQuestIndex = 0;
 
             SetCurrentQuest(QuestMachine.Instance.GetQuest(allQuests[currentQuestIndex]));
+            if (activeQuestToggle && !ActiveQuest(currentQuest))
+                MoveNextQuest();
         }
 
         void MovePreviousQuest()
@@ -499,7 +510,37 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 currentQuestIndex = allQuests.Length - 1;
 
             SetCurrentQuest(QuestMachine.Instance.GetQuest(allQuests[currentQuestIndex]));
+            if (activeQuestToggle && !ActiveQuest(currentQuest))
+                MovePreviousQuest();
         }
+
+        void ToggleActiveQuestView()
+        {
+            ulong[] activeQuests = QuestMachine.Instance.GetAllActiveQuests();
+            activeQuestToggle = !activeQuestToggle;
+
+            if (activeQuestToggle && activeQuests.Length == 0)
+            {
+                DaggerfallUI.AddHUDText("No Currently Active Quests. Showing all Quests");
+                activeQuestToggle = false;
+            }
+
+            if (activeQuestToggle && (currentQuest.QuestComplete || currentQuest.QuestTombstoned))
+                MoveNextQuest();
+        }
+
+        bool ActiveQuest(Quest currentQuest)
+        {
+            ulong[] activeQuests = QuestMachine.Instance.GetAllActiveQuests();
+            if (activeQuests.Length > 0)
+            {
+                if (currentQuest.QuestComplete || currentQuest.QuestTombstoned)
+                    return false;
+            }
+            return true;
+        }
+    
+
 
         void MoveNextMarker()
         {
@@ -545,7 +586,9 @@ namespace DaggerfallWorkshop.Game.UserInterface
             Debug.LogFormat("Moved to previous marker - index {0}", currentMarkerIndex);
         }
 
-        void EnableGlobalVars(bool value)
+
+    void EnableGlobalVars(bool value)
+
         {
             for (int i = 0; i < globalsLabelPool.Length; i++)
             {
