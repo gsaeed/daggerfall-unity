@@ -78,6 +78,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             DebuggerToggle,
             DebuggerPrevQuest,
             DebuggerNextQuest,
+            DebuggerActiveQuestToggle,
             DebuggerPrevMarker,
             DebuggerNextMarker,
 
@@ -343,3 +344,4 @@ namespace DaggerfallWorkshop.Game.UserInterface
         }
     }
 }
+
