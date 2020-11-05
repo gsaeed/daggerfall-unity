@@ -1,5 +1,3 @@
-﻿// Project:         Daggerfall Tools For Unity
-// Copyright:       Copyright (C) 2009-2021 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
@@ -54,10 +52,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 for (int i = 0; i < files.Length - 1; i++)
                 {
                     ClassFile classFile = new ClassFile(files[i]);
-                    classList.Add(classFile.Career);
-                    listBox.AddItem(classFile.Career.Name);
                 }
             }
+
             // Last option is for creating custom classes
             listBox.AddItem("Custom");
 
@@ -76,9 +73,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 selectedClass = classList[index];
                 selectedClassIndex = index;
-
-                TextFile.Token[] textTokens = DaggerfallUnity.Instance.TextProvider.GetRSCTokens(startClassDescriptionID + index);
                 DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+                TextFile.Token[] textTokens = DaggerfallUnity.Instance.TextProvider.GetRSCTokens(startClassDescriptionID + index);
                 messageBox.SetTextTokens(textTokens);
                 messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
                 Button noButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
