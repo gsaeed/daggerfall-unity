@@ -27,7 +27,7 @@ namespace DaggerfallWorkshop.Game.Items
     {
         #region Fields
 
-        OrderedDictionary items = new OrderedDictionary();
+        public OrderedDictionary items = new OrderedDictionary();
 
         #endregion
 
