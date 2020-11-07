@@ -201,7 +201,7 @@ namespace DaggerfallWorkshop.Game
 
             byte index = mobile.Summary.ClassicSpawnDistanceType;
 
-            classicSpawnXZDist = classicSpawnXZDistArray[index] * MeshReader.GlobalScale /3 * 2;
+            classicSpawnXZDist = classicSpawnXZDistArray[index] * MeshReader.GlobalScale;
             classicSpawnYDistUpper = classicSpawnYDistUpperArray[index] * MeshReader.GlobalScale;
             classicSpawnYDistLower = classicSpawnYDistLowerArray[index] * MeshReader.GlobalScale;
             classicDespawnXZDist = classicDespawnXZDistArray[index] * MeshReader.GlobalScale;
