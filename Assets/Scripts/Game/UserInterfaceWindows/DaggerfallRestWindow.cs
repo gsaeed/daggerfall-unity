@@ -85,7 +85,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected DaggerfallHUD hud;
 
         protected KeyCode toggleClosedBinding;
-        protected bool enemyOverride = false;
+        protected int enemyOverride = 0;
 
         #endregion
 
@@ -117,10 +117,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             : base(uiManager)
         {
             this.ignoreAllocatedBed = ignoreAllocatedBed;
-            this.enemyOverride = false;
+            this.enemyOverride = 0;
         }
 
-        public DaggerfallRestWindow(IUserInterfaceManager uiManager, bool ignoreAllocatedBed = false, bool enemy = false)
+        public DaggerfallRestWindow(IUserInterfaceManager uiManager, int enemy, bool ignoreAllocatedBed = false)
                : base(uiManager)
         {
             this.ignoreAllocatedBed = ignoreAllocatedBed;
@@ -358,7 +358,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             preventedRestMessage = GameManager.Instance.GetPreventedRestMessage();
 
-            if (preventedRestMessage != null && !enemyOverride)
+            if (preventedRestMessage != null && enemyOverride == 0)
                 return true;
 
             // Do nothing if another window has taken over UI
@@ -402,7 +402,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 return false;
 
             // Check if enemies nearby
-            if (GameManager.Instance.AreEnemiesNearby(true) && !enemyOverride)
+            if (GameManager.Instance.AreEnemiesNearby(true) && (enemyOverride == 0 || (enemyOverride == 1 && CanEnemySeePlayer() == true)))
             {
                 enemyBrokeRest = true;
                 return true;
@@ -410,7 +410,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             preventedRestMessage = GameManager.Instance.GetPreventedRestMessage();
 
-            if (preventedRestMessage != null && !enemyOverride)
+            if (preventedRestMessage != null && enemyOverride == 0)
                 return true;
 
             // Tick vitals to end
@@ -521,6 +521,28 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             playerEntity.TallySkill((short)Skills.Medical, 1);
 
             return IsPlayerFullyHealed();
+        }
+
+        bool CanEnemySeePlayer()
+        {
+            bool enemyCanSeePlayer = false;
+            DaggerfallEntityBehaviour[] entityBehaviours = GameManager.FindObjectsOfType<DaggerfallEntityBehaviour>();
+            for (int i = 0; i < entityBehaviours.Length; i++)
+            {
+                DaggerfallEntityBehaviour entityBehaviour = entityBehaviours[i];
+                if (entityBehaviour.EntityType == EntityTypes.EnemyMonster || entityBehaviour.EntityType == EntityTypes.EnemyClass)
+                {
+                    EnemySenses enemySenses = entityBehaviour.GetComponent<EnemySenses>();
+                    if (enemySenses)
+                    {
+                        // Check if enemy can actively target player
+                        enemyCanSeePlayer = enemySenses.Target == GameManager.Instance.PlayerEntityBehaviour && enemySenses.TargetInSight;
+                        if (enemyCanSeePlayer)
+                            break;
+                    }
+                }
+            }
+            return enemyCanSeePlayer;
         }
 
         bool IsPlayerFullyHealed()
