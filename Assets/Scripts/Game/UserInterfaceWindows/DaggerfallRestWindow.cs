@@ -85,6 +85,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected DaggerfallHUD hud;
 
         protected KeyCode toggleClosedBinding;
+        protected bool enemyOverride = false;
 
         #endregion
 
@@ -118,6 +119,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             this.ignoreAllocatedBed = ignoreAllocatedBed;
             // Prevent duplicate close calls with base class's exitKey (Escape)
             AllowCancel = false;
+            this.enemyOverride = false;
+        }
+
+        public DaggerfallRestWindow(IUserInterfaceManager uiManager, bool ignoreAllocatedBed = false, bool enemy = false)
+               : base(uiManager)
+        {
+            this.ignoreAllocatedBed = ignoreAllocatedBed;
+            this.enemyOverride = enemy;
+            AllowCancel = false;
+
         }
 
         #endregion
@@ -356,7 +367,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             preventedRestMessage = GameManager.Instance.GetPreventedRestMessage();
 
-            if (preventedRestMessage != null)
+            if (preventedRestMessage != null && !enemyOverride)
                 return true;
 
             // Do nothing if another window has taken over UI
@@ -400,7 +411,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 return false;
 
             // Check if enemies nearby
-            if (GameManager.Instance.AreEnemiesNearby(true))
+            if (GameManager.Instance.AreEnemiesNearby(true) && !enemyOverride)
             {
                 enemyBrokeRest = true;
                 return true;
@@ -408,7 +419,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             preventedRestMessage = GameManager.Instance.GetPreventedRestMessage();
 
-            if (preventedRestMessage != null)
+            if (preventedRestMessage != null && !enemyOverride)
                 return true;
 
             // Tick vitals to end
@@ -493,7 +504,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 else if (currentRestMode == RestModes.FullRest)
                 {
                     int message = IsPlayerFullyHealed() ? youAreHealedTextId : youWakeUpTextId;
-                    DaggerfallMessageBox mb =  DaggerfallUI.MessageBox(message);
+                    DaggerfallMessageBox mb = DaggerfallUI.MessageBox(message);
                     mb.OnClose += RestFinishedPopup_OnClose;
                     currentRestMode = RestModes.Selection;
                 }
@@ -569,7 +580,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     // Can rest if it's an player owned ship/house.
                     int buildingKey = playerEnterExit.BuildingDiscoveryData.buildingKey;
                     if (playerEnterExit.BuildingType == DFLocation.BuildingTypes.Ship || DaggerfallBankManager.IsHouseOwned(buildingKey))
-                       return true;
+                        return true;
 
                     // Find room rental record and get remaining time..
                     int mapId = playerGPS.CurrentLocation.MapTableData.MapId;
@@ -777,8 +788,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else if (time > DaggerfallUnity.Settings.LoiterLimitInHours)
             {
-                DaggerfallUI.MessageBox(new string[] { 
-                    TextManager.Instance.GetLocalizedText("cannotLoiterMoreThanXHours1"), 
+                DaggerfallUI.MessageBox(new string[] {
+                    TextManager.Instance.GetLocalizedText("cannotLoiterMoreThanXHours1"),
                     string.Format(TextManager.Instance.GetLocalizedText("cannotLoiterMoreThanXHours2"), DaggerfallUnity.Settings.LoiterLimitInHours) });
                 return;
             }
