@@ -618,8 +618,8 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         for (int i = 0; i < assets.Length; i++)
         {
             string extension = Path.GetExtension(assets[i]);
-            if (!ModManager.textExtensions.Contains(extension))
-                continue;
+            //if (!ModManager.textExtensions.Contains(extension))
+              //  continue;
 
             var asset = mod.GetAsset<TextAsset>(assets[i]);
             if (asset == null)
