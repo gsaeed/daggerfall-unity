@@ -150,9 +150,20 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             if (Directory.Exists(ModDirectory))
             {
+                string path = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
                 FindModsFromDirectory();
                 LoadModSettings();
                 SortMods();
+                File.WriteAllText(path + @"\mods.csv", "Mod Title,Mod Filename,Load Priority, Is Virtual, Asset List" + Environment.NewLine);
+                foreach (Mod m in mods)
+                {
+                    File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.LoadPriority}, {m.IsVirtual}" + Environment.NewLine);
+                    if (m.AssetNames != null)
+                        foreach (string a in m.AssetNames)
+                        {
+                            File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.LoadPriority}, {m.IsVirtual}, {a}" + Environment.NewLine);
+                        }
+                }
             }
             else
             {
