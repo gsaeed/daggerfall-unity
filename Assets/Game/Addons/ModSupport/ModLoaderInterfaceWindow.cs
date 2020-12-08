@@ -593,6 +593,21 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         }
 
         ModManager.Instance.SortMods();
+        string path = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
+
+        File.WriteAllText(path + @"\mods.csv", "Mod Title,Mod Filename,Enabled,Load Priority, Asset List" + Environment.NewLine);
+        foreach (Mod m in ModManager.Instance.Mods)
+        {
+            File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.Enabled}, {m.LoadPriority}" + Environment.NewLine);
+            if (m.AssetNames != null)
+                foreach (string a in m.AssetNames)
+                {
+                    File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.Enabled},{m.LoadPriority}, {a}" + Environment.NewLine);
+                }
+        }
+
+
+
         MoveNextStage();
     }
 
