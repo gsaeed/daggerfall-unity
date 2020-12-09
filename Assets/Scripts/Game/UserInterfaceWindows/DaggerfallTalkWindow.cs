@@ -89,7 +89,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             Normal,
             Blunt
         };
-        TalkTone selectedTalkTone = TalkTone.Normal;
+        protected TalkTone selectedTalkTone = TalkTone.Normal;
 
         static public int TalkToneToIndex(TalkTone talkTone)
         {
