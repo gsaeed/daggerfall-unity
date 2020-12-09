@@ -191,7 +191,11 @@ namespace DaggerfallWorkshop.Game
             public bool allowGuildResponse = true;
         }
         NPCData npcData;
-        public NPCData NpcData { get; private set; }
+        public NPCData NpcData
+        {
+            get => npcData;
+            private set => npcData = value;
+        }
 
         // type of npc talk partners for a conversion
         public enum NPCType
