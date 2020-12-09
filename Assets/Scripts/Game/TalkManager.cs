@@ -190,7 +190,7 @@ namespace DaggerfallWorkshop.Game
             public bool isSpyMaster;
             public bool allowGuildResponse = true;
         }
-        NPCData npcData;
+        public NPCData npcData;
 
         // type of npc talk partners for a conversion
         public enum NPCType
