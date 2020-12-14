@@ -287,6 +287,25 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 SetTalkCategoryLocation();
             }
 
+            switch (TalkManager.Instance.NpcData.socialGroup)
+            {
+                case FactionFile.SocialGroups.Commoners:
+                case FactionFile.SocialGroups.Underworld:
+                    selectedTalkTone = TalkTone.Blunt;
+                    break;
+                case FactionFile.SocialGroups.Scholars:
+                case FactionFile.SocialGroups.Nobility:
+                    selectedTalkTone = TalkTone.Polite;
+                    break;
+                default:
+                    selectedTalkTone = TalkTone.Normal;
+                    break;
+            }
+            //Debug.Log($"GCTalk {TalkManager.Instance.NameNPC} is in group {TalkManager.Instance.NpcData.socialGroup} so i selected {selectedTalkTone}");
+
+            if (panelTone != null)
+                UpdateCheckboxes();
+
             selectedTalkOption = TalkOption.WhereIs;
             selectedTalkCategory = TalkCategory.Location;
             talkCategoryLastUsed = TalkCategory.None;
