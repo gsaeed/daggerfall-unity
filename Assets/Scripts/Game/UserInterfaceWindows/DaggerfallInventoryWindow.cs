@@ -1136,7 +1136,18 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (item.ItemGroup == ItemGroups.Paintings)
                 tokens = new TextFile.Token[] { new TextFile.Token() { formatting = TextFile.Formatting.Text, text = tokens[tokens.Length - 1].text.Trim() } };
 
-            UpdateItemInfoPanel(tokens);
+            TextFile.Token[] newTokens = new TextFile.Token[tokens.Length + 2];
+            bool found = false;
+            for (int i = 0,  n = 0; i < tokens.Length; i++)
+            {
+                if (tokens[i].text.Contains("Worth:"))
+                    found = true;
+                if (i == tokens.Length - 1 && !found)
+                    newTokens[n++] = new TextFile.Token() { formatting = TextFile.Formatting.Text, text = "Worth: " + item.value.ToString() + " gold" };
+                else
+                    newTokens[n++] = tokens[i];
+            }
+            UpdateItemInfoPanel(newTokens);
         }
 
         protected void UpdateItemInfoPanel(TextFile.Token[] tokens)

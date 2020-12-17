@@ -53,6 +53,8 @@ namespace DaggerfallWorkshop.Game
             }
         }
 
+        protected TravelTimeCalculator travelTimeCalculator = new TravelTimeCalculator();
+
         public static bool HasInstance
         {
             get
@@ -1877,12 +1879,39 @@ namespace DaggerfallWorkshop.Game
             int locationsWithRegionalBuildingCount = 0;
 
             // Get how many locations in the region exist with the building being asked about
+            int[] foundLoc = new int[gps.CurrentRegion.LocationCount];
             for (int i = 0; i < gps.CurrentRegion.LocationCount; i++)
             {
-                locationsWithRegionalBuildingCount += CheckLocationKeyForRegionalBuilding(gps.CurrentRegion.MapTable[i].Key, index, faction);
+                if (CheckLocationKeyForRegionalBuilding(gps.CurrentRegion.MapTable[i].Key, index, faction) > 0)
+                    foundLoc[locationsWithRegionalBuildingCount++] = i ;
             }
             if (locationsWithRegionalBuildingCount > 0)
             {
+                DFLocation minLocation;
+                float minDist;
+
+                minDist = float.MaxValue;
+                minLocation = default(DFLocation);
+
+                for (int i = 0; i < locationsWithRegionalBuildingCount; i++)
+                {
+                    if (foundLoc[i] > 0)
+                    {
+                        location = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetLocation(gps.CurrentRegionIndex, foundLoc[i]);
+                        DFPosition mapPixel = MapsFile.LongitudeLatitudeToMapPixel(location.MapTableData.Longitude, location.MapTableData.Latitude);
+                        float dist = travelTimeCalculator.CalculateTravelTime(mapPixel, false, false, false, false, false) * 60;
+                        if (dist < minDist)
+                        {
+                            minLocation = location;
+                            minDist = dist;
+                        }
+                    }
+                }
+                if (minDist < float.MaxValue)
+                {
+                    location = minLocation;
+                    return true;
+                }
                 int locationToChoose = UnityEngine.Random.Range(0, locationsWithRegionalBuildingCount) + 1;
                 // Get the location
                 for (int i = 0; i < gps.CurrentRegion.LocationCount; i++)
@@ -1896,7 +1925,6 @@ namespace DaggerfallWorkshop.Game
                 }
                 return false;
             }
-
             return false;
         }
 
