@@ -1,3 +1,5 @@
+// Project:         Daggerfall Tools For Unity
+// Copyright:       Copyright (C) 2009-2020 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
@@ -52,6 +54,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 for (int i = 0; i < files.Length - 1; i++)
                 {
                     ClassFile classFile = new ClassFile(files[i]);
+                    if (classFile.Career.Name == "Spellsword")
+                    {
+                        DFCareer c = PopulateCareer();
+                        classList.Add(c);
+                        listBox.AddItem(c.Name);
+                    }
+                    else
+                    {
+                        classList.Add(classFile.Career);
+                        listBox.AddItem(classFile.Career.Name);
+                    }
                 }
             }
 
@@ -99,6 +112,71 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 selectedClass = null;
                 sender.CancelWindow();
             }
+        }
+
+        DFCareer PopulateCareer()
+        {
+           
+
+            DFCareer c = new DFCareer
+            {
+                AcuteHearing = false,
+                AdrenalineRush = false,
+                AdvancementMultiplier = 1.546154f,
+                Agility = 45,
+                AnimalsAttackModifier = DFCareer.AttackModifier.Normal,
+                Athleticism = false,
+                Axes = DFCareer.Proficiency.Normal,
+                BluntWeapons = DFCareer.Proficiency.Normal,
+                DaedraAttackModifier = DFCareer.AttackModifier.Normal,
+                DamageFromHolyPlaces = false,
+                DamageFromSunlight = false,
+                DarknessPoweredMagery = DFCareer.DarknessMageryFlags.Normal,
+                Disease = DFCareer.Tolerance.Normal,
+                Endurance = 40,
+                Fire = DFCareer.Tolerance.Normal,
+                ForbiddenMaterials = (DFCareer.MaterialFlags)0,
+                Frost = DFCareer.Tolerance.Normal,
+                HandToHand = DFCareer.Proficiency.Normal,
+                HitPointsPerLevel = 30,
+                HumanoidAttackModifier = DFCareer.AttackModifier.Normal,
+                Intelligence = 65,
+                LightPoweredMagery = DFCareer.LightMageryFlags.Normal,
+                LongBlades = DFCareer.Proficiency.Normal,
+                Luck = 50,
+                Magic = DFCareer.Tolerance.Normal,
+                MajorSkill1 = DFCareer.Skills.Restoration,
+                MajorSkill2 = DFCareer.Skills.Archery,
+                MajorSkill3 = DFCareer.Skills.ShortBlade,
+                MinorSkill1 = DFCareer.Skills.Alteration,
+                MinorSkill2 = DFCareer.Skills.CriticalStrike,
+                MinorSkill3 = DFCareer.Skills.Medical,
+                MinorSkill4 = DFCareer.Skills.Illusion,
+                MinorSkill5 = DFCareer.Skills.Mysticism,
+                MinorSkill6 = DFCareer.Skills.Thaumaturgy,
+                MissileWeapons = DFCareer.Proficiency.Normal,
+                Name = "Spellsword",
+                NoRegenSpellPoints = false,
+                Paralysis = DFCareer.Tolerance.Normal,
+                Personality = 35,
+                Poison = DFCareer.Tolerance.Normal,
+                PrimarySkill1 = DFCareer.Skills.Destruction,
+                PrimarySkill2 = DFCareer.Skills.Daedric,
+                PrimarySkill3 = DFCareer.Skills.LongBlade,
+                RapidHealing = DFCareer.RapidHealingFlags.None,
+                Regeneration = DFCareer.RegenerationFlags.None,
+                Shock = DFCareer.Tolerance.Normal,
+                ShortBlades = DFCareer.Proficiency.Normal,
+                Speed = 50,
+                SpellAbsorption = DFCareer.SpellAbsorptionFlags.None,
+                SpellPointMultiplier = DFCareer.SpellPointMultipliers.Times_0_50,
+                SpellPointMultiplierValue = 0.5f,
+                Strength = 75,
+                UndeadAttackModifier = DFCareer.AttackModifier.Normal,
+                Willpower = 40
+            };
+            return c;
+
         }
 
         public int SelectedClassIndex
