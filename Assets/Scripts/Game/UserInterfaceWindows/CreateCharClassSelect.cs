@@ -4,8 +4,8 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
-// 
+// Contributors:
+//
 // Notes:
 //
 
@@ -71,8 +71,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 selectedClass = null;
                 selectedClassIndex = -1;
                 CloseWindow();
-            } 
-            else 
+            }
+            else
             {
                 selectedClass = classList[index];
                 selectedClass.Name = className; // Ensures any localized display names are assigned after selection from list
