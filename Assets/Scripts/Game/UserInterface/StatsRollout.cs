@@ -36,7 +36,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
         const int minBonusRoll = 0;         // The minimum number of points added to each base class stat
         const int maxBonusRoll = 10;        // The maximum number of points added to each base class stat
         const int minBonusPool = 6;         // The minimum number of free points to allocate
-        const int maxBonusPool = 14;        // The maximum number of free points to allocate
+        const int maxBonusPool = 18;        // The maximum number of free points to allocate
 
         DaggerfallFont font;
         UpDownSpinner spinner;
