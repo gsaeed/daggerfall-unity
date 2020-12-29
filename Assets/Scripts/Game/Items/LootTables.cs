@@ -268,6 +268,29 @@ namespace DaggerfallWorkshop.Game.Items
             }
         }
 
+        static int RollForBonus(int playerlevel, int chanceSuccess)
+        {
+            float tier = 0;
+            int chanceMultiplier = Random.Range(1, 11) - 7;
+            if (chanceMultiplier < 1)
+                chanceMultiplier = 1;
+
+            chanceSuccess *= chanceMultiplier;
+            if (Dice100.SuccessRoll(chanceSuccess))
+            {
+                tier = (float)Random.Range(1, 101);
+                if (tier < 100)
+                    tier = tier % 25 + 1;
+            }
+            else
+                tier = 0f;
+
+            tier = Mathf.Round(tier + (float)playerlevel);
+            if (tier > 100f)
+                tier = 100f;
+            return (int)tier;
+        }
+
         #endregion
     }
 }
