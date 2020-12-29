@@ -269,7 +269,7 @@ namespace DaggerfallWorkshop.Game.Items
             {
                 tier = (float)Random.Range(1, 101);
                 if (tier < 100)
-                    tier = tier % 4 + 1;
+                    tier = tier % 25 + 1;
             }
             else
                 tier = 0f;

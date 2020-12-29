@@ -655,6 +655,7 @@ namespace DaggerfallWorkshop.Game
 
             // Get news
             var bulletinBoardMessage = GameManager.Instance.TalkManager.GetNewsOrRumorsForBulletinBoard();
+            RevealBuildings();
 
             // format message
             var tokens = new List<TextFile.Token>
@@ -1354,6 +1355,19 @@ namespace DaggerfallWorkshop.Game
 
             return null;
         }
+        void RevealBuildings()
+        {
+            var gameobjectExteriorAutomap = GameObject.Find("Automap/ExteriorAutomap");
+            if (gameobjectExteriorAutomap)
+            {
+                var exteriorAutomap = gameobjectExteriorAutomap.GetComponent<ExteriorAutomap>();
+                if (exteriorAutomap)
+                    exteriorAutomap.RevealUndiscoveredBuildings = true;
+            }
+
+            return;
+        }
+
 
         // Sets new activation mode
         public void ChangeInteractionMode(PlayerActivateModes newMode)
