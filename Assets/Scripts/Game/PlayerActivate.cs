@@ -1392,12 +1392,25 @@ namespace DaggerfallWorkshop.Game
         }
         void RevealBuildings()
         {
-            var gameobjectExteriorAutomap = GameObject.Find("Automap/ExteriorAutomap");
-            if (gameobjectExteriorAutomap)
+
+            DFLocation location = playerGPS.CurrentLocation;
+
+            DFBlock[] blocks;
+            RMBLayout.GetLocationBuildingData(location, out blocks);
+            int width = location.Exterior.ExteriorData.Width;
+            int height = location.Exterior.ExteriorData.Height;
+
+            for (int y = 0; y < height; y++)
             {
-                var exteriorAutomap = gameobjectExteriorAutomap.GetComponent<ExteriorAutomap>();
-                if (exteriorAutomap)
-                    exteriorAutomap.RevealUndiscoveredBuildings = true;
+                for (int x = 0; x < width; x++)
+                {
+                    int index = y * width + x;
+                    BuildingSummary[] buildingsInBlock = RMBLayout.GetBuildingData(blocks[index], x, y);
+                    foreach (BuildingSummary buildingSummary in buildingsInBlock)
+                    {
+                        GameManager.Instance.PlayerGPS.DiscoverBuilding(buildingSummary.buildingKey);
+                    }
+                }
             }
 
             return;
