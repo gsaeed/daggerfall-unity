@@ -53,6 +53,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     readonly Button enableAllButton          = new Button();
     readonly Button disableAllButton         = new Button();
     readonly Button saveAndCloseButton       = new Button();
+    readonly Button buildModSupport = new Button();
     readonly Button extractFilesButton       = new Button();
     readonly Button showModDescriptionButton = new Button();
     readonly Button modSettingsButton        = new Button();
@@ -248,12 +249,21 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         saveAndCloseButton.Outline.Enabled = true;
         saveAndCloseButton.BackgroundColor = textColor;
         saveAndCloseButton.VerticalAlignment = VerticalAlignment.Bottom;
-        saveAndCloseButton.HorizontalAlignment = HorizontalAlignment.Center;
+        saveAndCloseButton.HorizontalAlignment = HorizontalAlignment.Left;
         saveAndCloseButton.Label.Text = ModManager.GetText("saveClose");
         saveAndCloseButton.Label.ToolTipText = ModManager.GetText("saveCloseInfo");
         saveAndCloseButton.OnMouseClick += SaveAndCloseButton_OnMouseClick;
         saveAndCloseButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupSaveAndClose);
         ModPanel.Components.Add(saveAndCloseButton);
+
+        buildModSupport.Size = new Vector2(50, 12);
+        buildModSupport.Outline.Enabled = true;
+        buildModSupport.BackgroundColor = textColor;
+        buildModSupport.VerticalAlignment = VerticalAlignment.Bottom;
+        buildModSupport.HorizontalAlignment = HorizontalAlignment.Right;
+        buildModSupport.Label.Text = "Build Mod File";
+        buildModSupport.OnMouseClick += BuildModSupportFile;
+        ModPanel.Components.Add(buildModSupport);
 
         extractFilesButton.Size = new Vector2(60, 12);
         extractFilesButton.Position = new Vector2(5, 117);
@@ -592,22 +602,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             mod = null;
         }
 
-        ModManager.Instance.SortMods();
-        string path = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
-
-        File.WriteAllText(path + @"\mods.csv", "Mod Title,Mod Filename,Enabled,Load Priority, Asset List" + Environment.NewLine);
-        foreach (Mod m in ModManager.Instance.Mods)
-        {
-            File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.Enabled}, {m.LoadPriority}" + Environment.NewLine);
-            if (m.AssetNames != null)
-                foreach (string a in m.AssetNames)
-                {
-                    File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.Enabled},{m.LoadPriority}, {a}" + Environment.NewLine);
-                }
-        }
-
-
-
         MoveNextStage();
     }
 
@@ -697,6 +691,23 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         UpdateModPanel();
     }
 
+    void BuildModSupportFile(BaseScreenComponent sender, Vector2 position)
+    {
+        ModManager.Instance.SortMods();
+        string path = Path.Combine(Application.persistentDataPath, "Mods");
+
+        File.WriteAllText(path + @"\mods.csv", "Mod Title,Mod Filename,Enabled,Load Priority, Asset List" + Environment.NewLine);
+        foreach (Mod m in ModManager.Instance.Mods)
+        {
+            File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.Enabled}, {m.LoadPriority}" + Environment.NewLine);
+            if (m.AssetNames != null)
+                foreach (string a in m.AssetNames)
+                {
+                    File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.Enabled},{m.LoadPriority}, {a}" + Environment.NewLine);
+                }
+        }
+
+    }
     void ShowModDescriptionPopUp_OnMouseClick(BaseScreenComponent sender, Vector2 position)
     {
         if (modSettings == null || modSettings.Length < 1)
