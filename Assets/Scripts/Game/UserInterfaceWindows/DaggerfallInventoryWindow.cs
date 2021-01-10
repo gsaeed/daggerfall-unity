@@ -1140,7 +1140,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             bool found = false;
             for (int i = 0,  n = 0; i < tokens.Length; i++)
             {
-                if (tokens[i].text.Contains("Worth:"))
+                if (tokens[i].text != null && tokens[i].text.Contains("Worth:"))
                     found = true;
                 if (i == tokens.Length - 1 && !found)
                     newTokens[n++] = new TextFile.Token() { formatting = TextFile.Formatting.Text, text = "Worth: " + item.value.ToString() + " gold" };
