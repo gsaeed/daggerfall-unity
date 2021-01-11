@@ -696,18 +696,25 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         ModManager.Instance.SortMods();
         string path = Path.Combine(Application.persistentDataPath, "Mods");
 
-        File.WriteAllText(path + @"\mods.csv", "Mod Title,Mod Filename,Enabled,Load Priority, Asset List" + Environment.NewLine);
+        File.WriteAllText(path + @"\mods.csv", "Mod Title,Mod Filename,Enabled,Load Priority, Asset List, Count" + Environment.NewLine);
         foreach (Mod m in ModManager.Instance.Mods)
         {
-            File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.Enabled}, {m.LoadPriority}" + Environment.NewLine);
+            File.AppendAllText(path + @"\mods.csv", $"{RemoveComma(m.Title)}, {RemoveComma(m.FileName)}, {m.Enabled}, {m.LoadPriority}" + Environment.NewLine);
             if (m.AssetNames != null)
                 foreach (string a in m.AssetNames)
                 {
-                    File.AppendAllText(path + @"\mods.csv", $"{m.Title}, {m.FileName}, {m.Enabled},{m.LoadPriority}, {a}" + Environment.NewLine);
+                    File.AppendAllText(path + @"\mods.csv", $"{RemoveComma(m.Title)}, {RemoveComma(m.FileName)}, {m.Enabled},{m.LoadPriority}, {a}, 1" + Environment.NewLine);
                 }
         }
 
     }
+
+    string RemoveComma(string str)
+    {
+        string[] strArray = str.Split(',');
+        return String.Join(" ", strArray);
+    }
+
     void ShowModDescriptionPopUp_OnMouseClick(BaseScreenComponent sender, Vector2 position)
     {
         if (modSettings == null || modSettings.Length < 1)
