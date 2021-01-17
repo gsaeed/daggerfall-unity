@@ -713,7 +713,6 @@ namespace DaggerfallWorkshop.Game
 
             // Get news
             var bulletinBoardMessage = GameManager.Instance.TalkManager.GetNewsOrRumorsForBulletinBoard();
-            RevealBuildings();
 
             // format message
             var tokens = new List<TextFile.Token>
@@ -1390,32 +1389,6 @@ namespace DaggerfallWorkshop.Game
 
             return null;
         }
-        void RevealBuildings()
-        {
-
-            DFLocation location = playerGPS.CurrentLocation;
-
-            DFBlock[] blocks;
-            RMBLayout.GetLocationBuildingData(location, out blocks);
-            int width = location.Exterior.ExteriorData.Width;
-            int height = location.Exterior.ExteriorData.Height;
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    int index = y * width + x;
-                    BuildingSummary[] buildingsInBlock = RMBLayout.GetBuildingData(blocks[index], x, y);
-                    foreach (BuildingSummary buildingSummary in buildingsInBlock)
-                    {
-                        GameManager.Instance.PlayerGPS.DiscoverBuilding(buildingSummary.buildingKey);
-                    }
-                }
-            }
-
-            return;
-        }
-
 
         // Sets new activation mode
         public void ChangeInteractionMode(PlayerActivateModes newMode, bool showText = true)
