@@ -52,6 +52,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         KeyCode automapBinding = KeyCode.None;
         bool isCloseWindowDeferred = false;
         readonly KeyCode fallbackKey = KeyCode.Home;
+        public bool hotKeyOverride = false;
 
         // definitions of hotkey sequences
         HotkeySequence HotkeySequence_FocusPlayerPosition;
@@ -580,7 +581,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             base.Update();
             ResizeGUIelementsOnDemand();
 
-            HotkeySequence.KeyModifiers keyModifiers = HotkeySequence.GetKeyboardKeyModifiers();
+            if (!hotKeyOverride)
+            {
+                HotkeySequence.KeyModifiers keyModifiers = HotkeySequence.GetKeyboardKeyModifiers();
+
 
             if (InputManager.Instance.GetBackButtonDown() ||
                 // Toggle window closed with same hotkey used to open it
@@ -596,249 +600,251 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
 
             // check hotkeys and assign actions
-            if (HotkeySequence_FocusPlayerPosition.IsDownWith(keyModifiers))
-            {
-                ActionFocusPlayerPosition();
-            }
-            if (HotkeySequence_ResetView.IsDownWith(keyModifiers))
-            {
-                ActionResetView();
-            }
+                if (HotkeySequence_FocusPlayerPosition.IsDownWith(keyModifiers))
+                {
+                    ActionFocusPlayerPosition();
+                }
+                if (HotkeySequence_ResetView.IsDownWith(keyModifiers))
+                {
+                    ActionResetView();
+                }
 
-            if (HotkeySequence_SwitchToNextExteriorAutomapViewMode.IsDownWith(keyModifiers))
-            {
-                ActionSwitchToNextExteriorAutomapViewMode();
-            }
-            if (HotkeySequence_SwitchToExteriorAutomapViewModeOriginal.IsDownWith(keyModifiers))
-            {
-                ActionSwitchToExteriorAutomapViewModeOriginal();
-            }
-            if (HotkeySequence_SwitchToExteriorAutomapViewModeExtra.IsDownWith(keyModifiers))
-            {
-                ActionSwitchToExteriorAutomapViewModeExtra();
-            }
-            if (HotkeySequence_SwitchToExteriorAutomapViewModeAll.IsDownWith(keyModifiers))
-            {
-                ActionSwitchToExteriorAutomapViewModeAll();
-            }
+                if (HotkeySequence_SwitchToNextExteriorAutomapViewMode.IsDownWith(keyModifiers))
+                {
+                    ActionSwitchToNextExteriorAutomapViewMode();
+                }
+                if (HotkeySequence_SwitchToExteriorAutomapViewModeOriginal.IsDownWith(keyModifiers))
+                {
+                    ActionSwitchToExteriorAutomapViewModeOriginal();
+                }
+                if (HotkeySequence_SwitchToExteriorAutomapViewModeExtra.IsDownWith(keyModifiers))
+                {
+                    ActionSwitchToExteriorAutomapViewModeExtra();
+                }
+                if (HotkeySequence_SwitchToExteriorAutomapViewModeAll.IsDownWith(keyModifiers))
+                {
+                    ActionSwitchToExteriorAutomapViewModeAll();
+                }
 
-            if (HotkeySequence_SwitchToExteriorAutomapBackgroundOriginal.IsDownWith(keyModifiers))
-            {
-                ActionSwitchToExteriorAutomapBackgroundOriginal();
-            }
-            if (HotkeySequence_SwitchToExteriorAutomapBackgroundAlternative1.IsDownWith(keyModifiers))
-            {
-                ActionSwitchToExteriorAutomapBackgroundAlternative1();
-            }
-            if (HotkeySequence_SwitchToExteriorAutomapBackgroundAlternative2.IsDownWith(keyModifiers))
-            {
-                ActionSwitchToExteriorAutomapBackgroundAlternative2();
-            }
-            if (HotkeySequence_SwitchToExteriorAutomapBackgroundAlternative3.IsDownWith(keyModifiers))
-            {
-                ActionSwitchToExteriorAutomapBackgroundAlternative3();
-            }
+                if (HotkeySequence_SwitchToExteriorAutomapBackgroundOriginal.IsDownWith(keyModifiers))
+                {
+                    ActionSwitchToExteriorAutomapBackgroundOriginal();
+                }
+                if (HotkeySequence_SwitchToExteriorAutomapBackgroundAlternative1.IsDownWith(keyModifiers))
+                {
+                    ActionSwitchToExteriorAutomapBackgroundAlternative1();
+                }
+                if (HotkeySequence_SwitchToExteriorAutomapBackgroundAlternative2.IsDownWith(keyModifiers))
+                {
+                    ActionSwitchToExteriorAutomapBackgroundAlternative2();
+                }
+                if (HotkeySequence_SwitchToExteriorAutomapBackgroundAlternative3.IsDownWith(keyModifiers))
+                {
+                    ActionSwitchToExteriorAutomapBackgroundAlternative3();
+                }
 
-            if (HotkeySequence_MoveForward.IsPressedWith(keyModifiers))
-            {
-                ActionMoveForward();
-            }
-            if (HotkeySequence_MoveBackward.IsPressedWith(keyModifiers))
-            {
-                ActionMoveBackward();
-            }
-            if (HotkeySequence_MoveLeft.IsPressedWith(keyModifiers))
-            {
-                ActionMoveLeft();
-            }
-            if (HotkeySequence_MoveRight.IsPressedWith(keyModifiers))
-            {
-                ActionMoveRight();
-            }
+                if (HotkeySequence_MoveForward.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveForward();
+                }
+                if (HotkeySequence_MoveBackward.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveBackward();
+                }
+                if (HotkeySequence_MoveLeft.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveLeft();
+                }
+                if (HotkeySequence_MoveRight.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveRight();
+                }
 
-            if (HotkeySequence_MoveToNorthLocationBorder.IsPressedWith(keyModifiers))
-            {
-                ActionMoveToNorthLocationBorder();
-            }
-            if (HotkeySequence_MoveToSouthLocationBorder.IsPressedWith(keyModifiers))
-            {
-                ActionMoveToSouthLocationBorder();
-            }
-            if (HotkeySequence_MoveToWestLocationBorder.IsPressedWith(keyModifiers))
-            {
-                ActionMoveToWestLocationBorder();
-            }
-            if (HotkeySequence_MoveToEastLocationBorder.IsPressedWith(keyModifiers))
-            {
-                ActionMoveToEastLocationBorder();
-            }        
+                if (HotkeySequence_MoveToNorthLocationBorder.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveToNorthLocationBorder();
+                }
+                if (HotkeySequence_MoveToSouthLocationBorder.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveToSouthLocationBorder();
+                }
+                if (HotkeySequence_MoveToWestLocationBorder.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveToWestLocationBorder();
+                }
+                if (HotkeySequence_MoveToEastLocationBorder.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveToEastLocationBorder();
+                }
 
-            if (HotkeySequence_RotateLeft.IsPressedWith(keyModifiers))
-            {
-                ActionRotateLeft();
-            }
-            if (HotkeySequence_RotateRight.IsPressedWith(keyModifiers))
-            {
-                ActionRotateRight();
-            }
-            if (HotkeySequence_RotateAroundPlayerPosLeft.IsPressedWith(keyModifiers))
-            {
-                ActionRotateAroundPlayerPosLeft();
-            }
-            if (HotkeySequence_RotateAroundPlayerPosRight.IsPressedWith(keyModifiers))
-            {
-                ActionRotateAroundPlayerPosRight();
-            }
+                if (HotkeySequence_RotateLeft.IsPressedWith(keyModifiers))
+                {
+                    ActionRotateLeft();
+                }
+                if (HotkeySequence_RotateRight.IsPressedWith(keyModifiers))
+                {
+                    ActionRotateRight();
+                }
+                if (HotkeySequence_RotateAroundPlayerPosLeft.IsPressedWith(keyModifiers))
+                {
+                    ActionRotateAroundPlayerPosLeft();
+                }
+                if (HotkeySequence_RotateAroundPlayerPosRight.IsPressedWith(keyModifiers))
+                {
+                    ActionRotateAroundPlayerPosRight();
+                }
 
-            if (HotkeySequence_Upstairs.IsPressedWith(keyModifiers))
-            {
-                ActionMoveUpstairs();
-            }
-            if (HotkeySequence_Downstairs.IsPressedWith(keyModifiers))
-            {
-                ActionMoveDownstairs();
-            }
-            if (HotkeySequence_ZoomIn.IsPressedWith(keyModifiers))
-            {             
-                ActionZoom(-zoomSpeed * Time.unscaledDeltaTime);
-            }
-            if (HotkeySequence_ZoomOut.IsPressedWith(keyModifiers))
-            {                
-                ActionZoom(zoomSpeed * Time.unscaledDeltaTime);
-            }
+                if (HotkeySequence_Upstairs.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveUpstairs();
+                }
+                if (HotkeySequence_Downstairs.IsPressedWith(keyModifiers))
+                {
+                    ActionMoveDownstairs();
+                }
+                if (HotkeySequence_ZoomIn.IsPressedWith(keyModifiers))
+                {
+                    ActionZoom(-zoomSpeed * Time.unscaledDeltaTime);
+                }
+                if (HotkeySequence_ZoomOut.IsPressedWith(keyModifiers))
+                {
+                    ActionZoom(zoomSpeed * Time.unscaledDeltaTime);
+                }
 
-            if (HotkeySequence_MaxZoom1.IsPressedWith(keyModifiers))
-            {
-                ActionApplyMaxZoom();
-            }
-            if (HotkeySequence_MinZoom1.IsPressedWith(keyModifiers))
-            {
-                ActionApplyMinZoom();
-            }
-            if (HotkeySequence_MinZoom2.IsPressedWith(keyModifiers))
-            {
-                ActionApplyMinZoom();
-            }
-            if (HotkeySequence_MaxZoom2.IsPressedWith(keyModifiers))
-            {
-                ActionApplyMaxZoom();
-            }            
+                if (HotkeySequence_MaxZoom1.IsPressedWith(keyModifiers))
+                {
+                    ActionApplyMaxZoom();
+                }
+                if (HotkeySequence_MinZoom1.IsPressedWith(keyModifiers))
+                {
+                    ActionApplyMinZoom();
+                }
+                if (HotkeySequence_MinZoom2.IsPressedWith(keyModifiers))
+                {
+                    ActionApplyMinZoom();
+                }
+                if (HotkeySequence_MaxZoom2.IsPressedWith(keyModifiers))
+                {
+                    ActionApplyMaxZoom();
+                }
 
-            // check mouse input and assign actions
-            if (leftMouseDownOnPanelAutomap)
-            {
-                Vector2 mousePosition = new Vector2(InputManager.Instance.MousePosition.x, Screen.height - InputManager.Instance.MousePosition.y);
+                // check mouse input and assign actions
+                if (leftMouseDownOnPanelAutomap)
+                {
+                    Vector2 mousePosition = new Vector2(InputManager.Instance.MousePosition.x, Screen.height - InputManager.Instance.MousePosition.y);
 
-                float dragSpeedCompensated;
-                dragSpeedCompensated = dragSpeed * cameraExteriorAutomap.orthographicSize; // * cameraExteriorAutomap.transform.position.y;
-                Vector2 bias = mousePosition - oldMousePosition;
-                Vector3 translation = -cameraExteriorAutomap.transform.right * dragSpeedCompensated * bias.x + cameraExteriorAutomap.transform.up * dragSpeedCompensated * bias.y;
-                cameraExteriorAutomap.transform.position += translation;
-                UpdateAutomapView();
-                oldMousePosition = mousePosition;
-            }
+                    float dragSpeedCompensated;
+                    dragSpeedCompensated = dragSpeed * cameraExteriorAutomap.orthographicSize; // * cameraExteriorAutomap.transform.position.y;
+                    Vector2 bias = mousePosition - oldMousePosition;
+                    Vector3 translation = -cameraExteriorAutomap.transform.right * dragSpeedCompensated * bias.x + cameraExteriorAutomap.transform.up * dragSpeedCompensated * bias.y;
+                    cameraExteriorAutomap.transform.position += translation;
+                    UpdateAutomapView();
+                    oldMousePosition = mousePosition;
+                }
 
-            if (rightMouseDownOnPanelAutomap)
-            {
-                Vector2 mousePosition = new Vector2(InputManager.Instance.MousePosition.x, Screen.height - InputManager.Instance.MousePosition.y);
+                if (rightMouseDownOnPanelAutomap)
+                {
+                    Vector2 mousePosition = new Vector2(InputManager.Instance.MousePosition.x, Screen.height - InputManager.Instance.MousePosition.y);
 
-                Vector2 bias = mousePosition - oldMousePosition;
+                    Vector2 bias = mousePosition - oldMousePosition;
 
-                ActionRotate(dragRotateSpeed * bias.x);
-                
-                //float zoomSpeedCompensated = dragZoomSpeed * exteriorAutomap.LayoutMultiplier;
-                //ActionZoomOut(zoomSpeedCompensated * bias.y);
+                    ActionRotate(dragRotateSpeed * bias.x);
 
-                UpdateAutomapView();
-                oldMousePosition = mousePosition;
-            }
+                    //float zoomSpeedCompensated = dragZoomSpeed * exteriorAutomap.LayoutMultiplier;
+                    //ActionZoomOut(zoomSpeedCompensated * bias.y);
 
-            if (leftMouseDownOnForwardButton)
-            {
-                ActionMoveForward();
-            }
+                    UpdateAutomapView();
+                    oldMousePosition = mousePosition;
+                }
 
-            if (rightMouseDownOnForwardButton)
-            {
-                ActionMoveToNorthLocationBorder();
-            }
+                if (leftMouseDownOnForwardButton)
+                {
+                    ActionMoveForward();
+                }
 
-            if (leftMouseDownOnBackwardButton)
-            {
-                ActionMoveBackward();
-            }
+                if (rightMouseDownOnForwardButton)
+                {
+                    ActionMoveToNorthLocationBorder();
+                }
 
-            if (rightMouseDownOnBackwardButton)
-            {
-                ActionMoveToSouthLocationBorder();
-            }
+                if (leftMouseDownOnBackwardButton)
+                {
+                    ActionMoveBackward();
+                }
 
-            if (leftMouseDownOnLeftButton)
-            {
-                ActionMoveLeft();
-            }
+                if (rightMouseDownOnBackwardButton)
+                {
+                    ActionMoveToSouthLocationBorder();
+                }
 
-            if (rightMouseDownOnLeftButton)
-            {
-                ActionMoveToWestLocationBorder();
-            }
+                if (leftMouseDownOnLeftButton)
+                {
+                    ActionMoveLeft();
+                }
 
-            if (leftMouseDownOnRightButton)
-            {
-                ActionMoveRight();
-            }
+                if (rightMouseDownOnLeftButton)
+                {
+                    ActionMoveToWestLocationBorder();
+                }
 
-            if (rightMouseDownOnRightButton)
-            {
-                ActionMoveToEastLocationBorder();
-            }
+                if (leftMouseDownOnRightButton)
+                {
+                    ActionMoveRight();
+                }
+
+                if (rightMouseDownOnRightButton)
+                {
+                    ActionMoveToEastLocationBorder();
+                }
 
 
-            if (leftMouseDownOnRotateLeftButton)
-            {
-                ActionRotateLeft();
-            }
+                if (leftMouseDownOnRotateLeftButton)
+                {
+                    ActionRotateLeft();
+                }
 
-            if (leftMouseDownOnRotateRightButton)
-            {
-                ActionRotateRight();
-            }
+                if (leftMouseDownOnRotateRightButton)
+                {
+                    ActionRotateRight();
+                }
 
-            if (rightMouseDownOnRotateLeftButton)
-            {
-                ActionRotateAroundPlayerPosLeft();
-            }
+                if (rightMouseDownOnRotateLeftButton)
+                {
+                    ActionRotateAroundPlayerPosLeft();
+                }
 
-            if (rightMouseDownOnRotateRightButton)
-            {
-                ActionRotateAroundPlayerPosRight();
-            }
+                if (rightMouseDownOnRotateRightButton)
+                {
+                    ActionRotateAroundPlayerPosRight();
+                }
 
-            if (leftMouseDownOnUpstairsButton)
-            {
-                ActionMoveUpstairs();
-            }
+                if (leftMouseDownOnUpstairsButton)
+                {
+                    ActionMoveUpstairs();
+                }
 
-            if (leftMouseDownOnDownstairsButton)
-            {
-                ActionMoveDownstairs();
-            }
+                if (leftMouseDownOnDownstairsButton)
+                {
+                    ActionMoveDownstairs();
+                }
 
-            if (rightMouseDownOnUpstairsButton)
-            {
-                ActionApplyMaxZoom();
-            }
+                if (rightMouseDownOnUpstairsButton)
+                {
+                    ActionApplyMaxZoom();
+                }
 
-            if (rightMouseDownOnDownstairsButton)
-            {
-                ActionApplyMinZoom();
+                if (rightMouseDownOnDownstairsButton)
+                {
+                    ActionApplyMinZoom();
+                }
+
             }
         }
 
         /// <summary>
         /// updates the automap view - renders the automap level geometry afterwards into the automap render panel
         /// </summary>
-        public void UpdateAutomapView()
+        public virtual void UpdateAutomapView()
         {
             //exteriorAutomap.forceUpdate();
 
