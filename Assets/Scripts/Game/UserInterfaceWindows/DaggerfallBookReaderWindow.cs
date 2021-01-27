@@ -26,7 +26,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         const string textFolderName = "Text";
         const string bookImagesPath = "Books/BookImages";
 
-        const float scrollAmount = 24;
+        const float scrollAmount = 23;
+        const int textHeight = 7;
+
         const string nativeImgName = "BOOK00I0.IMG";
         char newline = '\n';
 
@@ -117,12 +119,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         private void Panel_OnMouseScrollDown(BaseScreenComponent sender)
         {
-            NextPageButton_OnMouseClick(sender, Vector2.zero);
+            //NextPageButton_OnMouseClick(sender, Vector2.zero);
+            ScrollBook(-1);
         }
 
         private void Panel_OnMouseScrollUp(BaseScreenComponent sender)
         {
-            PreviousPageButton_OnMouseClick(sender, Vector2.zero);
+            //PreviousPageButton_OnMouseClick(sender, Vector2.zero);
+            ScrollBook(1);
         }
 
         public override void OnPush()
@@ -183,15 +187,15 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Stop scrolling at top or bottom of book layout
             if (amount < 0 && scrollPosition - pagePanel.Size.y - amount < -maxHeight)
                 return;
-            else if (amount > 0 && scrollPosition == 0)
+            else if (amount > 0 && scrollPosition  >= 0)
                 return;
 
             // Scroll label and only draw what can be seen
-            scrollPosition += amount;
+            scrollPosition += amount * textHeight;
             foreach (TextLabel label in bookLabels)
             {
-                label.Position = new Vector2(label.Position.x, label.Position.y + amount);
-                label.Enabled = label.Position.y < pagePanel.Size.y && label.Position.y + label.Size.y > 0;
+                    label.Position = new Vector2(label.Position.x, label.Position.y + amount * textHeight);
+                    label.Enabled = label.Position.y < pagePanel.Size.y && label.Position.y + label.Size.y > 0;
             }
 
             // page displayed at the center of the panel
