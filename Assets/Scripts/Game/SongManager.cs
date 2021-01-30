@@ -165,7 +165,11 @@ namespace DaggerfallWorkshop.Game
                 RainSongs = _weatherRainSongsFM;
                 SnowSongs = _weatherSnowSongsFM;
                 TempleSongs = _templeSongsFM;
-                TavernSongs = _tavernSongsFM;
+
+                TavernSongs = new SongFiles[_tavernSongs.Length + _tavernSongsFM.Length];
+                Array.Copy(_tavernSongs, TavernSongs, _tavernSongs.Length);
+                Array.Copy(_tavernSongsFM, 0, TavernSongs, _tavernSongs.Length, _tavernSongsFM.Length);
+
                 NightSongs = _nightSongsFM;
                 ShopSongs = _shopSongsFM;
                 MagesGuildSongs = _magesGuildSongsFM;
@@ -177,6 +181,7 @@ namespace DaggerfallWorkshop.Game
             }
 
             PlayerEnterExit.OnTransitionDungeonInterior += PlayerEnterExit_OnTransitionDungeonInterior;
+            PlayerEnterExit.OnTransitionInterior += PlayerEnterExit_OnTransitionInterior;
         }
 
         void Update()
@@ -318,7 +323,7 @@ namespace DaggerfallWorkshop.Game
                 }
                 else if (currentPlaylist == TavernSongs)
                 {
-                    index = (int)(gameMinutes / 1440 % TavernSongs.Length);
+                    index = UnityEngine.Random.Range( 0, TavernSongs.Length);
                 }
                 else if (currentPlaylist == DungeonInteriorSongs)
                 {
@@ -349,12 +354,12 @@ namespace DaggerfallWorkshop.Game
             PlayCurrentSong();
         }
 
-        void PlayCurrentSong(bool forcePlay = false)
+        void PlayCurrentSong(bool forcePlay = true)
         {
             // Do nothing if already playing this song or play disabled
-            if (((songPlayer.Song == currentSong && songPlayer.IsPlaying) || !playSong) && !forcePlay)
-                return;
-
+            //if (((songPlayer.Song == currentSong && songPlayer.IsPlaying) || !playSong) && !forcePlay)
+              //  return;
+            SelectCurrentSong();
             songPlayer.Song = currentSong;
             songPlayer.Play();
         }
@@ -605,6 +610,14 @@ namespace DaggerfallWorkshop.Game
             }
         }
 
+        private void PlayerEnterExit_OnTransitionInterior(PlayerEnterExit.TransitionEventArgs args)
+        {
+            if (!songPlayer)
+                return;
+
+            UpdateSong(true);
+            
+        }
         #endregion
 
         #region Song Playlists
@@ -843,6 +856,100 @@ namespace DaggerfallWorkshop.Game
         static SongFiles[] _tavernSongsFM = new SongFiles[]
         {
             SongFiles.song_fm_sqr_2,
+            SongFiles.song_tavern1,
+            SongFiles.song_tavern2,
+            SongFiles.song_tavern3,
+            SongFiles.song_tavern4,
+            SongFiles.song_tavern5,
+            SongFiles.song_tavern6,
+            SongFiles.song_tavern7,
+            SongFiles.song_tavern8,
+            SongFiles.song_tavern9,
+            SongFiles.song_tavern10,
+            SongFiles.song_silent,
+            SongFiles.song_tavern11,
+            SongFiles.song_tavern12,
+            SongFiles.song_tavern13,
+            SongFiles.song_tavern14,
+            SongFiles.song_tavern15,
+            SongFiles.song_tavern16,
+            SongFiles.song_tavern17,
+            SongFiles.song_tavern18,
+            SongFiles.song_tavern19,
+            SongFiles.song_tavern20,
+            SongFiles.song_tavern21,
+            SongFiles.song_tavern22,
+            SongFiles.song_tavern23,
+            SongFiles.song_tavern24,
+            SongFiles.song_tavern25,
+            SongFiles.song_silent2,
+            SongFiles.song_tavern26,
+            SongFiles.song_tavern27,
+            SongFiles.song_tavern28,
+            SongFiles.song_tavern29,
+            SongFiles.song_tavern30,
+            SongFiles.song_tavern31,
+            SongFiles.song_tavern32,
+            SongFiles.song_tavern33,
+            SongFiles.song_tavern34,
+            SongFiles.song_tavern35,
+            SongFiles.song_tavern36,
+            SongFiles.song_tavern37,
+            SongFiles.song_tavern38,
+            SongFiles.song_tavern39,
+            SongFiles.song_tavern40,
+            SongFiles.song_tavern41,
+            SongFiles.song_tavern42,
+            SongFiles.song_tavern43,
+            SongFiles.song_silent3,
+            SongFiles.song_tavern44,
+            SongFiles.song_tavern45,
+            SongFiles.song_tavern46,
+            SongFiles.song_tavern47,
+            SongFiles.song_tavern48,
+            SongFiles.song_tavern49,
+            SongFiles.song_tavern50,
+            SongFiles.song_tavern51,
+            SongFiles.song_tavern52,
+            SongFiles.song_tavern53,
+            SongFiles.song_tavern54,
+            SongFiles.song_tavern55,
+            SongFiles.song_tavern56,
+            SongFiles.song_tavern57,
+            SongFiles.song_tavern58,
+            SongFiles.song_silent4,
+            SongFiles.song_tavern59,
+            SongFiles.song_tavern60,
+            SongFiles.song_tavern61,
+            SongFiles.song_tavern62,
+            SongFiles.song_tavern63,
+            SongFiles.song_tavern64,
+            SongFiles.song_tavern65,
+            SongFiles.song_tavern66,
+            SongFiles.song_tavern67,
+            SongFiles.song_tavern68,
+            SongFiles.song_tavern69,
+            SongFiles.song_tavern70,
+            SongFiles.song_tavern71,
+            SongFiles.song_tavern72,
+            SongFiles.song_tavern73,
+            SongFiles.song_tavern74,
+            SongFiles.song_tavern75,
+            SongFiles.song_tavern76,
+            SongFiles.song_tavern77,
+            SongFiles.song_tavern78,
+            SongFiles.song_tavern79,
+            SongFiles.song_tavern80,
+            SongFiles.song_tavern81,
+            SongFiles.song_silent5,
+            SongFiles.song_tavern82,
+            SongFiles.song_tavern83,
+            SongFiles.song_tavern84,
+            SongFiles.song_tavern85,
+            SongFiles.song_tavern86,
+            SongFiles.song_tavern87,
+            SongFiles.song_tavern88,
+            SongFiles.song_tavern89,
         };
 
         // Night FM version
@@ -890,12 +997,31 @@ namespace DaggerfallWorkshop.Game
         static SongFiles[] _shopSongs = new SongFiles[]
         {
             SongFiles.song_gshop,
+            SongFiles.song_tavern66,
+            SongFiles.song_tavern67,
+            SongFiles.song_tavern68,
+            SongFiles.song_tavern69,
+            SongFiles.song_tavern70,
+            SongFiles.song_tavern71,
+            SongFiles.song_tavern72,
+            SongFiles.song_tavern73,
+            SongFiles.song_tavern74,
         };
 
         // Shop FM version
         static SongFiles[] _shopSongsFM = new SongFiles[]
         {
             SongFiles.song_fm_sqr_2,
+            SongFiles.song_tavern66,
+            SongFiles.song_tavern67,
+            SongFiles.song_tavern68,
+            SongFiles.song_tavern69,
+            SongFiles.song_tavern70,
+            SongFiles.song_tavern71,
+            SongFiles.song_tavern72,
+            SongFiles.song_tavern73,
+            SongFiles.song_tavern74,
+
         };
 
         // Mages Guild
@@ -909,18 +1035,57 @@ namespace DaggerfallWorkshop.Game
         static SongFiles[] _magesGuildSongsFM = new SongFiles[]
         {
             SongFiles.song_fm_nite3,
+            SongFiles.song_gmage_3,
+            SongFiles.song_magic_2,
+
         };
 
         // Interior
         static SongFiles[] _interiorSongs = new SongFiles[]
         {
             SongFiles.song_23,
+            SongFiles.song_tavern45,
+            SongFiles.song_tavern46,
+            SongFiles.song_tavern47,
+            SongFiles.song_tavern48,
+            SongFiles.song_tavern49,
+            SongFiles.song_tavern50,
+            SongFiles.song_tavern51,
+            SongFiles.song_tavern52,
+            SongFiles.song_tavern53,
+            SongFiles.song_tavern54,
+            SongFiles.song_tavern55,
+            SongFiles.song_tavern56,
+            SongFiles.song_tavern57,
+            SongFiles.song_tavern58,
+            SongFiles.song_silent4,
+            SongFiles.song_tavern59,
+            SongFiles.song_tavern60,
+
         };
 
         // Interior FM version
         static SongFiles[] _interiorSongsFM = new SongFiles[]
         {
             SongFiles.song_23fm,
+                        SongFiles.song_tavern45,
+            SongFiles.song_tavern46,
+            SongFiles.song_tavern47,
+            SongFiles.song_tavern48,
+            SongFiles.song_tavern49,
+            SongFiles.song_tavern50,
+            SongFiles.song_tavern51,
+            SongFiles.song_tavern52,
+            SongFiles.song_tavern53,
+            SongFiles.song_tavern54,
+            SongFiles.song_tavern55,
+            SongFiles.song_tavern56,
+            SongFiles.song_tavern57,
+            SongFiles.song_tavern58,
+            SongFiles.song_silent4,
+            SongFiles.song_tavern59,
+            SongFiles.song_tavern60,
+
         };
 
         // Not used in classic. There is unused code to play it in knightly orders
