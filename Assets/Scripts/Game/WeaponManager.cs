@@ -339,16 +339,16 @@ namespace DaggerfallWorkshop.Game
                 else if (isClickAttack)
                 {
 
-                  if (Input.GetKey(KeyCode.Alpha1) )
-                        attackDirection = (MouseDirections)UnityEngine.Random.Range((int)MouseDirections.UpLeft, (int)MouseDirections.UpRight + 1);
+                    if (Input.GetKey(KeyCode.Alpha1))
+                        attackDirection = MouseDirections.Up;
                     else if (Input.GetKey(KeyCode.Alpha2))
-                        attackDirection = (MouseDirections)UnityEngine.Random.Range((int)MouseDirections.DownLeft, (int)MouseDirections.DownRight + 1);
+                        attackDirection = (MouseDirections)UnityEngine.Random.Range((int)MouseDirections.Left, (int)MouseDirections.Right + 1);
                     else if (Input.GetKey(KeyCode.Alpha3))
-                        attackDirection = MouseDirections.Left;
+                        attackDirection = UnityEngine.Random.Range(1, 3) == 1 ? MouseDirections.DownLeft : MouseDirections.DownRight;
                     else if (Input.GetKey(KeyCode.Alpha4))
-                       attackDirection = MouseDirections.Right;
+                        attackDirection = MouseDirections.Down;
                     else
-                       attackDirection = (MouseDirections)UnityEngine.Random.Range((int)MouseDirections.UpLeft, (int)MouseDirections.DownRight + 1);
+                        attackDirection = (MouseDirections)UnityEngine.Random.Range((int)MouseDirections.UpRight, (int)MouseDirections.DownRight + 1);
 
 
                     isClickAttack = false;
