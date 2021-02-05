@@ -1568,20 +1568,48 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
         protected virtual void ButtonLogbook_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
-            DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
-            if (listboxConversation.SelectedIndex < 0)
-                return;
+            int selectedIndex = listboxConversation.SelectedIndex;
+            int pairedIndex;
 
-            if (!copyIndexes.Contains(listboxConversation.SelectedIndex))
+            pairedIndex = selectedIndex == 0 ? -1 : selectedIndex % 2 == 0 ? selectedIndex - 1 : selectedIndex + 1;
+
+            if (selectedIndex > pairedIndex)
             {
-                copyIndexes.Add(listboxConversation.SelectedIndex);
-                MarkCopiedListItem(listboxConversation.GetItem(listboxConversation.SelectedIndex));
+                int temp = selectedIndex;
+                selectedIndex = pairedIndex;
+                pairedIndex = temp;
             }
-            else
+
+            DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
+            if (selectedIndex >= 0)
             {
-                copyIndexes.Remove(listboxConversation.SelectedIndex);
-                MarkCopiedListItem(listboxConversation.GetItem(listboxConversation.SelectedIndex), true);
+
+                if (!copyIndexes.Contains(selectedIndex))
+                {
+                    copyIndexes.Add(selectedIndex);
+                    MarkCopiedListItem(listboxConversation.GetItem(selectedIndex));
+                }
+                else
+                {
+                    copyIndexes.Remove(selectedIndex);
+                    MarkCopiedListItem(listboxConversation.GetItem(selectedIndex), true);
+                }
             }
+            if (pairedIndex >= 0)
+            {
+
+                if (!copyIndexes.Contains(pairedIndex))
+                {
+                    copyIndexes.Add(pairedIndex);
+                    MarkCopiedListItem(listboxConversation.GetItem(pairedIndex));
+                }
+                else
+                {
+                    copyIndexes.Remove(pairedIndex);
+                    MarkCopiedListItem(listboxConversation.GetItem(pairedIndex), true);
+                }
+            }
+            return;
         }
 
         protected virtual void ButtonLogbook_OnRightMouseClick(BaseScreenComponent sender, Vector2 position)
