@@ -47,6 +47,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         int messageCount = 0;
         int findPlaceRegion;
         string findPlaceName;
+        Quest parentQuest;
+        
 
         KeyCode toggleClosedBinding1;
         KeyCode toggleClosedBinding2;
@@ -326,7 +328,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         void QuestLogLabel_OnRightMouseClick(BaseScreenComponent sender, Vector2 position)
         {
-            HandleClick(position, true);
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+                EndQuest(position);
+            else
+                HandleClick(position, true);
         }
 
         void RemoveEntry_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
@@ -456,6 +461,44 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
             }
         }
+
+        private void EndQuest(Vector2 position, bool remove = false)
+        {
+            if (entryLineMap == null)
+                return;
+
+            int moveSrcIdx = selectedEntry;    // Will be set if moving an entry
+            int line = (int)(position.y / questLogLabel.LineHeight);
+
+            if (line < entryLineMap.Count)
+                selectedEntry = entryLineMap[line];
+            else
+                selectedEntry = entryLineMap[entryLineMap.Count - 1];
+            Debug.LogFormat("line is: {0} entry: {1}", line, selectedEntry);
+
+            if (DisplayMode == JournalDisplay.ActiveQuests)
+            {
+                Message questMessage = questMessages[selectedEntry];
+                parentQuest = questMessage.ParentQuest;
+
+                DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, DaggerfallMessageBox.CommonMessageBoxButtons.YesNo,
+                    $"Are you sure that you want to End Quest {parentQuest.DisplayName} ( QuestName: {parentQuest.QuestName}, UID: {parentQuest.UID} )?", uiManager.TopWindow);
+                messageBox.OnButtonClick += EndQuestConfirmed;
+                messageBox.Show();
+            }
+        }
+
+
+        private void EndQuestConfirmed(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
+        {
+            sender.CloseWindow();
+            if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
+            {
+                Wenzil.Console.Console.ExecuteCommand("endquest", parentQuest.UID.ToString());
+                DaggerfallUI.MessageBox($"Quest {parentQuest.DisplayName} ( QuestName: {parentQuest.QuestName}, UID: {parentQuest.UID} ) has been ended.  No reward received.");
+            }
+        }
+
 
         Place GetLastPlaceMentionedInMessage(Message message)
         {
