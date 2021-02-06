@@ -5,7 +5,7 @@
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Lypyl (lypyldf@gmail.com)
 // Contributors:    Hazelnut
-// 
+//
 // Notes:
 //
 
@@ -386,7 +386,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             if (entryLineMap == null)
                 return;
-            
+
             int moveSrcIdx = selectedEntry;    // Will be set if moving an entry
             int line = (int)(position.y / questLogLabel.LineHeight);
 
