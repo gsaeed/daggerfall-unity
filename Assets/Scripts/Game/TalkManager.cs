@@ -11,6 +11,7 @@
 
 using UnityEngine;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
@@ -20,7 +21,6 @@ using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Questing;
-using System.Linq;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Player;
 using DaggerfallWorkshop.Game.Guilds;
@@ -1887,11 +1887,7 @@ namespace DaggerfallWorkshop.Game
             }
             if (locationsWithRegionalBuildingCount > 0)
             {
-                DFLocation minLocation;
-                float minDist;
-
-                minDist = float.MaxValue;
-                minLocation = default(DFLocation);
+                Dictionary<DFLocation, float> allLocs = new Dictionary<DFLocation, float>();
 
                 for (int i = 0; i < locationsWithRegionalBuildingCount; i++)
                 {
@@ -1900,18 +1896,25 @@ namespace DaggerfallWorkshop.Game
                         location = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetLocation(gps.CurrentRegionIndex, foundLoc[i]);
                         DFPosition mapPixel = MapsFile.LongitudeLatitudeToMapPixel(location.MapTableData.Longitude, location.MapTableData.Latitude);
                         float dist = travelTimeCalculator.CalculateTravelTime(mapPixel, false, false, false, false, false) * 60;
-                        if (dist < minDist)
-                        {
-                            minLocation = location;
-                            minDist = dist;
-                        }
+                        allLocs.Add(location, dist);
                     }
                 }
-                if (minDist < float.MaxValue)
+
+                int selectedLoc = UnityEngine.Random.Range(0, Math.Min(allLocs.Count, 3));
+
+                var sortedLoc = from entry in allLocs orderby entry.Value ascending select entry;
+
+                int n = 0;
+                foreach(KeyValuePair<DFLocation, float> kv in sortedLoc)
                 {
-                    location = minLocation;
-                    return true;
+                    if (n == selectedLoc)
+                    {
+                        location = kv.Key;
+                        return true;
+                    }
+                    n++;
                 }
+
                 int locationToChoose = UnityEngine.Random.Range(0, locationsWithRegionalBuildingCount) + 1;
                 // Get the location
                 for (int i = 0; i < gps.CurrentRegion.LocationCount; i++)
