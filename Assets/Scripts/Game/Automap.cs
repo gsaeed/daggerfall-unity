@@ -239,7 +239,7 @@ namespace DaggerfallWorkshop.Game
 
         Texture2D textureMicroMap = null;
 
-        SortedList<int, NoteMarker> listUserNoteMarkers = new SortedList<int, NoteMarker>(); // the list containing the user note markers, key is the id used when creating the user note marker
+        public SortedList<int, NoteMarker> listUserNoteMarkers = new SortedList<int, NoteMarker>(); // the list containing the user note markers, key is the id used when creating the user note marker
         int idOfUserMarkerNoteToBeChanged; // used to identify id of last double-clicked user note marker when changing note text
         DaggerfallInputMessageBox messageboxUserNote;
         GameObject gameObjectUserNoteMarkers = null; // container object for custom user notes markers
@@ -1566,7 +1566,7 @@ namespace DaggerfallWorkshop.Game
         /// <param name="id">the target id of the marker</param>
         /// <param name="spawningPosition">the requested spawning position of the marker</param>
         /// <returns>the GameObject with the marker</returns>
-        private GameObject CreateUserMarker(int id, Vector3 spawningPosition)
+        public GameObject CreateUserMarker(int id, Vector3 spawningPosition)
         {
             if (gameObjectUserNoteMarkers == null)
             {
