@@ -1068,7 +1068,7 @@ namespace DaggerfallWorkshop.Game
         static SongFiles[] _interiorSongsFM = new SongFiles[]
         {
             SongFiles.song_23fm,
-                        SongFiles.song_tavern45,
+            SongFiles.song_tavern45,
             SongFiles.song_tavern46,
             SongFiles.song_tavern47,
             SongFiles.song_tavern48,
