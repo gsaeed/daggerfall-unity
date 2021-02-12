@@ -5,7 +5,7 @@
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:    Allofich, Hazelnut, ifkopifko, Numidium, TheLacus
-// 
+//
 // Notes:
 //
 
@@ -277,7 +277,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             chance += shopQuality + weightAndNumItems;
             return Mathf.Clamp(chance, 5, 95);
         }
-        
+
         // Calculate chance of stealth skill hiding the user.
         public static int CalculateStealthChance(float distanceToTarget, DaggerfallEntityBehaviour target)
         {
@@ -691,8 +691,11 @@ namespace DaggerfallWorkshop.Game.Formulas
                 // Handle poisoned weapons
                 if (damage > 0 && weapon.poisonType != Poisons.None)
                 {
+
                     InflictPoison(attacker, target, weapon.poisonType, false);
-                    weapon.poisonType = Poisons.None;
+                    if (attacker != player)
+                         weapon.poisonType = Poisons.None;
+
                 }
             }
 
@@ -2264,7 +2267,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             if(TryGetOverride("CalculateEffectCosts", out del))
                 return del(effect, settings, casterEntity);
 
-            bool activeComponents = false;            
+            bool activeComponents = false;
 
             // Get related skill
             int skillValue = 0;
@@ -2547,7 +2550,7 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             int cost = 0;
             int skill = 50; // 50 is used for item enchantments
-            
+
             for (int i = 0; i < 3; ++i)
             {
                 if (i < spell.effects.Length && spell.effects[i].type != -1)
@@ -2684,7 +2687,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             // The below yields correct enchantment power for staves matching classic
             switch(weaponMaterial)
             {
-                default:       
+                default:
                 case WeaponMaterialTypes.Steel:         // Steel uses base enchantment power
                     return 0f;
                 case WeaponMaterialTypes.Iron:          // Iron is -25% from base
