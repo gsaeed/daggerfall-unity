@@ -685,7 +685,8 @@ namespace DaggerfallWorkshop.Game.Formulas
                 if (damage > 0 && weapon.poisonType != Poisons.None)
                 {
                     InflictPoison(target, weapon.poisonType, false);
-                    weapon.poisonType = Poisons.None;
+                    if (attacker != player)
+                         weapon.poisonType = Poisons.None;
                 }
             }
 
