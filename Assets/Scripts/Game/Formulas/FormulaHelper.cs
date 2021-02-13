@@ -26,6 +26,10 @@ using DaggerfallWorkshop.Game.Utility.ModSupport;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
+    public delegate int LootDel(ref DaggerfallUnityItem[] lootItems);
+
+
+
     /// <summary>
     /// Common formulas used throughout game.
     /// Where the exact formula is unknown, a "best effort" approximation will be used.
@@ -47,6 +51,7 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         readonly static Dictionary<string, FormulaOverride> overrides = new Dictionary<string, FormulaOverride>();
+        public static LootDel lootDel;
 
         public static float specialInfectionChance = 0.6f;
 
@@ -2032,6 +2037,23 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// <returns>The number of items modified.</returns>
         public static int ModifyFoundLootItems(ref DaggerfallUnityItem[] lootItems)
         {
+
+            //Func<ref DaggerfallUnityItem[], int> del;
+            if (lootDel != null)
+                return lootDel(ref lootItems);
+
+            // DFU does no post-processing of loot items hence report zero changes, this is solely for mods to override.
+            return 0;
+        }
+
+        /// <summary>
+        /// Allows loot found in containers and enemy corpses to be modified.
+        /// </summary>
+        /// <param name="lootItems">An array of the loot items</param>
+        /// <returns>The number of items modified.</returns>
+        public static int ModifyFoundLootItems(DaggerfallUnityItem[] lootItems)
+        {
+
             Func<DaggerfallUnityItem[], int> del;
             if (TryGetOverride("ModifyFoundLootItems", out del))
                 return del(lootItems);
