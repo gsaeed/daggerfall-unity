@@ -27,6 +27,10 @@ using DaggerfallWorkshop.Game.Banking;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
+    public delegate int LootDel(ref DaggerfallUnityItem[] lootItems);
+
+
+
     /// <summary>
     /// Common formulas used throughout game.
     /// Where the exact formula is unknown, a "best effort" approximation will be used.
@@ -48,6 +52,7 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         readonly static Dictionary<string, FormulaOverride> overrides = new Dictionary<string, FormulaOverride>();
+        public static LootDel lootDel;
 
         public static float specialInfectionChance = 0.6f;
 
