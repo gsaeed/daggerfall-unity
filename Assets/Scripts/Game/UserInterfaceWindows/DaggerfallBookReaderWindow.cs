@@ -33,6 +33,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         float maxHeight = 0;
         float scrollPosition = 0;
         int currentPage = 0; // Used for page turn sounds only
+        DateTime startTime;
 
         const SoundClips openBook = SoundClips.OpenBook;
 
@@ -107,6 +108,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         private void ExitButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
+            TimeSpan ts = (DateTime.UtcNow - startTime);
+            int seconds =(int)( ts.Seconds * DaggerfallUnity.WorldTime.TimeScale * 6) ;
+            DaggerfallUnity.WorldTime.Now.RaiseTime(seconds);
             CloseWindow();
         }
 
@@ -138,6 +142,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         public void OpenBook(int id)
         {
+            startTime = DateTime.UtcNow;
             bookLabels.Clear();
             IsBookOpen = labelFormatter.ReformatBook(id);
             if (IsBookOpen)
@@ -146,6 +151,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         public void OpenBook(DaggerfallUnityItem target)
         {
+            startTime = DateTime.UtcNow;
             bookLabels.Clear();
             if (target == null || target.ItemGroup != ItemGroups.Books || target.IsArtifact)
                 throw new Exception("Item is not a valid book for book reader UI.");
