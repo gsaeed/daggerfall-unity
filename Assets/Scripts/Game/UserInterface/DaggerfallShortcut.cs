@@ -42,6 +42,14 @@ namespace DaggerfallWorkshop.Game.UserInterface
             GameSetupSaveAndClose,
             GameSetupExit,
 
+            //Book Reader
+            BookPageUp,
+            BookPageDown,
+            BookLineUp,
+            BookLineDown,
+            BookPageRight,
+            BookPageLeft,
+
             // Main menu
             MainMenuLoad,
             MainMenuStart,

@@ -33,6 +33,13 @@ GameSetupRefresh,          R
 GameSetupSaveAndClose,     S
 GameSetupExit,             E
 
+-- Book Reader
+BookPageUp,			PageUp
+BookPageDown,		PageDown
+BookLineUp,			UpArrow
+BookLineDown,		DownArrow
+BookPageRight,		RightArrow
+
 -- Main menu
 MainMenuLoad,         L
 MainMenuStart,        S
