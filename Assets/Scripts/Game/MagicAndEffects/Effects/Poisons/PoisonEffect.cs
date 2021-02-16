@@ -4,8 +4,8 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net), Allofich
-// Contributors:    
-// 
+// Contributors:
+//
 // Notes:
 //
 
@@ -212,6 +212,26 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
                 CurePoison();
         }
 
+        void DecreaseHealth(DaggerfallEntityBehaviour host, int amt)
+        {
+            host.Entity.DecreaseHealth(amt);
+            if (host.Entity == GameManager.Instance.PlayerEntity)
+                return;
+
+            EnemyEntity enemy = host.Entity as EnemyEntity;
+            EnemyBlood blood = host.transform.GetComponent<EnemyBlood>();
+            CharacterController targetController = host.transform.GetComponent<CharacterController>();
+            Vector3 bloodPos = host.transform.position + targetController.center;
+            bloodPos.y += targetController.height / 8;
+
+            if (blood)
+            {
+                blood.ShowBloodSplash(enemy.MobileEnemy.BloodIndex, bloodPos);
+            }
+
+            return;
+        }
+
         protected virtual void IncrementPoisonEffects()
         {
             // Count down to poison start
@@ -228,16 +248,19 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
             switch (PoisonType)
             {
                 case Poisons.Nux_Vomica:
-                    host.Entity.DecreaseHealth(Random.Range(2, 12));
+                    //host.Entity.DecreaseHealth(Random.Range(2, 12));
+                    DecreaseHealth(host, UnityEngine.Random.Range(2, 12));
                     break;
 
                 case Poisons.Arsenic:
-                    host.Entity.DecreaseHealth(2);
+                    //host.Entity.DecreaseHealth(2);
+                    DecreaseHealth(host, 2);
                     ChangeStatMod(DFCareer.Stats.Endurance, -1);
                     break;
 
                 case Poisons.Moonseed:
-                    host.Entity.DecreaseHealth(Random.Range(1, 10));
+                    //host.Entity.DecreaseHealth(Random.Range(1, 10));
+                    DecreaseHealth(host, UnityEngine.Random.Range(1, 10));
                     break;
 
                 case Poisons.Drothweed:
@@ -251,7 +274,8 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
                     break;
 
                 case Poisons.Pyrrhic_Acid:
-                    host.Entity.DecreaseHealth(Random.Range(1, 30));
+                    //host.Entity.DecreaseHealth(Random.Range(1, 30));
+                    DecreaseHealth(host, UnityEngine.Random.Range(1, 30));
                     break;
 
                 case Poisons.Magebane:
