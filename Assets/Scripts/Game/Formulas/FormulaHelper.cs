@@ -1371,7 +1371,7 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             if (bypassResistance || SavingThrow(DFCareer.Elements.DiseaseOrPoison, DFCareer.EffectFlags.Poison, target, 0) != 0)
             {
-                if (target.Level != 1)
+                if (!(target == GameManager.Instance.PlayerEntity &&   target.Level == 1))
                 {
                     // Infect target
                     EntityEffectBundle bundle = effectManager.CreatePoison(poisonType);
