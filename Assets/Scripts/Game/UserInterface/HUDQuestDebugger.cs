@@ -47,10 +47,9 @@ namespace DaggerfallWorkshop.Game.UserInterface
         int currentQuestIndex;
         Quest currentQuest;
 
+       
         int currentMarkerIndex = -1;
-
         bool activeQuestToggle = false;
-
 
         DisplayState displayState = DisplayState.Nothing;
 
@@ -159,6 +158,8 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 MovePreviousQuest();
             else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerNextQuest).IsDownWith(keyModifiers))
                 MoveNextQuest();
+            else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerActiveQuestToggle).IsDownWith(keyModifiers))
+                ToggleActiveQuestView();
 
 
             // Change marker selection
@@ -166,11 +167,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 MovePreviousMarker();
             else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerNextMarker).IsDownWith(keyModifiers))
                 MoveNextMarker();
-
-            else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerActiveQuestToggle).IsDownWith(keyModifiers))
-                ToggleActiveQuestView();
-
-        }
+		}
 
         private void QuestMachine_OnTick()
         {
@@ -379,7 +376,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             }
 
             // Disable timer labels
-            for(int i = 0; i < timerLabelPool.Length; i++)
+            for (int i = 0; i < timerLabelPool.Length; i++)
             {
                 timerLabelPool[i].Enabled = false;
             }
@@ -529,8 +526,6 @@ namespace DaggerfallWorkshop.Game.UserInterface
             }
             return true;
         }
-    
-
 
         void MoveNextMarker()
         {
@@ -576,9 +571,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             Debug.LogFormat("Moved to previous marker - index {0}", currentMarkerIndex);
         }
 
-
-    void EnableGlobalVars(bool value)
-
+        void EnableGlobalVars(bool value)
         {
             for (int i = 0; i < globalsLabelPool.Length; i++)
             {
