@@ -56,6 +56,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
         public Texture2D TalkTexture;
 
         float displayScale;
+        public float displayScaleAdjust = DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
 
         Texture2D crosshairTexture;
         Vector2 crosshairSize;
@@ -181,6 +182,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
                         displayScale = iconScale;
                     break;
             }
+            displayScale *= displayScaleAdjust;
 
             StealTexture = DaggerfallUI.GetTextureFromResources(IconsFolder + stealFilename, out stealSize);
             GrabTexture = DaggerfallUI.GetTextureFromResources(IconsFolder + grabFilename, out grabSize);
