@@ -30,7 +30,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         TextLabel midScreenTextLabel = new TextLabel();
         TextLabel arrowCountTextLabel = new TextLabel();
         HUDCrosshair crosshair = new HUDCrosshair();
-        HUDVitals vitals = new HUDVitals();
+        public HUDVitals vitals = new HUDVitals();
         HUDBreathBar breathBar = new HUDBreathBar();
         HUDCompass compass = new HUDCompass();
         HUDFlickerController flickerController = new HUDFlickerController();
@@ -171,7 +171,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             popupText.Enabled = ShowPopupText;
             midScreenTextLabel.Enabled = ShowMidScreenText;
             crosshair.Enabled = ShowCrosshair;
-            vitals.Enabled = ShowVitals;
+            if (GameManager.Instance.PlayerEntity.CurrentHealth == GameManager.Instance.PlayerEntity.MaxHealth &&
+                GameManager.Instance.PlayerEntity.CurrentMagicka == GameManager.Instance.PlayerEntity.MaxMagicka)
+                vitals.Enabled = false;
+            else
+                vitals.Enabled = ShowVitals;
             breathBar.Enabled = ShowBreathBar;
             compass.Enabled = ShowCompass;
             interactionModeIcon.Enabled = ShowInteractionModeIcon;
@@ -212,10 +216,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             // Scale HUD elements
             compass.Scale = NativePanel.LocalScale;
-            vitals.Scale = NativePanel.LocalScale;
-            breathBar.Scale = NativePanel.LocalScale;
+            vitals.Scale = new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
+            breathBar.Scale = new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
             crosshair.CrosshairScale = CrosshairScale;
-            interactionModeIcon.Scale = NativePanel.LocalScale;
+            interactionModeIcon.displayScaleAdjust = DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
+
 
             // Align compass to screen panel
             Rect screenRect = ParentPanel.Rectangle;

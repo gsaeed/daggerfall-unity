@@ -54,6 +54,7 @@ ShowQuestJournalClocksAsCountdown=False
 EnableInventoryInfoPanel=True
 EnableEnhancedItemLists=False
 EnableVitalsIndicators=True
+DisplayHUDScaleAdjust = 1.0
 EnableModernConversationStyleInTalkWindow=False
 IconsPositioningScheme=Classic
 HelmAndShieldMaterialDisplay=0
