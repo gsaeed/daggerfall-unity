@@ -229,6 +229,8 @@ namespace DaggerfallWorkshop
         public bool PlayerNudity { get; set; }
 
         // [GUI]
+
+        public float DisplayHUDScaleAdjust { get; set; }
         public bool ShowOptionsAtStart { get; set; }
         public int GUIFilterMode { get; set; }
         public int VideoFilterMode { get; set; }
@@ -490,6 +492,7 @@ namespace DaggerfallWorkshop
             ShowQuestJournalClocksAsCountdown = GetBool(sectionGUI, "ShowQuestJournalClocksAsCountdown");
             AccelerateUICopyTexture = GetBool(sectionGUI, "AccelerateUICopyTexture");
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
+            DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
             SDFFontRendering = GetBool(sectionGUI, "SDFFontRendering");
             EnableGeographicBackgrounds = GetBool(sectionGUI, "EnableGeographicBackgrounds");
             EnableArrowCounter = GetBool(sectionGUI, "EnableArrowCounter");
