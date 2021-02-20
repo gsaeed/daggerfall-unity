@@ -71,7 +71,7 @@ namespace DaggerfallWorkshop
             LootChanceMatrix matrix = LootTables.GetMatrix(LootTableKey);
             DaggerfallUnityItem[] newitems = LootTables.GenerateRandomLoot(matrix, GameManager.Instance.PlayerEntity);
 
-            FormulaHelper.ModifyFoundLootItems(ref newitems);
+            FormulaHelper.ModifyFoundLootItems(ref newitems, LootTableKey) ;
 
             collection.Import(newitems);
         }

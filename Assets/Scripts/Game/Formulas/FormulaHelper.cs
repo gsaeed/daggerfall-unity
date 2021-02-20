@@ -26,7 +26,7 @@ using DaggerfallWorkshop.Game.Utility.ModSupport;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
-    public delegate int LootDel(ref DaggerfallUnityItem[] lootItems);
+    public delegate int LootDel(ref DaggerfallUnityItem[] lootItems, string LootTableKey);
 
 
 
@@ -2035,12 +2035,12 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// </summary>
         /// <param name="lootItems">An array of the loot items</param>
         /// <returns>The number of items modified.</returns>
-        public static int ModifyFoundLootItems(ref DaggerfallUnityItem[] lootItems)
+        public static int ModifyFoundLootItems(ref DaggerfallUnityItem[] lootItems, string LootTableKey)
         {
 
             //Func<ref DaggerfallUnityItem[], int> del;
             if (lootDel != null)
-                return lootDel(ref lootItems);
+                return lootDel(ref lootItems, LootTableKey);
 
             // DFU does no post-processing of loot items hence report zero changes, this is solely for mods to override.
             return 0;
