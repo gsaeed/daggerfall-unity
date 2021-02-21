@@ -440,7 +440,7 @@ namespace DaggerfallConnect.Arena2
             }
             else
             {
-                Debug.LogError("CreateCharBiography: Invalid command - " + effect);
+                Debug.Log("Error - CreateCharBiography: Invalid command - " + effect);
             }
         }
 
