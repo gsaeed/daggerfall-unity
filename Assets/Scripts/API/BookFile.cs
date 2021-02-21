@@ -120,7 +120,7 @@ namespace DaggerfallConnect.Arena2
             try { ReadHeader(name.StartsWith("BOK", StringComparison.OrdinalIgnoreCase)); }
             catch (EndOfStreamException e)
             {
-                Debug.LogErrorFormat($"EndOfStreamException encountered for modded book {name}.\n" +
+                Debug.Log($"EndOfStreamException encountered for modded book {name}.\n" +
                     $"The last piece of data that was successfully read was {lastSuccessfulBookHeaderRead}.\n" +
                     $"{e.ToString()}");
                 return false;
