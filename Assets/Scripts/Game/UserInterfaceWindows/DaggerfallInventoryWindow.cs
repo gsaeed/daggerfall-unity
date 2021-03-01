@@ -353,6 +353,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     DaggerfallUI.MessageBox(suppressInventoryMessage);
                 return;
             }
+
         }
 
         protected void SetupItemListScrollers()
