@@ -918,7 +918,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 if (stringSource.Count > 0)
                 {
-                    assembly = ModManager.CompileFromSourceAssets(stringSource.ToArray());
+                    assembly = ModManager.CompileFromSourceAssets(stringSource.ToArray(), this.Title);
                     if (assembly != null)
                         assemblies.Add(assembly);
                 }

@@ -342,7 +342,15 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 // Toggle window closed with same hotkey used to open it
                 if (InputManager.Instance.GetKeyUp(toggleClosedBinding))
-                    CloseWindow();
+                    if (uiManager.TopWindow.FocusControl != null)
+                    {
+                        if (!uiManager.TopWindow.FocusControl.OverridesHotkeySequences)
+                            CloseWindow();
+
+                    } else
+                    {
+                        CloseWindow();
+                    }
             }
 
             // Close window immediately if inventory suppressed

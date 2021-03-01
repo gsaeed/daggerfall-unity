@@ -100,7 +100,7 @@ namespace DaggerfallWorkshop
         RepositionMethods autoRepositionMethod = RepositionMethods.RandomStartMarker;
 
         bool init;
-        bool terrainUpdateRunning;
+        public bool terrainUpdateRunning;
         bool updateLocatations;
 
         DaggerfallLocation currentPlayerLocationObject;

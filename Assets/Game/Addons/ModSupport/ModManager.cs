@@ -677,6 +677,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 }
                 Debug.Log("ModManager - started loading mod: " + mod.Title);
                 mod.CompileSourceToAssemblies();
+                Debug.Log("ModManager - compiled Assemblies for " + mod.Title);
             }
             Debug.Log("ModManager - init finished.  Mod Count: " + LoadedModCount);
         }
@@ -735,7 +736,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// </summary>
         /// <param name="source">The content of source files.</param>
         /// <returns>The compiled assembly or null.</returns>
-        public static Assembly CompileFromSourceAssets(string[] source)
+        public static Assembly CompileFromSourceAssets(string[] source, string modTitle = "")
         {
             if (source == null || source.Length < 1)
             {
@@ -752,7 +753,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             }
             catch (Exception ex)
             {
-                Debug.LogError(ex.Message);
+                Debug.LogError($"Error in {modTitle} compiling {ex.Message}");
                 return null;
             }
         }
