@@ -5,7 +5,7 @@
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:    LypyL, Hazelnut
-// 
+//
 // Notes:
 //
 
@@ -100,8 +100,10 @@ namespace DaggerfallWorkshop
         RepositionMethods autoRepositionMethod = RepositionMethods.RandomStartMarker;
 
         bool init;
-        bool terrainUpdateRunning;
+
+        public bool terrainUpdateRunning;
         bool updateLocations;
+
 
         DaggerfallLocation currentPlayerLocationObject;
         int playerTilemapIndex = -1;
