@@ -338,19 +338,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             base.Update();
 
-            if (!DaggerfallUI.Instance.HotkeySequenceProcessed)
+            if (DaggerfallUI.Instance.HotkeySequenceProcessed == HotkeySequence.HotkeySequenceProcessStatus.NotFound)
             {
                 // Toggle window closed with same hotkey used to open it
                 if (InputManager.Instance.GetKeyUp(toggleClosedBinding))
-                    if (uiManager.TopWindow.FocusControl != null)
-                    {
-                        if (!uiManager.TopWindow.FocusControl.OverridesHotkeySequences)
-                            CloseWindow();
-
-                    } else
-                    {
-                        CloseWindow();
-                    }
+                    CloseWindow();
             }
 
             // Close window immediately if inventory suppressed
