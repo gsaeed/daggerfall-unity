@@ -311,7 +311,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             if (asset == null)
             {
-                Debug.LogWarning(string.Format("Failed to load asset: {0}", assetName));
+                Debug.LogWarning(string.Format("Failed to load asset: {0} from {1}", assetName, Title));
                 return null;
             }
             else if (clone)
@@ -1121,7 +1121,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 if (this.ModInfo != null && string.IsNullOrEmpty(this.Title) == false)
                     ModManager.OnLoadAsset(this.Title, assetName, la.T);
 #if DEBUG
-                Debug.Log(string.Format("added asset: {0}", assetName));
+                Debug.Log(string.Format("added asset: {0} from mod: {1}", assetName, Title));
 #endif
                 return true;
             }
