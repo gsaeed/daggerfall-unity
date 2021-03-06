@@ -192,7 +192,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
                 if (TryDeserialize(path, ref importedPresets))
                     Presets.AddRange(importedPresets);
 
-                Debug.LogWarningFormat("Imported legacy preset for {0}.");
+                Debug.LogWarningFormat($"Imported legacy preset for {mod}.");
             }    
 
             HasLoadedPresets = true;
@@ -533,7 +533,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             string input = File.ReadAllText(path);
             fsResult fsResult = ModManager._serializer.TryDeserialize(fsJsonParser.Parse(input), ref instance);
             if (fsResult.Failed)
-                Debug.LogErrorFormat("Failed to import {0}:\n{1}", path, fsResult.FormattedMessages);
+                Debug.LogErrorFormat("Failed to import {0}:\n{1} for {2}", path, fsResult.FormattedMessages, instance.ToString()) ;
             return fsResult.Succeeded;
         }
 
@@ -547,7 +547,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             if (fsResult.Succeeded)
                 File.WriteAllText(path, fsJsonPrinter.PrettyJson(fsData));
             else
-                Debug.LogErrorFormat("Failed to write {0}:\n{1}", path, fsResult.FormattedMessages);
+                Debug.LogErrorFormat("Failed to write {0}:\n{1} for {2}", path, fsResult.FormattedMessages, instance.ToString());
         }
 
         #endregion

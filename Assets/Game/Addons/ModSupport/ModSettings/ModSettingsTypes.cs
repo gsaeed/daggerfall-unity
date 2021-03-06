@@ -269,7 +269,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
             }
             catch (Exception e)
             {
-                Debug.LogFormat("Failed to split values from {0}\n{1}", input, e.ToString());
+                Debug.LogFormat("Failed to split values from {0}\n{1} ", input, e.ToString());
                 items = new T[0];
                 return false;
             }
