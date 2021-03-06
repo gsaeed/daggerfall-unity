@@ -57,6 +57,7 @@ OptionsHeadBobbing,   H
 
 -- General
 Pause,                Shift-Escape
+LargeHUDToggle,       F10
 HUDToggle,            Shift-F10
 ToggleRetroPP,        Shift-F11
 
