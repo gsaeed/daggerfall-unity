@@ -573,7 +573,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 if (string.IsNullOrEmpty(modFileNames[i]))
                 {
-                    Debug.Log("failed to get name of mod");
+                    Debug.Log($"failed to get name of mod for {modFilePath}");
                     continue;
                 }
 
@@ -772,7 +772,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             if (source == null || source.Length < 1)
             {
-                Debug.Log("nothing to compile");
+                Debug.Log($"{modTitle} has nothing to compile");
                 return null;
             }
 
