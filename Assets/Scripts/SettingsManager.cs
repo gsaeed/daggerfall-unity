@@ -499,7 +499,9 @@ namespace DaggerfallWorkshop
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
             DisplayMobileEnemyDeathMsg = GetBool(sectionGUI, "DisplayMobileEnemyDeathMsg");
+
             DisplayMobileEnemyHealthStatus = GetBool(sectionGUI, "DisplayMobileEnemyHealthStatus");
+
             SDFFontRendering = GetBool(sectionGUI, "SDFFontRendering");
             EnableGeographicBackgrounds = GetBool(sectionGUI, "EnableGeographicBackgrounds");
             EnableArrowCounter = GetBool(sectionGUI, "EnableArrowCounter");
