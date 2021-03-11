@@ -507,7 +507,6 @@ namespace DaggerfallWorkshop
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
             DisplayMobileEnemyDeathMsg = GetBool(sectionGUI, "DisplayMobileEnemyDeathMsg");
-
             DisplayMobileEnemyHealthStatus = GetBool(sectionGUI, "DisplayMobileEnemyHealthStatus");
 
             SDFFontRendering = GetBool(sectionGUI, "SDFFontRendering");
@@ -730,6 +729,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "DisableEnemyDeathAlert", DisableEnemyDeathAlert);
             SetBool(sectionGUI, "HideLoginName", HideLoginName);
             SetFloat(sectionGUI, "DisplayHUDScaleAdjust", DisplayHUDScaleAdjust);
+
             SetBool(sectionGUI, "DisplayMobileEnemyHealthStatus", DisplayMobileEnemyHealthStatus);
 
             SetInt(sectionMeleeAttacks, "MeleeAttackDetection", MeleeAttackDetection);
