@@ -4,8 +4,8 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
-// 
+// Contributors:
+//
 // Notes:
 //
 
@@ -232,6 +232,9 @@ namespace DaggerfallWorkshop
         // [GUI]
 
         public float DisplayHUDScaleAdjust { get; set; }
+
+        public bool DisplayMobileEnemyDeathMsg { get; set; }
+
         public bool ShowOptionsAtStart { get; set; }
         public int GUIFilterMode { get; set; }
         public int VideoFilterMode { get; set; }
@@ -491,13 +494,14 @@ namespace DaggerfallWorkshop
             EnableEnhancedItemLists = GetBool(sectionGUI, "EnableEnhancedItemLists");
             EnableModernConversationStyleInTalkWindow = GetBool(sectionGUI, "EnableModernConversationStyleInTalkWindow");
             IconsPositioningScheme = GetString(sectionGUI, "IconsPositioningScheme");
-            HelmAndShieldMaterialDisplay = GetInt(sectionGUI, "HelmAndShieldMaterialDisplay", 0, 3);            
+            HelmAndShieldMaterialDisplay = GetInt(sectionGUI, "HelmAndShieldMaterialDisplay", 0, 3);
             ShopQualityPresentation = GetInt(sectionGUI, "ShopQualityPresentation", 0, 2);
             ShopQualityHUDDelay = GetInt(sectionGUI, "ShopQualityHUDDelay", 1, 10);
             ShowQuestJournalClocksAsCountdown = GetBool(sectionGUI, "ShowQuestJournalClocksAsCountdown");
             AccelerateUICopyTexture = GetBool(sectionGUI, "AccelerateUICopyTexture");
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
+            DisplayMobileEnemyDeathMsg = GetBool(sectionGUI, "DisplayMobileEnemyDeathMsg");
             SDFFontRendering = GetBool(sectionGUI, "SDFFontRendering");
             EnableGeographicBackgrounds = GetBool(sectionGUI, "EnableGeographicBackgrounds");
             EnableArrowCounter = GetBool(sectionGUI, "EnableArrowCounter");
@@ -547,7 +551,7 @@ namespace DaggerfallWorkshop
             AutomapNumberOfDungeons = GetInt(sectionMap, "AutomapNumberOfDungeons", 0, 100);
             AutomapDisableMicroMap = GetBool(sectionMap, "AutomapDisableMicroMap");
             AutomapRememberSliceLevel = GetBool(sectionMap, "AutomapRememberSliceLevel");
-            AutomapAlwaysMaxOutSliceLevel = GetBool(sectionMap, "AutomapAlwaysMaxOutSliceLevel");            
+            AutomapAlwaysMaxOutSliceLevel = GetBool(sectionMap, "AutomapAlwaysMaxOutSliceLevel");
             ExteriorMapDefaultZoomLevel = GetFloat(sectionMap, "ExteriorMapDefaultZoomLevel", 4, 31);
             ExteriorMapResetZoomLevelOnNewLocation = GetBool(sectionMap, "ExteriorMapResetZoomLevelOnNewLocation");
             AutomapTempleColor = GetColor(sectionMap, "AutomapTempleColor", DaggerfallUI.DaggerfallDefaultTempleAutomapColor);
@@ -715,6 +719,7 @@ namespace DaggerfallWorkshop
             SetInt(sectionGUI, "QuestRumorWeight", QuestRumorWeight);
             SetBool(sectionGUI, "DisableEnemyDeathAlert", DisableEnemyDeathAlert);
             SetBool(sectionGUI, "HideLoginName", HideLoginName);
+            SetFloat(sectionGUI, "DisplayHUDScaleAdjust", DisplayHUDScaleAdjust);
 
             SetInt(sectionMeleeAttacks, "MeleeAttackDetection", MeleeAttackDetection);
             SetBool(sectionMeleeAttacks, "MeleeAttackFriendlyProtection", MeleeAttackFriendlyProtection);
