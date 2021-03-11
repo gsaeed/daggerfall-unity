@@ -4,8 +4,8 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
-// 
+// Contributors:
+//
 // Notes:
 //
 
@@ -78,7 +78,9 @@ namespace DaggerfallWorkshop.Game
 
             // Show death message
             string deathMessage = TextManager.Instance.GetLocalizedText("thingJustDied");
+
             deathMessage = deathMessage.Replace("%s", TextManager.Instance.GetLocalizedEnemyName(mobile.Enemy.ID));
+
             if (!DaggerfallUnity.Settings.DisableEnemyDeathAlert)
                 DaggerfallUI.Instance.PopupMessage(deathMessage);
 
