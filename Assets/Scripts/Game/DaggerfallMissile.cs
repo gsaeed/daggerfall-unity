@@ -241,7 +241,7 @@ namespace DaggerfallWorkshop.Game
 
             // Ignore missile collision with caster (this is a different check to AOE targets)
             if (caster)
-                Physics.IgnoreCollision(caster.GetComponent<Collider>(), this.GetComponent<Collider>());
+                Physics.IgnoreCollision(caster.GetComponent<Collider>(), this.GetComponent<Collider>(), true);
         }
 
         private void Update()
