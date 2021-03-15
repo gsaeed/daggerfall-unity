@@ -122,6 +122,8 @@ namespace DaggerfallWorkshop
 
         public bool DisplayMobileEnemyDeathMsg { get; set; }
 
+        public bool DisplayMobileEnemyHealthStatus { get; set; }
+
         public bool ShowOptionsAtStart { get; set; }
         public int GUIFilterMode { get; set; }
         public int VideoFilterMode { get; set; }
@@ -297,6 +299,7 @@ namespace DaggerfallWorkshop
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
             DisplayMobileEnemyDeathMsg = GetBool(sectionGUI, "DisplayMobileEnemyDeathMsg");
+            DisplayMobileEnemyHealthStatus = GetBool(sectionGUI, "DisplayMobileEnemyHealthStatus");
             SDFFontRendering = GetBool(sectionGUI, "SDFFontRendering");
             EnableGeographicBackgrounds = GetBool(sectionGUI, "EnableGeographicBackgrounds");
             EnableArrowCounter = GetBool(sectionGUI, "EnableArrowCounter");
@@ -450,6 +453,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "CanDropQuestItems", CanDropQuestItems);
             SetFloat(sectionGUI, "DisplayHUDScaleAdjust", DisplayHUDScaleAdjust);
             SetBool(sectionGUI, "DisplayMobileEnemyDeathMsg", DisplayMobileEnemyDeathMsg);
+            SetBool(sectionGUI, "DisplayMobileEnemyHealthStatus", DisplayMobileEnemyHealthStatus);
 
             SetBool(sectionSpells, "EnableSpellLighting", EnableSpellLighting);
             SetBool(sectionSpells, "EnableSpellShadows", EnableSpellShadows);
