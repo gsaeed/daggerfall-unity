@@ -633,6 +633,8 @@ namespace DaggerfallWorkshop.Game
 
                     // Remove health
                     enemyEntity.DecreaseHealth(damage);
+                    if (damage > 0 && DaggerfallUnity.Settings.DisplayMobileEnemyHealthStatus)
+                        ShowDamageMsg(enemyEntity, damage);
 
                     // Handle attack from player
                     enemyEntity.EntityBehaviour.HandleAttackFromSource(GameManager.Instance.PlayerEntityBehaviour);
@@ -647,6 +649,39 @@ namespace DaggerfallWorkshop.Game
             }
 
             return false;
+        }
+
+        void ShowDamageMsg(EnemyEntity enemyEntity, int damage)
+        {
+            float percentDamage = enemyEntity.CurrentHealthPercent * 100;
+            if (percentDamage == 0)
+                return;
+
+            if ((int)(percentDamage / 20) == (int)(((enemyEntity.CurrentHealth + damage) * 100 / enemyEntity.MaxHealth) / 20))
+                return;
+
+            if (percentDamage > 80)
+            {
+                DaggerfallUI.AddHUDText($"{enemyEntity.Name} is lightly wounded.");
+                return;
+            }
+            if (percentDamage > 60)
+            {
+                DaggerfallUI.AddHUDText($"{enemyEntity.Name} is wounded.");
+                return;
+            }
+            if (percentDamage > 40)
+            {
+                DaggerfallUI.AddHUDText($"{enemyEntity.Name} is severely wounded.");
+                return;
+            }
+            if (percentDamage > 20)
+            {
+                DaggerfallUI.AddHUDText($"{enemyEntity.Name} is critically wounded.");
+                return;
+            }
+            DaggerfallUI.AddHUDText($"{enemyEntity.Name} is nearing death.");
+            return;
         }
 
         #region Weapon Setup Methods
