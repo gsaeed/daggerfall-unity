@@ -109,6 +109,7 @@ DungeonExitWagonPrompt=True
 TravelMapLocationsOutline=False
 IllegalRestWarning=True
 DisplayMobileEnemyDeathMsg=False
+DisplayMobileEnemyHealthStatus=True
 LargeHUD=False
 LargeHUDDocked=True
 LargeHUDUndockedScale=0.75
