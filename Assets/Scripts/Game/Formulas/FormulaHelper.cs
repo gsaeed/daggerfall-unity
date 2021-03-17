@@ -3152,8 +3152,17 @@ namespace DaggerfallWorkshop.Game.Formulas
                 throw new InvalidCastException("formula is not a delegate.");
 
             FormulaOverride formulaOverride;
-            if (!overrides.TryGetValue(formulaName, out formulaOverride) || formulaOverride.Provider.LoadPriority < provider.LoadPriority)
+            if (!overrides.TryGetValue(formulaName, out formulaOverride))
+            {
+                Debug.Log($"Formula Override: {provider.Title} implemented an override for {formulaName}");
                 overrides[formulaName] = new FormulaOverride(del, provider);
+            }
+
+            else if (formulaOverride.Provider.LoadPriority < provider.LoadPriority)
+            {
+                Debug.Log($"Formula Override Warning: {provider.Title} overrides {formulaName} that {formulaOverride.Provider.Title} implemented");
+                overrides[formulaName] = new FormulaOverride(del, provider);
+            }
         }
 
         /// <summary>
