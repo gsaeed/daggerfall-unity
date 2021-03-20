@@ -2271,7 +2271,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Note: Classic does not assign a gold cost when a zero-component effect is the only effect present, which seems like a bug
             int fudgeGoldCost = 0;
             if (activeComponents == 0)
-                GetEffectComponentCosts(out fudgeGoldCost, BaseEntityEffect.MakeEffectCosts(60, 100, 160), 1, 1, 1, skillValue);
+                GetEffectComponentCosts(out fudgeGoldCost, BaseEntityEffect.MakeEffectCosts(60, 100, 160), 10, 10, 1, skillValue);
 
             // Add gold costs together and calculate spellpoint cost from the result
             goldCostOut = durationGoldCost + chanceGoldCost + magnitudeGoldCost + fudgeGoldCost;
