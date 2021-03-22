@@ -335,6 +335,7 @@ namespace DaggerfallWorkshop.Game
                 }
                 else if (isClickAttack)
                 {
+
                     if (Input.GetKey(KeyCode.Alpha1))
                         attackDirection = MouseDirections.Up;
                     else if (Input.GetKey(KeyCode.Alpha2))

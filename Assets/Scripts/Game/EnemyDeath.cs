@@ -79,6 +79,7 @@ namespace DaggerfallWorkshop.Game
             // Show death message
             string deathMessage = TextManager.Instance.GetLocalizedText("thingJustDied");
             deathMessage = deathMessage.Replace("%s", TextManager.Instance.GetLocalizedEnemyName(mobile.Enemy.ID));
+
             if (DaggerfallUnity.Settings.DisplayMobileEnemyDeathMsg)
                 DaggerfallUI.Instance.PopupMessage(deathMessage);
 

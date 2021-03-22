@@ -128,7 +128,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
             }
 
             foreach (var entry in BookMappingEntries)
-                bookIDNameMapping.Add(entry.Key, entry.Value.Title);
+                bookIDNameMapping.Add(entry.Key, entry.Value.Title); 
         }
 
         /// <summary>
