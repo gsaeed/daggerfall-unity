@@ -97,7 +97,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             TextFile.Token[] tokens = DaggerfallUnity.Instance.TextProvider.GetRandomTokens(flavourMessageID);
             DaggerfallMessageBox messageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager);
             messageBox.SetTextTokens(tokens);
-            messageBox.ClickAnywhereToClose = true;
+            messageBox.ClickAnywhereToClose = false;
             messageBox.AllowCancel = true;
             messageBox.ParentPanel.BackgroundColor = Color.clear;
             messageBox.Show();
@@ -115,7 +115,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             TextFile.Token[] tokens = message.GetTextTokens();
             DaggerfallMessageBox messageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager);
             messageBox.SetTextTokens(tokens, this.offeredQuest.ExternalMCP);
-            messageBox.ClickAnywhereToClose = true;
+            messageBox.ClickAnywhereToClose = false;
             messageBox.AllowCancel = true;
             messageBox.ParentPanel.BackgroundColor = Color.clear;
 
@@ -209,7 +209,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {   // Display not summoning day message.
                 TextFile.Token[] tokens = DaggerfallUnity.Instance.TextProvider.GetRandomTokens(SummonNotToday);
                 messageBox.SetTextTokens(tokens, this);
-                messageBox.ClickAnywhereToClose = true;
+                messageBox.ClickAnywhereToClose = false;
             }
             else
             {   // Ask player if they really want to risk the summoning.
@@ -299,7 +299,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     };
                     DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, uiManager.TopWindow);
                     messageBox.SetTextTokens(msg, this);
-                    messageBox.ClickAnywhereToClose = true;
+                    messageBox.ClickAnywhereToClose = false;
                     messageBox.Show();
                 }
             }
