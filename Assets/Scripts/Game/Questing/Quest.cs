@@ -823,7 +823,7 @@ namespace DaggerfallWorkshop.Game.Questing
             {
                 DaggerfallMessageBox messageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager);
                 messageBox.SetTextTokens(chunks[i], ExternalMCP);
-                messageBox.ClickAnywhereToClose = true;
+                messageBox.ClickAnywhereToClose = false;
                 messageBox.AllowCancel = true;
                 messageBox.ParentPanel.BackgroundColor = Color.clear;
                 pendingMessageBoxStack.Push(messageBox);
