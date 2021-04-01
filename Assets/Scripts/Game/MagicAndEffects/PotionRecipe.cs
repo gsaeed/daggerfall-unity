@@ -221,7 +221,12 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
             if (string.IsNullOrEmpty(DisplayNameKey))
                 return TextManager.Instance.GetLocalizedText("unknownPowers");
             else
-                return TextManager.Instance.GetLocalizedText(DisplayNameKey);
+            {
+                var localizedText = TextManager.Instance.GetLocalizedText(DisplayNameKey);
+                localizedText = localizedText.ToLower().Contains("notfound") ? DisplayNameKey : localizedText;
+                return localizedText;
+            }
+                
         }
 
         /// <summary>

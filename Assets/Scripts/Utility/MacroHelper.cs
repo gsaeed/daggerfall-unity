@@ -17,6 +17,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using UnityEngine;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
+using System.Runtime.CompilerServices;
 
 namespace DaggerfallWorkshop.Utility
 {
@@ -433,6 +434,7 @@ namespace DaggerfallWorkshop.Utility
                                     else if ((macroLen = macro.IndexOfAny(PUNCTUATION)) > 0)
                                     {
                                         string symbolStr = macro.Substring(0, macroLen);
+                                        Debug.Log($"Symbol {symbolStr} in {tokenText} ");
                                         string expandedString = GetValue(symbolStr, mcp);
                                         words[wordIdx] = prefix + expandedString + macro.Substring(macroLen);
                                         macroCache[macro] = expandedString;
@@ -476,8 +478,13 @@ namespace DaggerfallWorkshop.Utility
         /// <param name="symbolStr">macro symbol string.</param>
         /// <param name="mcp">an object instance providing context for macro expansion.</param>
         /// <param name="mcp2">an object instance providing secondary context for macro expansion.</param>
-        public static string GetValue(string symbolStr, IMacroContextProvider mcp, IMacroContextProvider mcp2 = null)
+        public static string GetValue(string symbolStr, IMacroContextProvider mcp, IMacroContextProvider mcp2 = null,
+            [CallerMemberName] string membername = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
         {
+            
+
             if (macroHandlers.ContainsKey(symbolStr))
             {
                 MacroHandler svp = macroHandlers[symbolStr];
@@ -497,9 +504,11 @@ namespace DaggerfallWorkshop.Utility
                         return symbolStr + "[srcDataUnknown]";
                     }
                 } else {
+                    Debug.Log($"Error: {symbolStr} unhandled when called from {membername} {sourceFilePath} {sourceLineNumber}");
                     return symbolStr + "[unhandled]";
                 }
             } else {
+                Debug.Log($"Error: {symbolStr} undefined when called from {membername} {sourceFilePath} {sourceLineNumber}");
                 return symbolStr + "[undefined]";
             }
         }
