@@ -327,7 +327,7 @@ namespace DaggerfallWorkshop.Game.Entity
             }
 
             // Generate loot table items
-            DaggerfallLoot.GenerateItems(mobileEnemy.LootTableKey, items);
+            DaggerfallLoot.GenerateItems(mobileEnemy.LootTableKey, items, true, this);
 
             // Enemy classes and some monsters use equipment
             if (careerIndex == (int)MonsterCareers.Orc || careerIndex == (int)MonsterCareers.OrcShaman)
