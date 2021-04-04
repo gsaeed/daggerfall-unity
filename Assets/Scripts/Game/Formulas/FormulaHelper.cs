@@ -26,7 +26,7 @@ using DaggerfallWorkshop.Game.Utility.ModSupport;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
-    public delegate int LootDel(ref DaggerfallUnityItem[] lootItems, string LootTableKey);
+    public delegate int LootDel(ref DaggerfallUnityItem[] lootItems, string LootTableKey, bool mobileEnemyDrop, EnemyEntity mobileEnemy);
 
 
 
@@ -2039,12 +2039,12 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// </summary>
         /// <param name="lootItems">An array of the loot items</param>
         /// <returns>The number of items modified.</returns>
-        public static int ModifyFoundLootItems(ref DaggerfallUnityItem[] lootItems, string LootTableKey)
+        public static int ModifyFoundLootItems(ref DaggerfallUnityItem[] lootItems, string LootTableKey, bool enemyDrop = false, EnemyEntity enemy = null)
         {
 
             //Func<ref DaggerfallUnityItem[], int> del;
             if (lootDel != null)
-                return lootDel(ref lootItems, LootTableKey);
+                return lootDel(ref lootItems, LootTableKey, enemyDrop, enemy);
 
             // DFU does no post-processing of loot items hence report zero changes, this is solely for mods to override.
             return 0;
@@ -2055,12 +2055,12 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// </summary>
         /// <param name="lootItems">An array of the loot items</param>
         /// <returns>The number of items modified.</returns>
-        public static int ModifyFoundLootItems(DaggerfallUnityItem[] lootItems)
+        public static int ModifyFoundLootItems(DaggerfallUnityItem[] lootItems, string lootTableKey= "-" , bool enemyDrop = false, EnemyEntity enemy = null)
         {
 
-            Func<DaggerfallUnityItem[], int> del;
+            Func<DaggerfallUnityItem[], string, bool, EnemyEntity, int> del;
             if (TryGetOverride("ModifyFoundLootItems", out del))
-                return del(lootItems);
+                return del(lootItems, lootTableKey, enemyDrop, enemy);
 
             // DFU does no post-processing of loot items hence report zero changes, this is solely for mods to override.
             return 0;
