@@ -99,6 +99,7 @@ namespace DaggerfallWorkshop.Game.Utility
                 {
                     msg.AppendFormat("Error ({0}): {1}\n",
                         error.ErrorNumber, error.ErrorText);
+                    UnityEngine.Debug.Log($"Compile Erorr {error.ErrorNumber}:{error.ErrorText} at line {error.Line}");
                 }
 
                 throw new Exception(msg.ToString());
