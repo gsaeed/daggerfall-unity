@@ -418,7 +418,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             .Select(x => new DirectoryInfo(x))
             .Where(x => ModManager.Instance.GetModFromGUID(x.Name) == null)
             .ToArray();
-
+#if !UNITY_EDITOR
         if (unknownDirectories.Length > 0)
         {
             var cleanConfigMessageBox = new DaggerfallMessageBox(uiManager, this);
@@ -440,6 +440,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             uiManager.PushWindow(cleanConfigMessageBox);
         }
         else
+#endif
         {
             moveNextStage = true;
         }
@@ -539,9 +540,9 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         }
     }
 
-    #endregion
+#endregion
 
-    #region Events
+#region Events
 
     void DecreaseLoadOrderButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
     {
@@ -765,5 +766,5 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         modList.ScrollIndex = modListScrollBar.ScrollIndex;
     }
 
-    #endregion
+#endregion
 }
