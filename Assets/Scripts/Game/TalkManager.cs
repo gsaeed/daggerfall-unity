@@ -1282,6 +1282,11 @@ namespace DaggerfallWorkshop.Game
                 MacroHelper.SetFactionIdsAndRegionID(validRumor.faction1, validRumor.faction2, regionID);
                 MacroHelper.ExpandMacros(ref tokens, this);
                 MacroHelper.SetFactionIdsAndRegionID(-1, -1, -1); // Reset again so %reg macro may resolve to current region if needed
+                for (int n = 0; n < tokens.Length; n++)
+                {
+                    if (tokens[n].formatting == TextFile.Formatting.Text)
+                        tokens[n].text += " ";
+                }
                 news = TokensToString(tokens, false);
             }
 
