@@ -5,13 +5,12 @@
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Michael Rauter (Nystul)
 // Contributors:    Numidium, Allofich, Interkarma, Ferital
-// 
+//
 // Notes:
 //
 
 using UnityEngine;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
@@ -21,6 +20,7 @@ using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Questing;
+using System.Linq;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Player;
 using DaggerfallWorkshop.Game.Guilds;
@@ -120,7 +120,7 @@ namespace DaggerfallWorkshop.Game
         readonly ushort[] greetings =               { 8550, 8551, 8552, 8553, 8554, 8555, 8556, 8557, 8558, 8559, 8560, 8561, 8562, 8562,
                                                       8563, 8564, 8564, 8565, 8566, 8566, 8567, 8568, 8568, 8569, 8570, 8570, 8571 };
 
-        readonly ushort[] allowedBulletinTextIds =  { 1475, 1476, 1477, 1478, 1479, 1482, 1483 };
+        readonly ushort[] allowedBulletinTextIds = { 1475, 1476, 1477, 1478, 1479, 1482, 1483 };
 
         const float ChanceToRevealLocationOnMap = 0.35f; // Chances unknown
 
@@ -1339,6 +1339,7 @@ namespace DaggerfallWorkshop.Game
 
         public TextFile.Token[] GetNewsOrRumorsForBulletinBoard()
         {
+
             List<RumorMillEntry> validRumors = GetValidRumors(true);
 
             if (validRumors.Count == 0)
@@ -1364,6 +1365,11 @@ namespace DaggerfallWorkshop.Game
                 MacroHelper.SetFactionIdsAndRegionID(validRumor.faction1, validRumor.faction2, regionID);
                 MacroHelper.ExpandMacros(ref tokens, this);
                 MacroHelper.SetFactionIdsAndRegionID(-1, -1, -1); // Reset again so %reg macro may resolve to current region if needed
+                for (int n = 0; n < tokens.Length; n++)
+                {
+                    if (tokens[n].formatting == TextFile.Formatting.Text)
+                        tokens[n].text += " ";
+                }
                 return tokens;
             }
 
@@ -1447,7 +1453,7 @@ namespace DaggerfallWorkshop.Game
                 totalWeight += weight; // increase weight sum
             }
 
-            return selected; // when iterations end, selected is some element of sequence. 
+            return selected; // when iterations end, selected is some element of sequence.
         }
 
         private List<RumorMillEntry> GetValidRumors(bool readingSign = false)
@@ -1883,7 +1889,7 @@ namespace DaggerfallWorkshop.Game
             for (int i = 0; i < gps.CurrentRegion.LocationCount; i++)
             {
                 if (CheckLocationKeyForRegionalBuilding(gps.CurrentRegion.MapTable[i].Key, index, faction) > 0)
-                    foundLoc[locationsWithRegionalBuildingCount++] = i ;
+                    foundLoc[locationsWithRegionalBuildingCount++] = i;
             }
             if (locationsWithRegionalBuildingCount > 0)
             {
@@ -1905,7 +1911,7 @@ namespace DaggerfallWorkshop.Game
                 var sortedLoc = from entry in allLocs orderby entry.Value ascending select entry;
 
                 int n = 0;
-                foreach(KeyValuePair<DFLocation, float> kv in sortedLoc)
+                foreach (KeyValuePair<DFLocation, float> kv in sortedLoc)
                 {
                     if (n == selectedLoc)
                     {
@@ -2163,7 +2169,7 @@ namespace DaggerfallWorkshop.Game
             if (questResourceInfo.resourceType == QuestInfoResourceType.Location)
             {
                 // Undiscover residences when they are a quest resource (named residence) when creating quest resource
-                // Otherwise previously discovered residences will automatically show up on the automap when used in a quest            
+                // Otherwise previously discovered residences will automatically show up on the automap when used in a quest
                 UndiscoverQuestResidence(questID, resourceName, questResourceInfo);
             }
 
@@ -2499,7 +2505,7 @@ namespace DaggerfallWorkshop.Game
                         }
                     }
 
-                    questResources = quest.GetAllResources(typeof(Place)); // Get list of place quest resources                   
+                    questResources = quest.GetAllResources(typeof(Place)); // Get list of place quest resources
                     for (int i = 0; i < questResources.Length; i++)
                     {
                         Place place = (Place)questResources[i];
@@ -2811,7 +2817,7 @@ namespace DaggerfallWorkshop.Game
                         }
                         catch (Exception e)
                         {
-                            string exceptionMessage = string.Format("exception occured in function BuildingNames.GetName (exception message: " + e.Message + @") with params: 
+                            string exceptionMessage = string.Format("exception occured in function BuildingNames.GetName (exception message: " + e.Message + @") with params:
                                                                         seed: {0}, type: {1}, factionID: {2}, locationName: {3}, regionName: {4}",
                                                                         buildingSummary.NameSeed, buildingSummary.BuildingType, buildingSummary.FactionId, location.Name, location.RegionName);
                             DaggerfallUnity.LogMessage(exceptionMessage, true);
@@ -3000,7 +3006,7 @@ namespace DaggerfallWorkshop.Game
                 // note Nystul :
                 // resolving is not optimal here but it works - when not inside building but instead castle it will resolve via building type
                 // since there is only one castle per location this finds the castle (a better way would be to have the building key of the palace entered,
-                // but I could not find an easy way to determine building key of castle (PlayerGPS and PlayerEnterExit do not provide this, nor do other classes))                    
+                // but I could not find an easy way to determine building key of castle (PlayerGPS and PlayerEnterExit do not provide this, nor do other classes))
                 buildingInfoCurrentBuilding = listBuildings.Find(x => x.buildingType == DFLocation.BuildingTypes.Palace);
             }
             return buildingInfoCurrentBuilding;
