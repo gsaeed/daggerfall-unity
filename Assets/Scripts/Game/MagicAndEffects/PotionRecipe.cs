@@ -159,7 +159,7 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         /// <summary>
         /// Abstracts an item ID into an ingredient.
         /// </summary>
-        public struct Ingredient
+        public struct Ingredient : IComparable
         {
             public int id;
 
@@ -167,6 +167,21 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
             {
                 this.id = id;
             }
+
+            public int CompareTo(object obj)
+            {
+                if (obj == null)
+                    return 1;
+
+                Ingredient other = (Ingredient)obj;
+
+                if (this.id < other.id)
+                    return -1;
+                if (this.id > other.id)
+                    return 1;
+                return 0;
+            }
+
         }
 
         #endregion
