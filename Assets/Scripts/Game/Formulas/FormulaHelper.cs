@@ -26,6 +26,8 @@ using DaggerfallWorkshop.Game.Utility.ModSupport;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
+    public delegate DaggerfallUnityItem[] LootDel(DaggerfallUnityItem[] lootItems, string LootTableKey, bool mobileEnemyDrop, EnemyEntity mobileEnemy);
+
     /// <summary>
     /// Common formulas used throughout game.
     /// Where the exact formula is unknown, a "best effort" approximation will be used.
@@ -47,6 +49,7 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         readonly static Dictionary<string, FormulaOverride> overrides = new Dictionary<string, FormulaOverride>();
+        public static LootDel lootDel;
 
         public static float specialInfectionChance = 0.6f;
 
@@ -686,7 +689,8 @@ namespace DaggerfallWorkshop.Game.Formulas
                 if (damage > 0 && weapon.poisonType != Poisons.None)
                 {
                     InflictPoison(target, weapon.poisonType, false);
-                    weapon.poisonType = Poisons.None;
+                    if (attacker != player)
+                        weapon.poisonType = Poisons.None;
                 }
             }
 
@@ -1363,7 +1367,10 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Note: In classic, AI characters' immunity to poison is ignored, although the level 1 check below still gives rats immunity
             DFCareer.Tolerance toleranceFlags = target.Career.Poison;
             if (toleranceFlags == DFCareer.Tolerance.Immune)
+            {
+                DaggerfallUI.AddHUDText($"{target.Name} is immune to {poisonType.ToString()}");
                 return;
+            }
 
             // Handle player with racial resistance to poison
             if (target is PlayerEntity)
@@ -1375,16 +1382,17 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             if (bypassResistance || SavingThrow(DFCareer.Elements.DiseaseOrPoison, DFCareer.EffectFlags.Poison, target, 0) != 0)
             {
-                if (target.Level != 1)
+                if (!(target == GameManager.Instance.PlayerEntity && target.Level == 1))
                 {
                     // Infect target
                     EntityEffectBundle bundle = effectManager.CreatePoison(poisonType);
                     effectManager.AssignBundle(bundle, AssignBundleFlags.BypassSavingThrows);
+                    DaggerfallUI.AddHUDText($"{target.Name} has been poisoned by {poisonType.ToString()}.");
                 }
             }
             else
             {
-                Debug.LogFormat("Poison resisted by {0}.", target.EntityBehaviour.name);
+                DaggerfallUI.AddHUDText($"{target.Name} resisted the {poisonType.ToString()},");
             }
         }
 
@@ -2033,6 +2041,23 @@ namespace DaggerfallWorkshop.Game.Formulas
             else
                 return false;
         }
+
+        /// <summary>
+        /// Allows loot found in containers and enemy corpses to be modified.
+        /// </summary>
+        /// <param name="lootItems">An array of the loot items</param>
+        /// <returns>The number of items modified.</returns>
+        public static DaggerfallUnityItem[] ModifyFoundLootItems(DaggerfallUnityItem[] lootItems, string LootTableKey, bool enemyDrop = false, EnemyEntity enemy = null)
+        {
+
+            //Func<ref DaggerfallUnityItem[], int> del;
+            if (lootDel != null)
+                return lootDel(lootItems, LootTableKey, enemyDrop, enemy);
+
+            // DFU does no post-processing of loot items hence report zero changes, this is solely for mods to override.
+            return lootItems;
+        }
+
 
         /// <summary>
         /// Allows loot found in containers and enemy corpses to be modified.
