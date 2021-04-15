@@ -154,10 +154,10 @@ namespace DaggerfallWorkshop
             PlayerEntity player = Game.GameManager.Instance.PlayerEntity;
 
             // If player fails at their current lockpicking skill level, they can't try again
-            if (FailedSkillLevel == player.Skills.GetLiveSkillValue(DFCareer.Skills.Lockpicking))
-            {
-                return;
-            }
+            //if (FailedSkillLevel == player.Skills.GetLiveSkillValue(DFCareer.Skills.Lockpicking))
+            //{
+            //    return;
+            //}
 
             if (!IsMagicallyHeld)
             {
