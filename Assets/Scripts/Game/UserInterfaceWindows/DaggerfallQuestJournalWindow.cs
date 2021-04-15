@@ -102,64 +102,62 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (defaultToolTip != null)
                 defaultToolTip.ToolTipDelay = 1;
 
-            mainPanel = DaggerfallUI.AddPanel(NativePanel, AutoSizeModes.None);
-            mainPanel.BackgroundTexture = texture;
-            mainPanel.Size = new Vector2(320, 200);
-            mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
-            mainPanel.VerticalAlignment = VerticalAlignment.Middle;
-            mainPanel.OnMouseScrollDown += MainPanel_OnMouseScrollDown;
-            mainPanel.OnMouseScrollUp += MainPanel_OnMouseScrollUp;
+            mainPanel                       = DaggerfallUI.AddPanel(NativePanel, AutoSizeModes.None);
+            mainPanel.BackgroundTexture     = texture;
+            mainPanel.Size                  = new Vector2(320, 200);
+            mainPanel.HorizontalAlignment   = HorizontalAlignment.Center;
+            mainPanel.VerticalAlignment     = VerticalAlignment.Middle;
+            mainPanel.OnMouseScrollDown     += MainPanel_OnMouseScrollDown;
+            mainPanel.OnMouseScrollUp       += MainPanel_OnMouseScrollUp;
 
-            dialogButton = new Button();
-            dialogButton.Position = new Vector2(32, 187);
-            dialogButton.Size = new Vector2(68, 10);
-            dialogButton.OnMouseClick += DialogButton_OnMouseClick;
-            dialogButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.JournalNextCategory);
-            dialogButton.Name = "dialog_button";
-            dialogButton.ToolTip = defaultToolTip;
-            dialogButton.ToolTipText = TextManager.Instance.GetLocalizedText("dialogButtonInfo");
+            dialogButton                    = new Button();
+            dialogButton.Position           = new Vector2(32, 187);
+            dialogButton.Size               = new Vector2(68, 10);
+            dialogButton.OnMouseClick       += DialogButton_OnMouseClick;
+            dialogButton.Hotkey             = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.JournalNextCategory);
+            dialogButton.Name               = "dialog_button";
+            dialogButton.ToolTip            = defaultToolTip;
+            dialogButton.ToolTipText        = TextManager.Instance.GetLocalizedText("dialogButtonInfo");
             mainPanel.Components.Add(dialogButton);
 
-            upArrowButton = new Button();
-            upArrowButton.Position = new Vector2(181, 188);
-            upArrowButton.Size = new Vector2(13, 7);
-            upArrowButton.OnMouseClick += UpArrowButton_OnMouseClick;
-            upArrowButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.JournalPreviousPage);
-            upArrowButton.Name = "uparrow_button";
+            upArrowButton                   = new Button();
+            upArrowButton.Position          = new Vector2(181, 188);
+            upArrowButton.Size              = new Vector2(13, 7);
+            upArrowButton.OnMouseClick      += UpArrowButton_OnMouseClick;
+            upArrowButton.Hotkey            = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.JournalPreviousPage);
+            upArrowButton.Name              = "uparrow_button";
             mainPanel.Components.Add(upArrowButton);
 
-            downArrowButton = new Button();
-            downArrowButton.Position = new Vector2(209, 188);
-            downArrowButton.Size = new Vector2(13, 7);
-            downArrowButton.OnMouseClick += DownArrowButton_OnMouseClick;
-            downArrowButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.JournalNextPage);
-            downArrowButton.Name = "downarrow_button";
+            downArrowButton                 = new Button();
+            downArrowButton.Position        = new Vector2(209, 188);
+            downArrowButton.Size            = new Vector2(13, 7);
+            downArrowButton.OnMouseClick    += DownArrowButton_OnMouseClick;
+            downArrowButton.Hotkey          = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.JournalNextPage);
+            downArrowButton.Name            = "downarrow_button";
             mainPanel.Components.Add(downArrowButton);
 
-            exitButton = new Button();
-            exitButton.Position = new Vector2(278, 187);
-            exitButton.Size = new Vector2(30, 9);
-            exitButton.OnMouseClick += ExitButton_OnMouseClick;
-            exitButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.JournalExit);
-            exitButton.OnKeyboardEvent += ExitButton_OnKeyboardEvent;
-            exitButton.Name = "exit_button";
+            exitButton                      = new Button();
+            exitButton.Position             = new Vector2(278, 187);
+            exitButton.Size                 = new Vector2(30, 9);
+            exitButton.OnMouseClick         += ExitButton_OnMouseClick;
+            exitButton.Hotkey               = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.JournalExit);
+            exitButton.OnKeyboardEvent      += ExitButton_OnKeyboardEvent;
+            exitButton.Name                 = "exit_button";
             mainPanel.Components.Add(exitButton);
 
-            questLogLabel = new MultiFormatTextLabel();
-            questLogLabel.Position = new Vector2(30, 38);
-            questLogLabel.Size = new Vector2(238, 138);
-            questLogLabel.HighlightColor = Color.white;
-            questLogLabel.OnMouseClick += QuestLogLabel_OnMouseClick;
+            questLogLabel                   = new MultiFormatTextLabel();
+            questLogLabel.Position          = new Vector2(30, 38);
+            questLogLabel.Size              = new Vector2(238, 138);
+            questLogLabel.HighlightColor    = Color.white;
+            questLogLabel.OnMouseClick      += QuestLogLabel_OnMouseClick;
             questLogLabel.OnRightMouseClick += QuestLogLabel_OnRightMouseClick;
             mainPanel.Components.Add(questLogLabel);
 
-            Panel titlePanel = new Panel
-            {
+            Panel titlePanel = new Panel {
                 Position = new Vector2(30, 22),
                 Size = new Vector2(238, 16),
             };
-            titleLabel = new TextLabel
-            {
+            titleLabel = new TextLabel {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Font = DaggerfallUI.LargeFont,
                 ShadowColor = new Color(0f, 0.2f, 0.5f),
@@ -192,10 +190,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             toggleClosedBinding1 = InputManager.Instance.GetBinding(InputManager.Actions.LogBook);
             toggleClosedBinding2 = InputManager.Instance.GetBinding(InputManager.Actions.NoteBook);
 
-            questMessages = QuestMachine.Instance.GetAllQuestLogMessages();
-            lastMessageIndex = NULLINT;
+            questMessages       = QuestMachine.Instance.GetAllQuestLogMessages();
+            lastMessageIndex    = NULLINT;
             currentMessageIndex = 0;
-            selectedEntry = NULLINT;
+            selectedEntry       = NULLINT;
             DaggerfallUI.Instance.PlayOneShot(openJournal);
         }
 
@@ -385,7 +383,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             if (entryLineMap == null)
                 return;
-
+            
             int moveSrcIdx = selectedEntry;    // Will be set if moving an entry
             int line = (int)(position.y / questLogLabel.LineHeight);
 
@@ -468,7 +466,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 return null;
 
             Place lastPlace = null;
-            foreach (QuestResource resource in resources)
+            foreach(QuestResource resource in resources)
             {
                 if (resource is Place)
                     lastPlace = (Place)resource;
@@ -504,8 +502,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 selectedEntry = -index + currentMessageIndex;
                 Debug.Log("Add at " + selectedEntry);
 
-                TextFile.Token prompt = new TextFile.Token()
-                {
+                TextFile.Token prompt = new TextFile.Token() {
                     text = TextManager.Instance.GetLocalizedText("enterNote"),
                     formatting = TextFile.Formatting.Text,
                 };

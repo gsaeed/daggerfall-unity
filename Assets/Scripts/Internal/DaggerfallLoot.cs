@@ -8,8 +8,7 @@
 // 
 // Notes:
 //
-using System;
-using System.Collections.Generic;
+
 using UnityEngine;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Items;
@@ -67,14 +66,14 @@ namespace DaggerfallWorkshop
         /// Generates items in the given item collection based on loot table key.
         /// Any existing items will be destroyed.
         /// </summary>
-        public static void GenerateItems(string LootTableKey, ItemCollection collection, bool enemydrop = false, EnemyEntity enemy = null)
+        public static void GenerateItems(string LootTableKey, ItemCollection collection)
         {
             LootChanceMatrix matrix = LootTables.GetMatrix(LootTableKey);
             DaggerfallUnityItem[] newitems = LootTables.GenerateRandomLoot(matrix, GameManager.Instance.PlayerEntity);
 
-            FormulaHelper.ModifyFoundLootItems(ref newitems, LootTableKey, enemydrop, enemy) ;
+            DaggerfallUnityItem[] modifieditems = FormulaHelper.ModifyFoundLootItems(ref newitems);
 
-            collection.Import(newitems);
+            collection.Import(modifieditems);
         }
 
         /// <summary>
@@ -105,9 +104,9 @@ namespace DaggerfallWorkshop
         {
             if (Dice100.SuccessRoll(chance))
             {
-                List<int> recipeKeys = GameManager.Instance.EntityEffectBroker.GetPotionRecipeKeys();
-                int recipeIdx = UnityEngine.Random.Range(0, recipeKeys.Count);
-                DaggerfallUnityItem potionRecipe = new DaggerfallUnityItem(ItemGroups.MiscItems, 4) { PotionRecipeKey = recipeKeys[recipeIdx] } ;
+                int recipeIdx = Random.Range(0, PotionRecipe.classicRecipeKeys.Length);
+                int recipeKey = PotionRecipe.classicRecipeKeys[recipeIdx];
+                DaggerfallUnityItem potionRecipe = new DaggerfallUnityItem(ItemGroups.MiscItems, 4) { PotionRecipeKey = recipeKey };
                 collection.AddItem(potionRecipe);
             }
         }
@@ -227,7 +226,7 @@ namespace DaggerfallWorkshop
                                     {
                                         item = new DaggerfallUnityItem(itemGroup, j);
                                         if (DaggerfallUnity.Settings.PlayerTorchFromItems && item.IsOfTemplate(ItemGroups.UselessItems2, (int)UselessItems2.Oil))
-                                            item.stackCount = UnityEngine.Random.Range(5, 20 + 1);  // Shops stock 5-20 bottles
+                                            item.stackCount = Random.Range(5, 20 + 1);  // Shops stock 5-20 bottles
                                     }
                                     items.AddItem(item);
                                 }
@@ -311,7 +310,7 @@ namespace DaggerfallWorkshop
                 }
                 if (privatePropertyList == null)
                     return;
-                int randomChoice = UnityEngine.Random.Range(0, privatePropertyList.Length);
+                int randomChoice = Random.Range(0, privatePropertyList.Length);
                 ItemGroups itemGroup = (ItemGroups)privatePropertyList[randomChoice];
                 int continueChance = 100;
                 bool keepGoing = true;
@@ -336,7 +335,7 @@ namespace DaggerfallWorkshop
                             else
                             {
                                 System.Array enumArray = DaggerfallUnity.Instance.ItemHelper.GetEnumArray(itemGroup);
-                                item = new DaggerfallUnityItem(itemGroup, UnityEngine.Random.Range(0, enumArray.Length));
+                                item = new DaggerfallUnityItem(itemGroup, Random.Range(0, enumArray.Length));
                             }
                         }
                     }
