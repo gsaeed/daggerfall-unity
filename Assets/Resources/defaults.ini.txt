@@ -75,6 +75,7 @@ LargeHUDUndockedAlignment=0
 LargeHUDUndockedOffsetWeapon=False
 LargeHUDOffsetHorse=True
 CanDropQuestItems=False
+EnableQuestDebugger=False
 
 [Spells]
 EnableSpellLighting=True
