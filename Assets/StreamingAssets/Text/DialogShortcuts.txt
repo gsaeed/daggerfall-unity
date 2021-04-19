@@ -62,7 +62,7 @@ HUDToggle,            Shift-F10
 ToggleRetroPP,        Shift-F11
 
 -- Debugger
-DebuggerActiveQuestToggle, 	Shift-Q
+DebuggerActiveQuestToggle, 	Ctrl-Shift-Q
 DebuggerToggle,       Ctrl-Shift-D
 DebuggerPrevQuest,    Ctrl-Shift-LeftArrow
 DebuggerNextQuest,    Ctrl-Shift-RightArrow
