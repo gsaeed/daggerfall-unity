@@ -336,7 +336,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         protected void SetupClosedBinding()
         {
-               toggleClosedBinding = InputManager.Instance.GetBinding(InputManager.Actions.Inventory);
+            toggleClosedBinding = InputManager.Instance.GetBinding(InputManager.Actions.Inventory);
         }
 
         public override void Update()
@@ -447,7 +447,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 MaxTextWidth = 37,
                 WrapText = true,
                 WrapWords = true,
-                ExtraLeading = 1, // spacing between info panel elements
+                ExtraLeading = 3, // spacing between info panel elements
                 TextColor = DaggerfallUI.DaggerfallInfoPanelTextColor,
                 ShadowPosition = new Vector2(0.5f, 0.5f),
                 ShadowColor = DaggerfallUI.DaggerfallAlternateShadowColor1
@@ -1127,38 +1127,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (item.ItemGroup == ItemGroups.Paintings)
                 tokens = new TextFile.Token[] { new TextFile.Token() { formatting = TextFile.Formatting.Text, text = tokens[tokens.Length - 1].text.Trim() } };
 
-            TextFile.Token[] newTokens;
-
-            if (item.ItemGroup == ItemGroups.Weapons)
-
-                newTokens = new TextFile.Token[tokens.Length + 4];
-            else
-                newTokens = new TextFile.Token[tokens.Length + 2];
-
-            bool found = false;
-            int n = 0;
-            for (int i = 0; i < tokens.Length; i++)
-            {
-                if (tokens[i].text != null && tokens[i].text.Contains("Worth:"))
-                    found = true;
-                if (i == tokens.Length - 1 && !found)
-                {
-                    newTokens[n++] = new TextFile.Token() { formatting = TextFile.Formatting.Text, text = "Worth: " + item.value.ToString() + " gold" };
-                    newTokens[n++] = new TextFile.Token() { formatting = TextFile.Formatting.JustifyCenter };
-
-                }
-                else
-                    newTokens[n++] = tokens[i];
-
-            }
-
-            if (item.ItemGroup == ItemGroups.Weapons && item.poisonType != Poisons.None)
-            {
-                newTokens[n++] = new TextFile.Token() { formatting = TextFile.Formatting.Text, text = "Poison: " + item.poisonType.ToString() };
-                newTokens[n++] = new TextFile.Token() { formatting = TextFile.Formatting.JustifyCenter };
-            }
-
-            UpdateItemInfoPanel(newTokens);
+            UpdateItemInfoPanel(tokens);
         }
 
         protected void UpdateItemInfoPanel(TextFile.Token[] tokens)
@@ -1609,7 +1578,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        protected void ShowInfoPopup(DaggerfallUnityItem item)
+        protected virtual void ShowInfoPopup(DaggerfallUnityItem item)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             TextFile.Token[] tokens = ItemHelper.GetItemInfo(item, DaggerfallUnity.TextProvider);
@@ -1644,20 +1613,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     messageBox.ClickAnywhereToClose = true;
                     messageBox.Show();
                 }
-                else if (item.ItemGroup == ItemGroups.Weapons && item.poisonType != Poisons.None)
-                {
-                    DaggerfallMessageBox weaponBox = new DaggerfallMessageBox(uiManager, messageBox);
-                    TextFile.Token[] newTokens = new TextFile.Token[2];
-                    int n = 0;
-                    newTokens[n++] = new TextFile.Token() { formatting = TextFile.Formatting.Text, text = "Poison: " + item.poisonType.ToString() };
-                    newTokens[n++] = new TextFile.Token() { formatting = TextFile.Formatting.JustifyCenter };
-                    weaponBox.SetTextTokens(newTokens);
-                    weaponBox.ClickAnywhereToClose = true;
-                    messageBox.AddNextMessageBox(weaponBox);
-                    messageBox.Show();
-                }
-
-
                 else
                 {
                     messageBox.ClickAnywhereToClose = true;
@@ -1894,7 +1849,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Item Click Event Handlers
 
-
         // Get action mode, swapping equip and remove - for right clicks
         protected virtual ActionModes GetActionModeRightClick()
         {
@@ -1942,7 +1896,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             AccessoryItemsButton_OnMouseClick(sender, position, GetActionModeRightClick());
         }
-
 
         private DaggerfallUnityItem PaperDoll_GetItem(BaseScreenComponent sender, Vector2 position)
         {
@@ -1993,7 +1946,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             PaperDoll_OnMouseClick(sender, position, GetActionModeRightClick());
         }
-
 
         protected virtual void PaperDoll_OnMiddleMouseClick(BaseScreenComponent sender, Vector2 position)
         {
@@ -2056,7 +2008,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void LocalItemListScroller_OnItemMiddleClick(DaggerfallUnityItem item)
         {
             NextVariant(item);
-
         }
 
         protected virtual void RemoteItemListScroller_OnItemClick(DaggerfallUnityItem item, ActionModes actionMode)
@@ -2115,7 +2066,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             NextVariant(item);
         }
-
 
         protected void ExitButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
