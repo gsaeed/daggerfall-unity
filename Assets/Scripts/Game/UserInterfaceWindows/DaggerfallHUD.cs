@@ -188,6 +188,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             activeSpells.Enabled = ShowActiveSpells;
 
             // Large HUD will force certain other HUD elements off as they conflict in space or utility
+            bool largeHUDwasEnabled = largeHUD.Enabled;
             bool largeHUDEnabled = DaggerfallUnity.Settings.LargeHUD;
             if (largeHUDEnabled)
             {
@@ -211,6 +212,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 largeHUD.Enabled = false;
             }
+
+            if (largeHUDEnabled != largeHUDwasEnabled)
+                RaiseOnLargeHUDToggleEvent();
 
             // Scale large HUD
             largeHUD.CustomScale = NativePanel.LocalScale;
@@ -345,5 +349,18 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             midScreenTextDelay = delay;
             GameManager.Instance.PlayerEntity.Notebook.AddMessage(message);
         }
+
+        #region Events
+
+        // OnLargeHUDToggleEvent
+        public delegate void OnLargeHUDToggleHandler();
+        public static event OnLargeHUDToggleHandler OnLargeHUDToggle;
+        protected virtual void RaiseOnLargeHUDToggleEvent()
+        {
+            if (OnLargeHUDToggle != null)
+                OnLargeHUDToggle();
+        }
+
+        #endregion
     }
 }
