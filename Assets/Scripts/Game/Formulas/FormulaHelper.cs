@@ -23,11 +23,10 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallConnect.Save;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using DaggerfallWorkshop.Game.Banking;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
-    public delegate DaggerfallUnityItem[] LootDel(DaggerfallUnityItem[] lootItems, string LootTableKey, bool mobileEnemyDrop, EnemyEntity mobileEnemy);
-
     /// <summary>
     /// Common formulas used throughout game.
     /// Where the exact formula is unknown, a "best effort" approximation will be used.
@@ -49,7 +48,6 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         readonly static Dictionary<string, FormulaOverride> overrides = new Dictionary<string, FormulaOverride>();
-        public static LootDel lootDel;
 
         public static float specialInfectionChance = 0.6f;
 
@@ -319,6 +317,10 @@ namespace DaggerfallWorkshop.Game.Formulas
         // Calculate how many uses a skill needs before its value will rise.
         public static int CalculateSkillUsesForAdvancement(int skillValue, int skillAdvancementMultiplier, float careerAdvancementMultiplier, int level)
         {
+            Func<int, int, float, int, int> del;
+            if (TryGetOverride("CalculateSkillUsesForAdvancement", out del))
+                return del(skillValue, skillAdvancementMultiplier, careerAdvancementMultiplier, level);
+
             double levelMod = Math.Pow(1.04, level);
             return (int)Math.Floor((skillValue * skillAdvancementMultiplier * careerAdvancementMultiplier * levelMod * 2 / 5) + 1);
         }
@@ -688,9 +690,8 @@ namespace DaggerfallWorkshop.Game.Formulas
                 // Handle poisoned weapons
                 if (damage > 0 && weapon.poisonType != Poisons.None)
                 {
-                    InflictPoison(target, weapon.poisonType, false);
-                    if (attacker != player)
-                        weapon.poisonType = Poisons.None;
+                    InflictPoison(attacker, target, weapon.poisonType, false);
+                    weapon.poisonType = Poisons.None;
                 }
             }
 
@@ -1260,13 +1261,20 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// <param name="damage">Damage done by the hit</param>
         public static void OnMonsterHit(EnemyEntity attacker, DaggerfallEntity target, int damage)
         {
-            Func<EnemyEntity, DaggerfallEntity, int, bool> del;
+            Action<EnemyEntity, DaggerfallEntity, int> del;
             if (TryGetOverride("OnMonsterHit", out del))
+            {
                 del(attacker, target, damage);
+                return;
+            }
 
-            byte[] diseaseListA = { 1 };
-            byte[] diseaseListB = { 1, 3, 5 };
-            byte[] diseaseListC = { 1, 2, 3, 4, 5, 6, 8, 9, 11, 13, 14 };
+            Diseases[] diseaseListA = { Diseases.Plague };
+            Diseases[] diseaseListB = { Diseases.Plague, Diseases.StomachRot, Diseases.BrainFever };
+            Diseases[] diseaseListC = {
+                Diseases.Plague, Diseases.YellowFever, Diseases.StomachRot, Diseases.Consumption,
+                Diseases.BrainFever, Diseases.SwampRot, Diseases.Cholera, Diseases.Leprosy, Diseases.RedDeath,
+                Diseases.TyphoidFever, Diseases.Dementia
+            };
             float random;
             switch (attacker.CareerIndex)
             {
@@ -1274,12 +1282,12 @@ namespace DaggerfallWorkshop.Game.Formulas
                     // In classic rat can only give plague (diseaseListA), but DF Chronicles says plague, stomach rot and brain fever (diseaseListB).
                     // Don't know which was intended. Using B since it has more variety.
                     if (Dice100.SuccessRoll(5))
-                        InflictDisease(target, diseaseListB);
+                        InflictDisease(attacker, target, diseaseListB);
                     break;
                 case (int)MonsterCareers.GiantBat:
                     // Classic uses 2% chance, but DF Chronicles says 5% chance. Not sure which was intended.
                     if (Dice100.SuccessRoll(2))
-                        InflictDisease(target, diseaseListB);
+                        InflictDisease(attacker, target, diseaseListB);
                     break;
                 case (int)MonsterCareers.Spider:
                 case (int)MonsterCareers.GiantScorpion:
@@ -1306,7 +1314,7 @@ namespace DaggerfallWorkshop.Game.Formulas
                     }
                     break;
                 case (int)MonsterCareers.Nymph:
-                    FatigueDamage(target, damage);
+                    FatigueDamage(attacker, target, damage);
                     break;
                 case (int)MonsterCareers.Wereboar:
                     random = UnityEngine.Random.Range(0f, 100f);
@@ -1322,11 +1330,11 @@ namespace DaggerfallWorkshop.Game.Formulas
                     // Nothing in classic. DF Chronicles says 2% chance of disease, which seems like it was probably intended.
                     // Diseases listed in DF Chronicles match those of mummy (except missing cholera, probably a mistake)
                     if (Dice100.SuccessRoll(2))
-                        InflictDisease(target, diseaseListC);
+                        InflictDisease(attacker, target, diseaseListC);
                     break;
                 case (int)MonsterCareers.Mummy:
                     if (Dice100.SuccessRoll(5))
-                        InflictDisease(target, diseaseListC);
+                        InflictDisease(attacker, target, diseaseListC);
                     break;
                 case (int)MonsterCareers.Vampire:
                 case (int)MonsterCareers.VampireAncient:
@@ -1340,20 +1348,34 @@ namespace DaggerfallWorkshop.Game.Formulas
                     }
                     else if (random <= 2.0f)
                     {
-                        InflictDisease(target, diseaseListA);
+                        InflictDisease(attacker, target, diseaseListA);
                     }
                     break;
                 case (int)MonsterCareers.Lamia:
                     // Nothing in classic, but DF Chronicles says 2 pts of fatigue damage per health damage
-                    FatigueDamage(target, damage);
+                    FatigueDamage(attacker, target, damage);
                     break;
                 default:
                     break;
             }
         }
 
-        public static void InflictPoison(DaggerfallEntity target, Poisons poisonType, bool bypassResistance)
+        /// <summary>
+        /// Inflict a classic poison onto entity.
+        /// </summary>
+        /// <param name="attacker">Source entity. Can be the same as target</param>
+        /// <param name="target">Target entity</param>
+        /// <param name="poisonType">Classic poison type</param>
+        /// <param name="bypassResistance">Whether it should bypass resistances</param>
+        public static void InflictPoison(DaggerfallEntity attacker, DaggerfallEntity target, Poisons poisonType, bool bypassResistance)
         {
+            Action<DaggerfallEntity, DaggerfallEntity, Poisons, bool> del;
+            if(TryGetOverride("InflictPoison", out del))
+            {
+                del(attacker, target, poisonType, bypassResistance);
+                return;
+            }
+
             // Target must have an entity behaviour and effect manager
             EntityEffectManager effectManager = null;
             if (target.EntityBehaviour != null)
@@ -1370,10 +1392,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Note: In classic, AI characters' immunity to poison is ignored, although the level 1 check below still gives rats immunity
             DFCareer.Tolerance toleranceFlags = target.Career.Poison;
             if (toleranceFlags == DFCareer.Tolerance.Immune)
-            {
-                DaggerfallUI.AddHUDText($"{target.Name} is immune to {poisonType.ToString()}");
                 return;
-            }
 
             // Handle player with racial resistance to poison
             if (target is PlayerEntity)
@@ -1385,17 +1404,16 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             if (bypassResistance || SavingThrow(DFCareer.Elements.DiseaseOrPoison, DFCareer.EffectFlags.Poison, target, 0) != 0)
             {
-                if (!(target == GameManager.Instance.PlayerEntity && target.Level == 1))
+                if (target.Level != 1)
                 {
                     // Infect target
                     EntityEffectBundle bundle = effectManager.CreatePoison(poisonType);
                     effectManager.AssignBundle(bundle, AssignBundleFlags.BypassSavingThrows);
-                    DaggerfallUI.AddHUDText($"{target.Name} has been poisoned by {poisonType.ToString()}.");
                 }
             }
             else
             {
-                DaggerfallUI.AddHUDText($"{target.Name} resisted the {poisonType.ToString()},");
+                Debug.LogFormat("Poison resisted by {0}.", target.EntityBehaviour.name);
             }
         }
 
@@ -1423,6 +1441,10 @@ namespace DaggerfallWorkshop.Game.Formulas
 
         public static int SavingThrow(DFCareer.Elements elementType, DFCareer.EffectFlags effectFlags, DaggerfallEntity target, int modifier)
         {
+            Func<DFCareer.Elements, DFCareer.EffectFlags, DaggerfallEntity, int, int> del;
+            if (TryGetOverride("SavingThrow", out del))
+                return del(elementType, effectFlags, target, modifier);
+
             // Handle resistances granted by magical effects
             if (target.HasResistanceFlag(elementType))
             {
@@ -1625,17 +1647,21 @@ namespace DaggerfallWorkshop.Game.Formulas
             return result;
         }
 
-        #endregion
-
-        #region Enemies
-
         /// <summary>
         /// Inflict a classic disease onto player.
         /// </summary>
+        /// <param name="attacker">Source entity. Can be the same as target</param>
         /// <param name="target">Target entity - must be player.</param>
         /// <param name="diseaseList">Array of disease indices matching Diseases enum.</param>
-        public static void InflictDisease(DaggerfallEntity target, byte[] diseaseList)
+        public static void InflictDisease(DaggerfallEntity attacker, DaggerfallEntity target, Diseases[] diseaseList)
         {
+            Action<DaggerfallEntity, DaggerfallEntity, Diseases[]> del;
+            if (TryGetOverride("InflictDisease", out del))
+            {
+                del(attacker, target, diseaseList);
+                return;
+            }
+
             // Must have a valid disease list
             if (diseaseList == null || diseaseList.Length == 0 || target.EntityBehaviour.EntityType != EntityTypes.Player)
                 return;
@@ -1654,11 +1680,9 @@ namespace DaggerfallWorkshop.Game.Formulas
 
                 // Select a random disease from disease array and validate range
                 int diseaseIndex = UnityEngine.Random.Range(0, diseaseList.Length);
-                if (diseaseIndex < 0 || diseaseIndex > 16)
-                    return;
 
                 // Infect player
-                Diseases diseaseType = (Diseases)diseaseList[diseaseIndex];
+                Diseases diseaseType = diseaseList[diseaseIndex];
                 EntityEffectBundle bundle = GameManager.Instance.PlayerEffectManager.CreateDisease(diseaseType);
                 GameManager.Instance.PlayerEffectManager.AssignBundle(bundle, AssignBundleFlags.BypassSavingThrows);
 
@@ -1666,8 +1690,15 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
         }
 
-        public static void FatigueDamage(DaggerfallEntity target, int damage)
+        public static void FatigueDamage(EnemyEntity attacker, DaggerfallEntity target, int damage)
         {
+            Action<EnemyEntity, DaggerfallEntity, int> del;
+            if (TryGetOverride("FatigueDamage", out del))
+            {
+                del(attacker, target, damage);
+                return;
+            }
+
             // In classic, nymphs do 10-30 fatigue damage per hit, and lamias don't do any.
             // DF Chronicles says nymphs have "Energy Leech", which is a spell in
             // the game and not what they use, and for lamias "Every 1 pt of health damage = 2 pts of fatigue damage".
@@ -1681,6 +1712,10 @@ namespace DaggerfallWorkshop.Game.Formulas
             // and then wake up, according to DF Chronicles. This doesn't work correctly in classic. Classic does advance
             // time 14 days but the player dies like normal because of the "collapse from exhaustion near monsters = die" code.
         }
+
+        #endregion
+
+        #region Enemies
 
         // Generates health for enemy classes based on level and class
         public static int RollEnemyClassMaxHealth(int level, int hitPointsPerLevel)
@@ -1864,6 +1899,10 @@ namespace DaggerfallWorkshop.Game.Formulas
 
         public static int CalculateItemRepairTime(int condition, int max)
         {
+            Func<int, int, int> del;
+            if (TryGetOverride("CalculateItemRepairTime", out del))
+                return del(condition, max);
+
             int damage = max - condition;
             int repairTime = (damage * DaggerfallDateTime.SecondsPerDay / 1000);
             return Mathf.Max(repairTime, DaggerfallDateTime.SecondsPerDay);
@@ -1871,6 +1910,10 @@ namespace DaggerfallWorkshop.Game.Formulas
 
         public static int CalculateItemIdentifyCost(int baseItemValue, IGuild guild)
         {
+            Func<int, IGuild, int> del;
+            if (TryGetOverride("CalculateItemIdentifyCost", out del))
+                return del(baseItemValue, guild);
+
             // Free on Witches Festival
             uint minutes = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime();
             PlayerGPS gps = GameManager.Instance.PlayerGPS;
@@ -1934,6 +1977,26 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
 
             return amount;
+        }
+
+        public static int CalculateMaxBankLoan()
+        {
+            Func<int> del;
+            if (TryGetOverride("CalculateMaxBankLoan", out del))
+                return del();
+
+            //unoffical wiki says max possible loan is 1,100,000 but testing indicates otherwise
+            //rep. doesn't seem to effect cap, it's just level * 50k
+            return GameManager.Instance.PlayerEntity.Level * DaggerfallBankManager.loanMaxPerLevel;
+        }
+
+        public static int CalculateBankLoanRepayment(int amount, int regionIndex)
+        {
+            Func<int, int, int> del;
+            if (TryGetOverride("CalculateBankLoanRepayment", out del))
+                return del(amount, regionIndex);
+
+            return (int)(amount + amount * .1);
         }
 
         public static int ApplyRegionalPriceAdjustment(int cost)
@@ -2013,7 +2076,7 @@ namespace DaggerfallWorkshop.Game.Formulas
                 if (del(item))
                     return true; // Only return if override returns true
 
-            if (item.IsIngredient || item.IsPotion ||
+            if (item.IsIngredient || item.IsPotion || (item.ItemGroup == ItemGroups.Books) ||
                 item.IsOfTemplate(ItemGroups.Currency, (int)Currency.Gold_pieces) ||
                 item.IsOfTemplate(ItemGroups.Weapons, (int)Weapons.Arrow) ||
                 item.IsOfTemplate(ItemGroups.UselessItems2, (int)UselessItems2.Oil))
@@ -2021,23 +2084,6 @@ namespace DaggerfallWorkshop.Game.Formulas
             else
                 return false;
         }
-
-        /// <summary>
-        /// Allows loot found in containers and enemy corpses to be modified.
-        /// </summary>
-        /// <param name="lootItems">An array of the loot items</param>
-        /// <returns>The number of items modified.</returns>
-        public static DaggerfallUnityItem[] ModifyFoundLootItems(DaggerfallUnityItem[] lootItems, string LootTableKey, bool enemyDrop = false, EnemyEntity enemy = null)
-        {
-
-            //Func<ref DaggerfallUnityItem[], int> del;
-            if (lootDel != null)
-                return lootDel(lootItems, LootTableKey, enemyDrop, enemy);
-
-            // DFU does no post-processing of loot items hence report zero changes, this is solely for mods to override.
-            return lootItems;
-        }
-
 
         /// <summary>
         /// Allows loot found in containers and enemy corpses to be modified.
