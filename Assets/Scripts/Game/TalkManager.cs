@@ -1296,14 +1296,13 @@ namespace DaggerfallWorkshop.Game
             return question;
         }
 
-        public string GetNewsOrRumorsForBulletinBoard()
+        public TextFile.Token[] GetNewsOrRumorsForBulletinBoard()
         {
-            string news = string.Empty;
 
             List<RumorMillEntry> validRumors = GetValidRumors(true);
 
             if (validRumors.Count == 0)
-                return news;
+                return null;
 
             // Simply use first rumor available
             RumorMillEntry validRumor = validRumors.FirstOrDefault(x => x.rumorType == RumorType.CommonRumor);
@@ -1330,10 +1329,10 @@ namespace DaggerfallWorkshop.Game
                     if (tokens[n].formatting == TextFile.Formatting.Text)
                         tokens[n].text += " ";
                 }
-                news = TokensToString(tokens, false);
+                return tokens;
             }
 
-            return news;
+            return null;
         }
 
         public string GetNewsOrRumors()
