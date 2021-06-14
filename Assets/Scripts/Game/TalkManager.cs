@@ -11,7 +11,6 @@
 
 using UnityEngine;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
@@ -21,6 +20,7 @@ using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Questing;
+using System.Linq;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Player;
 using DaggerfallWorkshop.Game.Guilds;
@@ -120,7 +120,7 @@ namespace DaggerfallWorkshop.Game
         readonly ushort[] greetings =               { 8550, 8551, 8552, 8553, 8554, 8555, 8556, 8557, 8558, 8559, 8560, 8561, 8562, 8562,
                                                       8563, 8564, 8564, 8565, 8566, 8566, 8567, 8568, 8568, 8569, 8570, 8570, 8571 };
 
-        readonly ushort[] allowedBulletinTextIds =  { 1475, 1476, 1477, 1478, 1479, 1482, 1483 };
+        readonly ushort[] allowedBulletinTextIds = { 1475, 1476, 1477, 1478, 1479, 1482, 1483 };
 
         const float ChanceToRevealLocationOnMap = 0.35f; // Chances unknown
 
@@ -1824,7 +1824,7 @@ namespace DaggerfallWorkshop.Game
             for (int i = 0; i < gps.CurrentRegion.LocationCount; i++)
             {
                 if (CheckLocationKeyForRegionalBuilding(gps.CurrentRegion.MapTable[i].Key, index, faction) > 0)
-                    foundLoc[locationsWithRegionalBuildingCount++] = i ;
+                    foundLoc[locationsWithRegionalBuildingCount++] = i;
             }
             if (locationsWithRegionalBuildingCount > 0)
             {
@@ -1846,7 +1846,7 @@ namespace DaggerfallWorkshop.Game
                 var sortedLoc = from entry in allLocs orderby entry.Value ascending select entry;
 
                 int n = 0;
-                foreach(KeyValuePair<DFLocation, float> kv in sortedLoc)
+                foreach (KeyValuePair<DFLocation, float> kv in sortedLoc)
                 {
                     if (n == selectedLoc)
                     {
