@@ -77,15 +77,6 @@ namespace DaggerfallWorkshop
             collection.Import(modifieditems);
         }
 
-        public static void GenerateItems(string LootTableKey, ItemCollection collection, bool enemydrop = false, EnemyEntity enemy = null)
-        {
-            LootChanceMatrix matrix = LootTables.GetMatrix(LootTableKey);
-            DaggerfallUnityItem[] newitems = LootTables.GenerateRandomLoot(matrix, GameManager.Instance.PlayerEntity);
-
-           newitems = FormulaHelper.ModifyFoundLootItems(newitems, LootTableKey, enemydrop, enemy);
-
-           collection.Import(newitems);
-        }
 
         /// <summary>
         /// Randomly add a map

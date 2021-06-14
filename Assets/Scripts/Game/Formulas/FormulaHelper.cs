@@ -691,7 +691,8 @@ namespace DaggerfallWorkshop.Game.Formulas
                 if (damage > 0 && weapon.poisonType != Poisons.None)
                 {
                     InflictPoison(attacker, target, weapon.poisonType, false);
-                    weapon.poisonType = Poisons.None;
+                    if (attacker != player)
+                        weapon.poisonType = Poisons.None;
                 }
             }
 
@@ -1392,7 +1393,11 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Note: In classic, AI characters' immunity to poison is ignored, although the level 1 check below still gives rats immunity
             DFCareer.Tolerance toleranceFlags = target.Career.Poison;
             if (toleranceFlags == DFCareer.Tolerance.Immune)
+            {
+                DaggerfallUI.AddHUDText($"{target.Name} is immune to {poisonType.ToString()}");
                 return;
+            }
+
 
             // Handle player with racial resistance to poison
             if (target is PlayerEntity)
@@ -1404,16 +1409,17 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             if (bypassResistance || SavingThrow(DFCareer.Elements.DiseaseOrPoison, DFCareer.EffectFlags.Poison, target, 0) != 0)
             {
-                if (target.Level != 1)
+                if (!(target == GameManager.Instance.PlayerEntity && target.Level == 1))
                 {
                     // Infect target
                     EntityEffectBundle bundle = effectManager.CreatePoison(poisonType);
                     effectManager.AssignBundle(bundle, AssignBundleFlags.BypassSavingThrows);
+                    DaggerfallUI.AddHUDText($"{target.Name} has been poisoned by {poisonType.ToString()}.");
                 }
             }
             else
             {
-                Debug.LogFormat("Poison resisted by {0}.", target.EntityBehaviour.name);
+                DaggerfallUI.AddHUDText($"{target.Name} resisted the {poisonType.ToString()},");
             }
         }
 
