@@ -794,6 +794,8 @@ namespace DaggerfallWorkshop
                                 blocks[blockIndex],
                                 x,
                                 y,
+                                location.MapTableData.MapId,
+                                location.LocationIndex,
                                 false,
                                 dfUnity.Option_CityBlockPrefab,
                                 natureBillboardBatch,
