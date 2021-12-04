@@ -69,7 +69,9 @@ namespace DaggerfallWorkshop.Game
             public bool arrested;
 
             //minimize GC alloc of struct.Equals(object o) with this method instead
+
             public bool Equals(PlayerMusicContext pmc) {
+
                 return environment == pmc.environment
                         && weather == pmc.weather
                         && time == pmc.time
