@@ -1785,9 +1785,6 @@ namespace Wenzil.Console
                             items.AddItem(newItem);
                             break;
                         case "recipe":
-                            DaggerfallLoot.RandomlyAddPotionRecipe(100, items);
-                            break;
-                        case "recipe":
                             newItem = ItemBuilder.CreateRandomRecipe();
                             break;
                         case "painting":

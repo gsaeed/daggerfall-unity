@@ -772,7 +772,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             if (source == null || source.Length < 1)
             {
-                Debug.Log($"{modTitle} has nothing to compile");
+                Debug.Log($"{modName} has nothing to compile");
                 return null;
             }
 
