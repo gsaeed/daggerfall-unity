@@ -5,7 +5,7 @@
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Lypyl (lypyl@dfworkshop.net)
 // Contributors:    TheLacus
-// 
+//
 // Notes:
 //
 
@@ -14,11 +14,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using FullSerializer;
 
 public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 {
@@ -446,12 +448,171 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         }
     }
 
+    private Mod GetModFromName(string name)
+    {
+        return ModManager.Instance.Mods.FirstOrDefault(x => x.FileName.Equals(name.ToLower(), StringComparison.Ordinal));
+    }
+
+    private void PopulateDependencies()
+    {
+        /*
+         * read config file into table
+         * close config file
+         * loop through mods
+         *      get mod from filename
+         *      if mod has dependencies, check if this one exists
+         *             if it exists and mod override setting, replace it else error message and continue
+         *             if it doesn't exist, add it
+         *
+         *     Added global mod order configuration.  The file is called mod_order.txt in Daggerfall Unity appdata location
+
+    The format is to use tab delimited
+    Mod     Override        modName IsOptional      IsPeer  Version
+    Mod = the mod to apply the rule
+    Override is true or false and dictates if you overWrite an existing rule
+    modName is the dependency for the mod
+    IsOptional is true or false - does this mod need to exist in the order
+    IsPeer is true or false, if false, dependent mod must be earlier in the load order
+    Version is optional but if it exists, it checks for a minimum version for the dependent mod
+
+
+         */
+        string sep = "\t";
+        string conflictStr = "";
+        bool conflictFound = false;
+        bool disableConflicts = false;
+
+
+        var filename = Application.persistentDataPath + @"/mod_order.txt";
+        if (!File.Exists(filename))
+        {
+            string str;
+            str = "# Add entries to this file using tab delimited spacing.\n";
+            str += "#\n";
+            str += "# The columns are: Mod     Override        modName IsOptional      IsPeer   IsConflict  Version\n";
+            str += "#\n";
+            str += "# Mod = the mod to apply the rule.\n";
+            str += "# Override is true or false and dictates if you overWrite an existing rule.\n";
+            str += "# modName is the dependency for the mod\n";
+            str += "# IsOptional is true or false, does the dependent mod need to exist?\n";
+            str += "# IsPeer is true or false, if false, dependent mod must appear earlier in load order\n";
+            str += "# IsConflict is true or false, if true, dependent mod should not be run with Mod\n";
+            str +=
+                "# Version is optional but if it exists, checks that current dependent mod is at least at this version level.\n";
+            str += "#\n";
+            str += "#\n";
+            str += "$Disable Conflicts = false\n";
+            str += "\n";
+            str += "#Mod\tOverride\tmodName\tIsOptional\tIsPeer\tIsConflict\tVersion\n";
+            File.WriteAllText(Application.persistentDataPath + @"/mod_order.txt", str);
+            return;
+        }
+
+        foreach (string line in System.IO.File.ReadLines(filename))
+        {
+            if (line.Length == 0 || line[0] == '#')
+                continue;
+
+            if (line.Length > 0 && line[0] == '$')
+            {
+                var flds = line.Split(('='));
+                if (flds[0].Trim().ToLower() == "$disable conflicts")
+                    disableConflicts = flds[1].Trim().ToLower() == "true" ? true : false;
+                continue;
+            }
+
+            var fields = line.Split(sep.ToCharArray());
+            var target = GetModFromName(fields[0]);
+            if (target != null)
+            {
+                var depTarget = GetModFromName(fields[2]);
+                if (depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
+                {
+                    if (disableConflicts)
+                    {
+                        conflictStr +=
+                            $"{fields[0]} conflicts with {fields[2]}, {fields[2]} was disabled.\n\n";
+                        depTarget.Enabled = false;
+                    }
+                    else
+                    {
+                        conflictStr +=
+                            $"{fields[0]} conflicts with {fields[2]}, you should disable one of them.\n\n";
+                    }
+
+                    conflictFound = true;
+                    continue;
+                }
+
+                bool found = false;
+                if (target.ModInfo.Dependencies != null)
+                {
+                    for (var n = 0; n < target.ModInfo.Dependencies.Length; n++)
+                    {
+                        if (target.ModInfo.Dependencies[n].Name == fields[2].Trim().ToLower())
+                        {
+                            found = true;
+
+
+                            if (fields[1] == "true")
+                            {
+                                target.ModInfo.Dependencies[n].IsOptional = fields[3].Trim().ToLower() == "true" ? true : false;
+                                target.ModInfo.Dependencies[n].IsPeer = fields[4].Trim().ToLower() == "true" ? true : false;
+                                if (fields.Length > 6)
+                                    target.ModInfo.Dependencies[n].Version = fields[6].Trim().ToLower();
+                            }
+
+                            break;
+                        }
+
+                        if (!found)
+                        {
+                            var l = target.ModInfo.Dependencies.Length;
+                            Array.Resize(ref target.ModInfo.Dependencies, l + 1);
+                            target.ModInfo.Dependencies[l].Name = fields[2].Trim().ToLower();
+                            target.ModInfo.Dependencies[l].IsOptional = fields[3].Trim().ToLower() == "true" ? true : false;
+                            target.ModInfo.Dependencies[l].IsPeer = fields[4].Trim().ToLower() == "true" ? true : false;
+                            if (fields.Length > 6)
+                                target.ModInfo.Dependencies[l].Version = fields[6].Trim().ToLower();
+                        }
+                    }
+                }
+                else
+                {
+                    target.ModInfo.Dependencies = new ModDependency[1];
+                    target.ModInfo.Dependencies[0].Name = fields[2].Trim().ToLower();
+                    target.ModInfo.Dependencies[0].IsOptional = fields[3].Trim().ToLower() == "true" ? true : false;
+                    target.ModInfo.Dependencies[0].IsPeer = fields[4].Trim().ToLower() == "true" ? true : false;
+                    if (fields.Length > 6)
+                        target.ModInfo.Dependencies[0].Version = fields[6].Trim().ToLower();
+                }
+            }
+        }
+
+        if (conflictFound)
+        {
+            var msgBox = new DaggerfallMessageBox(uiManager, this);
+            msgBox.EnableVerticalScrolling(80);
+            msgBox.SetText(conflictStr);
+
+            msgBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK);
+            msgBox.OnButtonClick += (sender, button) =>
+            {
+                Debug.LogWarning(conflictStr);
+                sender.CancelWindow();
+            };
+
+            msgBox.Show();
+        }
+        return;
+    }
+
     private void CheckDependencies()
     {
         bool hasSortIssues = false;
         List<string> errorMessages = null;
         var modErrorMessages = new List<string>();
-        
+        PopulateDependencies();
         foreach (Mod mod in ModManager.Instance.Mods.Where(x => x.Enabled))
         {
             bool? isGameVersionSatisfied = mod.IsGameVersionSatisfied();
@@ -479,6 +640,11 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
         if (errorMessages != null && errorMessages.Count > 0)
         {
+            foreach (var errorMsg in errorMessages)
+            {
+                Debug.Log(errorMsg);
+            }
+
             if (hasSortIssues)
                 errorMessages.Add(ModManager.GetText("sortModsQuestion"));
 
@@ -533,6 +699,10 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                 break;
             case Stage.CheckDependencies:
                 CheckDependencies();
+                foreach (var mod in ModManager.Instance.Mods)
+                {
+                    Debug.Log($"Load Priority: {mod.LoadPriority} mod: {mod.Title}, Active: {mod.Enabled.ToString()} filename: [{mod.FileName}] ");
+                }
                 break;
             default:
                 SaveAndClose();
