@@ -5,7 +5,7 @@
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Lypyl (lypyl@dfworkshop.net)
 // Contributors:    TheLacus
-// 
+//
 // Notes:
 //
 
@@ -24,7 +24,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 {
     /// <summary>
     /// Handles setup and execution of mods and provides support for features related to modding support.
-    /// Mods can also use this singleton to find and interact with other mods. 
+    /// Mods can also use this singleton to find and interact with other mods.
     /// </summary>
     public class ModManager : MonoBehaviour
     {
@@ -473,7 +473,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                             assets.Add(asset);
                         }
                     }
-                }  
+                }
             }
 
             return assets;
@@ -1075,6 +1075,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 for (int i = 0; i < mods.Count; i++)
                     mods[i].LoadPriority = i;
+
+
             }
             catch (Exception e)
             {
@@ -1133,7 +1135,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                             string referenceVersion = index != -1 ? target.ModInfo.ModVersion.Remove(index) : target.ModInfo.ModVersion;
                             if (IsVersionLowerOrEqual(dependency.Version, referenceVersion) != true)
                                 errorMessages.Add(string.Format(GetText("dependencyWithIncompatibleVersion"), target.Title, target.ModInfo.ModVersion, dependency.Version));
-                        }   
+                        }
                     }
                 }
             }
