@@ -1102,11 +1102,13 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                         if (dependency.IsOptional)
                             continue;
 
+
                         errorMessages.Add(string.Format(GetText("dependencyIsMissing"), dependency.Name));
+                        errorMessages.Add($"{mod.FileName} needs {dependency.Name} because optional = {dependency.IsOptional.ToString()}");
                         continue;
                     }
 
-                    if (!target.Enabled)
+                    if (!target.Enabled && !dependency.IsOptional)
                     {
                         if (dependency.IsOptional)
                             continue;
@@ -1116,14 +1118,14 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     }
 
                     // Check load order priority
-                    if (!dependency.IsPeer && mod.LoadPriority < target.LoadPriority)
+                    if (target.Enabled && !dependency.IsPeer && mod.LoadPriority < target.LoadPriority)
                     {
                         errorMessages.Add(string.Format(GetText("dependencyWithIncorrectPosition"), target.Title));
                         hasSortIssues = true;
                     }
 
                     // Check minimum version (ignore pre-release identifiers after hyphen).
-                    if (dependency.Version != null)
+                    if (target.Enabled && dependency.Version != null)
                     {
                         if (target.ModInfo.ModVersion == null)
                         {
