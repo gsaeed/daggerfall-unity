@@ -730,6 +730,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 //    ShowSummaryPanel();
                 //    break;
                 case SetupStages.LaunchGame:
+                    foreach (var mod in ModManager.Instance.Mods)
+                    {
+                        Debug.Log($"Load Priority: {mod.LoadPriority} mod: {mod.Title}, Active: {mod.Enabled.ToString()} filename: [{mod.FileName}] - GUID: {mod.GUID}");
+                    }
                     SceneManager.LoadScene(DaggerfallWorkshop.Game.Utility.SceneControl.GameSceneIndex);
                     break;
             }
