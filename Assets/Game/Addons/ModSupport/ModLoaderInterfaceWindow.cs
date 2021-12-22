@@ -699,10 +699,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                 break;
             case Stage.CheckDependencies:
                 CheckDependencies();
-                foreach (var mod in ModManager.Instance.Mods)
-                {
-                    Debug.Log($"Load Priority: {mod.LoadPriority} mod: {mod.Title}, Active: {mod.Enabled.ToString()} filename: [{mod.FileName}] ");
-                }
+
                 break;
             default:
                 SaveAndClose();
