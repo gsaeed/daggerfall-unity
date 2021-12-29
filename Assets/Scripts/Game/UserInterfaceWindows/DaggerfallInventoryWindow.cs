@@ -687,7 +687,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             shopShelfStealing = false;
 
             // If icon has changed move items to dropped list so this loot is removed and a new one created
-            if (lootTarget != null && lootTarget.playerOwned && lootTarget.TextureArchive > 0 &&
+            if (lootTarget != null && lootTarget.playerOwned && lootTarget.TextureArchive > 0 && dropIconTexture > 0 && 
                 (lootTarget.TextureArchive != dropIconArchive || lootTarget.TextureRecord != DaggerfallLootDataTables.dropIconIdxs[dropIconArchive][dropIconTexture]))
             {
                 droppedItems.TransferAll(lootTarget.Items);
