@@ -698,13 +698,46 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 DaggerfallLoot droppedLootContainer;
                 if (dropIconTexture > -1)
-                    droppedLootContainer = GameObjectHelper.CreateDroppedLootContainer(
-                        GameManager.Instance.PlayerObject,
-                        DaggerfallUnity.NextUID,
-                        dropIconArchive,
-                        DaggerfallLootDataTables.dropIconIdxs[dropIconArchive][dropIconTexture]);
+                    if (droppedItems.Count > 1)
+                    {
+
+
+                        droppedLootContainer = GameObjectHelper.CreateDroppedLootContainer(
+                            GameManager.Instance.PlayerObject,
+                            DaggerfallUnity.NextUID,
+                            dropIconArchive,
+                            DaggerfallLootDataTables.dropIconIdxs[dropIconArchive][dropIconTexture]);
+                    }
+                    else
+                    {
+                        var item = droppedItems.GetItem(0);
+                        var archive = item.WorldTextureArchive;
+                        var record = item.WorldTextureRecord;
+                        droppedLootContainer = GameObjectHelper.CreateDroppedLootContainer(
+                            GameManager.Instance.PlayerObject,
+                            DaggerfallUnity.NextUID,
+                            archive,
+                            record);
+                    }
                 else
-                    droppedLootContainer = GameObjectHelper.CreateDroppedLootContainer(GameManager.Instance.PlayerObject, DaggerfallUnity.NextUID);
+                {
+                    if (droppedItems.Count == 1)
+                    {
+                        var item = droppedItems.GetItem(0);
+                        var archive = item.WorldTextureArchive;
+                        var record = item.WorldTextureRecord;
+                        droppedLootContainer = GameObjectHelper.CreateDroppedLootContainer(
+                            GameManager.Instance.PlayerObject,
+                            DaggerfallUnity.NextUID,
+                            archive,
+                            record);
+                    }
+                    else
+                    {
+                        droppedLootContainer = GameObjectHelper.CreateDroppedLootContainer(GameManager.Instance.PlayerObject, DaggerfallUnity.NextUID);                        
+                    }
+                }
+
 
                 droppedLootContainer.Items.TransferAll(droppedItems);
                 if (lootTarget != null)
