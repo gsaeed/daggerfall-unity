@@ -3157,6 +3157,20 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         /// <summary>
+        /// UnRegisters an override for a formula 
+        /// </summary>
+        /// <param name="provider">The mod that provides this override; used to enforce load order.</param>
+        /// <param name="formulaName">The name of the method that provides the formula.</param>
+        /// <exception cref="ArgumentNullException">`formulaName` is null.</exception>
+        public static void UnRegisterOverride<TDelegate>(Mod provider, string formulaName)
+        {
+            if (formulaName == null)
+                throw new ArgumentNullException("formulaName");
+
+            overrides.Remove(formulaName);
+        }
+
+        /// <summary>
         /// Gets an override for a formula.
         /// </summary>
         /// <param name="formulaName">The name of the method that provides the formula.</param>
