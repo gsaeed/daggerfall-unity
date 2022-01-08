@@ -373,12 +373,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Debate)
             {
                 playerSkill = playerEntity.Skills.GetLiveSkillValue(DFCareer.Skills.Etiquette);
-                playerEntity.TallySkill(DFCareer.Skills.Etiquette, 1);
+                playerEntity.TallySkill(DFCareer.Skills.Etiquette, 5);
             }
             else
             {
                 playerSkill = playerEntity.Skills.GetLiveSkillValue(DFCareer.Skills.Streetwise);
-                playerEntity.TallySkill(DFCareer.Skills.Streetwise, 1);
+                playerEntity.TallySkill(DFCareer.Skills.Streetwise, 5);
             }
 
             int chanceToGoFree = playerEntity.RegionData[regionIndex].LegalRep +
