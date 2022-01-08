@@ -521,7 +521,7 @@ namespace DaggerfallWorkshop.Game
                                 DaggerfallUI.AddHUDText(TextManager.Instance.GetLocalizedText("languagePacified").Replace("%e", enemyName).Replace("%s", languageSkillName), 5);
                                 player.TallySkill(languageSkill, 3);    // BCHG: increased skill uses from 1 in classic on success to make raising language skills easier
                             }
-                            else if (languageSkill != DFCareer.Skills.Etiquette && languageSkill != DFCareer.Skills.Streetwise)
+                            else 
                                 player.TallySkill(languageSkill, 1);
                         }
                     }

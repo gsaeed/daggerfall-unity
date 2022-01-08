@@ -632,14 +632,14 @@ namespace DaggerfallWorkshop.Game
                 skillValue = player.Skills.GetLiveSkillValue(DFCareer.Skills.Etiquette);
                 toneModifier += etiquetteReactionMods[socialGroup];
                 if (toneReactionForTalkSession[0] == 0)
-                    player.TallySkill(DFCareer.Skills.Etiquette, 1);
+                    player.TallySkill(DFCareer.Skills.Etiquette, 3);
             }
             else if (toneIndex == 2)
             {
                 skillValue = player.Skills.GetLiveSkillValue(DFCareer.Skills.Streetwise);
                 toneModifier += streetwiseReactionMods[socialGroup];
                 if (toneReactionForTalkSession[2] == 0)
-                    player.TallySkill(DFCareer.Skills.Streetwise, 1);
+                    player.TallySkill(DFCareer.Skills.Streetwise, 3);
             }
 
             if (toneIndex != 1)
