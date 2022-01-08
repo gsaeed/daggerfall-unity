@@ -381,10 +381,10 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             int roll = UnityEngine.Random.Range(0, 200);
             bool success = (roll < chance);
-            //if (success)
-            //    player.TallySkill(languageSkill, 1);
-            //else if (languageSkill != DFCareer.Skills.Etiquette && languageSkill != DFCareer.Skills.Streetwise)
-            //    player.TallySkill(languageSkill, 1);
+            if (success)
+                player.TallySkill(languageSkill, 3);
+            else 
+                player.TallySkill(languageSkill, 1);
 
             Debug.LogFormat("Pacification {3} using {0} skill: chance= {1}  roll= {2}", languageSkill, chance, roll, success ? "success" : "failure");
             return success;
@@ -3162,7 +3162,7 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// <param name="provider">The mod that provides this override; used to enforce load order.</param>
         /// <param name="formulaName">The name of the method that provides the formula.</param>
         /// <exception cref="ArgumentNullException">`formulaName` is null.</exception>
-        public static void UnRegisterOverride<TDelegate>(Mod provider, string formulaName)
+        public static void UnRegisterOverride(Mod provider, string formulaName)
         {
             if (formulaName == null)
                 throw new ArgumentNullException("formulaName");
