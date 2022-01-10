@@ -520,6 +520,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         private static bool TryDeserialize<T>(Mod mod, string assetName, ref T instance)
         {
             var textAsset = mod.GetAsset<TextAsset>(assetName);
+            if (!textAsset)
+            {
+                Debug.LogError($"{assetName} not found, Requested from {mod.FileName}");
+                return false;
+            }
+
             fsResult fsResult = ModManager._serializer.TryDeserialize(fsJsonParser.Parse(textAsset.text), ref instance);
             if (fsResult.Failed)
                 Debug.LogErrorFormat("{0}: Failed to import {1}:\n{2}", mod.Title, assetName, fsResult.FormattedMessages);
