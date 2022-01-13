@@ -27,6 +27,7 @@ using DaggerfallWorkshop.Game.Guilds;
 using Wenzil.Console;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Formulas;
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -1885,6 +1886,8 @@ namespace DaggerfallWorkshop.Game
             int locationsWithRegionalBuildingCount = 0;
 
             // Get how many locations in the region exist with the building being asked about
+
+
             int[] foundLoc = new int[gps.CurrentRegion.LocationCount];
             for (int i = 0; i < gps.CurrentRegion.LocationCount; i++)
             {
