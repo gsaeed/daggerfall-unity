@@ -5,7 +5,7 @@
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Lypyl (lypyldf@gmail.com), Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:    Allofich, Hazelnut
-// 
+//
 // Notes:
 //
 
@@ -59,7 +59,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         protected ListBox spellsListBox;
         protected VerticalScrollBar spellsListScrollBar;
-        
+
         protected Panel mainPanel;
         protected Panel spellIconPanel;
         protected Panel spellTargetIconPanel;
@@ -96,7 +96,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected const string spellBookTextureFilename = "SPBK00I0.IMG";
         protected const string spellBookBuyModeTextureFilename = "SPBK01I0.IMG";
         protected const string spellsFilename = "SPELLS.STD";
-         
+
         protected const int noSpellBook = 1703;
 
         protected const SoundClips openSpellBook = SoundClips.OpenBook;
@@ -517,7 +517,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 spellSettings = offeredSpells[spellsListBox.SelectedIndex];
 
-                // The price shown in buy mode is the player casting cost * 4                
+                // The price shown in buy mode is the player casting cost * 4
                 (int _, int spellPointCost) = FormulaHelper.CalculateTotalEffectCosts(spellSettings.Effects, spellSettings.TargetType);
                 presentedCost = spellPointCost * 4;
 
@@ -986,7 +986,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else if (GameManager.Instance.PlayerEntity.GetGoldAmount() < tradePrice)
             {
-                DaggerfallUI.MessageBox(notEnoughGoldId);
+                DaggerfallUI.MessageBox($"That will cost you {tradePrice}, you do not have enough gold.");
             }
             else
             {
