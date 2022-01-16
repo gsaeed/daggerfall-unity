@@ -887,6 +887,7 @@ namespace DaggerfallWorkshop
             dl.regionName = location.RegionName;
             dl.locationName = location.Name;
             discoveredLocations.Add(mapPixelID, dl);
+            RaiseOnDiscoverLocationEvent(location);
         }
 
         public DFLocation DiscoverRandomLocation()
@@ -1362,6 +1363,17 @@ namespace DaggerfallWorkshop
         {
             if (OnMapPixelChanged != null)
                 OnMapPixelChanged(mapPixel);
+        }
+
+        //OnDiscoverLocation
+        public delegate void OnDiscoverLocationEventHandler(DFLocation location);
+
+        public static event OnDiscoverLocationEventHandler OnDiscoverLocation;
+
+        protected virtual void RaiseOnDiscoverLocationEvent(DFLocation location)
+        {
+            if (OnDiscoverLocation != null)
+                OnDiscoverLocation(location);
         }
 
         // OnRegionIndexChanged
