@@ -633,7 +633,7 @@ namespace DaggerfallWorkshop.Game.Items
                 }
             }
 
-            newItem.value = value;
+            newItem.value += value;
 
             return newItem;
         }
