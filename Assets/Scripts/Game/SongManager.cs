@@ -199,8 +199,13 @@ namespace DaggerfallWorkshop.Game
 
         void UpdateSong()
         {
-            if (!songPlayer)
+            if (!songPlayer || DaggerfallUnity.Settings.MusicVolume - 0.09f <= 0)
+            {
+                if (songPlayer && songPlayer.IsPlaying)
+                    songPlayer.Stop();
                 return;
+            }
+            
 
             // Play song if no song was playing or if playlist changed
             // Switch to another random song to prevent fatigue of hearing same song repeatedly
