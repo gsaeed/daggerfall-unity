@@ -1784,6 +1784,7 @@ namespace DaggerfallWorkshop.Game
                         {
                             textureMicroMap.SetPixel(xBlockPos * microMapBlockSizeInPixels + x, yBlockPos * microMapBlockSizeInPixels + y, Color.yellow);
                         }
+
                     }
                 }
             }
