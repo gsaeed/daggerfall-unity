@@ -11,6 +11,7 @@
 
 using UnityEngine;
 using System;
+using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Utility.AssetInjection;
 
@@ -281,6 +282,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 if (saveSettings)
                     DaggerfallUnity.Settings.SaveSettings();
+
+                if (GameManager.Instance.PlayerEntity.CurrentHealth > 0)
+                    SaveLoadManager.Instance.QuickSave();
 
                 DaggerfallUI.PostMessage(DaggerfallUIMessages.dfuiExitGame);
                 CancelWindow();
