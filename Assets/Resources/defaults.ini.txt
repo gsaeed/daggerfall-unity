@@ -119,6 +119,8 @@ HideLoginName=False
 DisableEnemyDeathAlert=True
 DisplayHUDScaleAdjust=0.5
 DisplayMobileEnemyHealthStatus=False
+DisplayHUDScaleAdjust=0.5
+DisplayMobileEnemyHealthStatus=False
 
 [Spells]
 EnableSpellLighting=True
