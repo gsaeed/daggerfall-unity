@@ -772,6 +772,13 @@ namespace DaggerfallWorkshop.Game
             switch (currentMode)
             {
                 case PlayerActivateModes.Info:
+                    if (hit.distance > MobileNPCActivationDistance)
+                    {
+                        DaggerfallUI.SetMidScreenText(TextManager.Instance.GetLocalizedText("youAreTooFarAway"));
+                        break;
+                    }
+                    PresentNPCInfo(mobileNpc);
+                    break;
                 case PlayerActivateModes.Grab:
                 case PlayerActivateModes.Talk:
                     if (hit.distance > MobileNPCActivationDistance)
@@ -1354,7 +1361,7 @@ namespace DaggerfallWorkshop.Game
             // UESP states this is building quality / 4 but Daggerfall uses manual thresholds
             int qualityTextId;
             if (buildingSummary.Quality <= 3)
-                qualityTextId = qualityLevel5TextId;        // 01 - 03
+                qualityTextId = qualityLevel5TextId;        // 01 - 0
             else if (buildingSummary.Quality <= 7)
                 qualityTextId = qualityLevel4TextId;        // 04 - 07
             else if (buildingSummary.Quality <= 13)
@@ -1477,6 +1484,13 @@ namespace DaggerfallWorkshop.Game
                     break;
             }
             ChangeInteractionMode(nextMode);
+        }
+
+        // Output NPC info to HUD
+        private void PresentNPCInfo(MobilePersonNPC npc)
+        {
+            DaggerfallUI.AddHUDText(TextManager.Instance.GetLocalizedText("youSee").Replace("%s", npc.NameNPC));
+            return;
         }
 
         // Output NPC info to HUD
