@@ -32,6 +32,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         PopupText popupText = new PopupText();
         TextLabel midScreenTextLabel = new TextLabel();
         TextLabel arrowCountTextLabel = new TextLabel();
+        private TextLabel poisonTextLabel = new TextLabel();
         HUDCrosshair crosshair = new HUDCrosshair();
         public HUDVitals vitals = new HUDVitals();
         HUDBreathBar breathBar = new HUDBreathBar();
@@ -191,6 +192,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             arrowCountTextLabel.TextColor = realArrowsColor;
             arrowCountTextLabel.ShadowPosition = Vector2.zero;
             ParentPanel.Components.Add(arrowCountTextLabel);
+
+            poisonTextLabel.TextColor = Color.green;
+            poisonTextLabel.ShadowPosition = Vector2.zero;
+            poisonTextLabel.Text = "Poison";
+            parentPanel.Components.Add(poisonTextLabel);
         }
 
         public override void Update()
@@ -211,6 +217,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             escortingFaces.EnableBorder = ShowEscortingFaces;
             questDebugger.Enabled = !(questDebugger.State == HUDQuestDebugger.DisplayState.Nothing);
             activeSpells.Enabled = ShowActiveSpells;
+
+            poisonTextLabel.Enabled = true;
 
             // Large HUD will force certain other HUD elements off as they conflict in space or utility
             bool largeHUDwasEnabled = largeHUD.Enabled;
@@ -253,7 +261,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             crosshair.CrosshairScale = CrosshairScale;
 
             interactionModeIcon.Scale = NativePanel.LocalScale;
-            arrowCountTextLabel.Scale = NativePanel.LocalScale;
+            arrowCountTextLabel.Scale = new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
+            poisonTextLabel.Scale =  new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
 
             interactionModeIcon.displayScaleAdjust = DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
 
@@ -295,11 +304,22 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     DaggerfallUnityItem arrows = GameManager.Instance.PlayerEntity.Items.GetItem(ItemGroups.Weapons, (int)Weapons.Arrow, allowQuestItem: false, priorityToConjured: true);
                     arrowCountTextLabel.Text = (arrows != null) ? arrows.stackCount.ToString() : "0";
                     arrowCountTextLabel.TextColor = (arrows != null && arrows.IsSummoned) ? conjuredArrowsColor : realArrowsColor;
-                    arrowCountTextLabel.TextScale = NativePanel.LocalScale.x;
+                    arrowCountTextLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
                     arrowCountTextLabel.Position = arrowLabelPos;
                     arrowCountTextLabel.Enabled = true;
                 }
             }
+
+            poisonTextLabel.Enabled = false;
+
+            if (!GameManager.Instance.WeaponManager.Sheathed && GameManager.Instance.WeaponManager.GetWeapon() != null && GameManager.Instance.WeaponManager.GetWeapon().poisonType != Poisons.None)
+            {
+                poisonTextLabel.Enabled = true;
+                poisonTextLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
+                poisonTextLabel.Text = GameManager.Instance.WeaponManager.GetWeapon().poisonType.ToString();
+                poisonTextLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - compass.Size.y);
+            }
+            
 
             HotkeySequence.KeyModifiers keyModifiers = HotkeySequence.GetKeyboardKeyModifiers();
             // Cycle quest debugger state
