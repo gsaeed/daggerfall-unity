@@ -239,6 +239,17 @@ namespace DaggerfallWorkshop.Game.Formulas
             return Mathf.Clamp(chance, 5, 95);
         }
 
+        // Returns true if player is able to retry lock picking
+        public static bool CanRetryLockPicking( int failedChance, int lockpickingSkill)
+        {
+            Func<int, int, bool> del;
+            if (TryGetOverride("CanRetryLockPicking", out del))
+                return del(failedChance, lockpickingSkill);
+
+            return !(failedChance == lockpickingSkill);
+
+        }
+
         // Calculate chance of successfully lockpicking a door in an exterior (a door that leads to an interior). If this is higher than a random number between 0 and 100 (inclusive), the lockpicking succeeds.
         public static int CalculateExteriorLockpickingChance(int lockvalue, int lockpickingSkill)
         {
@@ -692,7 +703,7 @@ namespace DaggerfallWorkshop.Game.Formulas
                 if (damage > 0 && weapon.poisonType != Poisons.None)
                 {
                     InflictPoison(attacker, target, weapon.poisonType, false);
-                    if (attacker != player)
+                    if (ShouldClearWeaponPoison(attacker, player))
                         weapon.poisonType = Poisons.None;
                 }
             }
@@ -721,6 +732,16 @@ namespace DaggerfallWorkshop.Game.Formulas
             //Debug.LogFormat("Damage {0} applied, animTime={1}  ({2})", damage, weaponAnimTime, GameManager.Instance.WeaponManager.ScreenWeapon.WeaponState);
 
             return damage;
+        }
+
+        // Calculate chance of successfully lockpicking a door in an interior (an animating door). If this is higher than a random number between 0 and 100 (inclusive), the lockpicking succeeds.
+        public static bool ShouldClearWeaponPoison(DaggerfallEntity attacker, PlayerEntity player)
+        {
+            Func<DaggerfallEntity, PlayerEntity, bool> del;
+            if (TryGetOverride("ShouldClearWeaponPoison", out del))
+                return del(attacker, player);
+
+            return true;
         }
 
         private static bool IsRingOfNamira(DaggerfallUnityItem item)
