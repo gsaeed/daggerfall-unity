@@ -9,6 +9,7 @@
 // Notes:
 //
 
+using System;
 using UnityEngine;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
@@ -26,6 +27,7 @@ using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using Random = UnityEngine.Random;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -1407,6 +1409,9 @@ namespace DaggerfallWorkshop.Game
             // Set the new mode
             currentMode = newMode;
 
+            if (!showText || DaggerfallUnity.Settings.InteractionModeIcon.Contains("Xhair"))
+                return;
+
             // Get output text based on mode
             string modeText = string.Empty;
             switch (currentMode)
@@ -1426,8 +1431,7 @@ namespace DaggerfallWorkshop.Game
             }
 
             // Present new mode to player
-            if (showText)
-                DaggerfallUI.SetMidScreenText(TextManager.Instance.GetLocalizedText("interactionIsNowInMode").Replace("%s", modeText));
+            DaggerfallUI.SetMidScreenText(TextManager.Instance.GetLocalizedText("interactionIsNowInMode").Replace("%s", modeText));
         }
 
         /// <summary>
@@ -1651,7 +1655,7 @@ namespace DaggerfallWorkshop.Game
                         gotGold = gotGold.Replace("%d", pinchedGoldPieces.ToString());
                     }
                     DaggerfallUI.MessageBox(gotGold);
-                    player.TallyCrimeGuildRequirements(true, 1);
+                    player.TallyCrimeGuildRequirements (true, 1);
                 }
                 else
                 {
