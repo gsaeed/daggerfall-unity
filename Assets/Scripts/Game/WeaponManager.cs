@@ -986,6 +986,12 @@ namespace DaggerfallWorkshop.Game
                                                         DaggerfallUnity.Instance.ItemHelper.ConvertItemToAPIWeaponType(leftHandItem), false);
             else
                 ScreenWeapon.TryCacheReadiedWeaponAtlas(MetalTypes.None, WeaponTypes.Melee, false);
+
+        }
+
+        public DaggerfallUnityItem GetWeapon()
+        {
+            return usingRightHand ? currentRightHandWeapon : currentLeftHandWeapon;
         }
 
         public void ToggleSheath()
