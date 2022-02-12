@@ -50,7 +50,9 @@ namespace DaggerfallConnect.Arena2
             this.characterDocument = characterDocument;
 
             // Load text file
-            string fileName = $"BIOG{characterDocument.classIndex:D2}T{characterDocument.biographyIndex}.TXT";
+            var classIndex = characterDocument.classIndex > 17 ? 0 : characterDocument.classIndex;
+            
+            string fileName = $"BIOG{classIndex:D2}T{characterDocument.biographyIndex}.TXT";
             FileProxy txtFile = new FileProxy(Path.Combine(BiogFile.BIOGSourceFolder, fileName), FileUsage.UseDisk, true);
             questionsStr = System.Text.Encoding.UTF8.GetString(txtFile.GetBytes());
 
@@ -74,7 +76,7 @@ namespace DaggerfallConnect.Arena2
                         if (!int.TryParse(value, out backstoryId))
                         {
                             Debug.LogError($"{fileName}: Invalid string id '{value}'");
-                            backstoryId = defaultBackstoriesStart + characterDocument.classIndex;
+                            backstoryId = defaultBackstoriesStart + classIndex;
                         }
 
                         // Find the next non-empty line, which should be question 1
@@ -85,7 +87,7 @@ namespace DaggerfallConnect.Arena2
                     }
                     else
                     {
-                        backstoryId = defaultBackstoriesStart + characterDocument.classIndex;
+                        backstoryId = defaultBackstoriesStart + classIndex;
                     }
                 }
 
