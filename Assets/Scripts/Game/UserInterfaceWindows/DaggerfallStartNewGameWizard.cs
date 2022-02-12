@@ -412,7 +412,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 // Pick a biography template, 0 by default
                 // Classic only has a T0 template for each class, but mods can add more
-                Regex reg = new Regex($"BIOG{characterDocument.classIndex:D2}T([0-9]+).TXT");
+                var classIndex = characterDocument.classIndex;
+                if (classIndex > 17)
+                {
+                    classIndex = 0;
+                    characterDocument.isCustom = true;
+                }
+                Regex reg = new Regex($"BIOG{classIndex:D2}T([0-9]+).TXT");
                 IEnumerable<Match> biogMatches = Directory.EnumerateFiles(BiogFile.BIOGSourceFolder, "*.TXT")
                     .Select(FilePath => reg.Match(FilePath))
                     .Where(FileMatch => FileMatch.Success);
