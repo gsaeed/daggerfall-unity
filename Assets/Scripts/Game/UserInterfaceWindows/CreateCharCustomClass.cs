@@ -11,13 +11,30 @@
 
 using UnityEngine;
 using System;
+using System.IO;
 using System.Collections.Generic;
+using FullSerializer;
 using DaggerfallConnect;
 using DaggerfallWorkshop.Game.UserInterface;
 using System.Collections;
+using Mono.CSharp;
+using Enum = System.Enum;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
+    [FullSerializer.fsObject("v1")]
+    public class DFCareerArray
+    {
+        public Dictionary<string, DFCareer> DfCareers;
+
+        public DFCareerArray()
+        {
+            DfCareers = new Dictionary<string, DFCareer>();
+        }
+    }
+
+
+
     /// <summary>
     /// Implements custom class creator window.
     /// </summary>
@@ -25,7 +42,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
     {
         const string nativeImgName = "CUST00I0.IMG";
         const string nativeDaggerImgName = "CUST08I0.IMG";
-
+        public static readonly fsSerializer _serializer = new fsSerializer();
         const int maxHpPerLevel = 30;
         const int minHpPerLevel = 4;
         const int defaultHpPerLevel = 8;
@@ -33,6 +50,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         const int maxDifficultyPoints = 40;
 
         const float daggerTrailLingerTime = 1.0f;
+
+        private DFCareerArray myDfCareers;
 
         const int strNameYourClass = 301;
         const int strSetSkills = 300;
@@ -137,6 +156,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             if (IsSetup)
                 return;
+
+            myDfCareers = LoadCreatedClass();
 
             // Load native textures
             nativeTexture = DaggerfallUI.GetTextureFromImg(nativeImgName);
@@ -467,12 +488,144 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 createCharSpecialDisadvantageWindow.ParseCareerData();
             }
 
-            CloseWindow();
+            ShouldSaveCustomClass();
         }
 
         #endregion
 
         #region Private methods
+
+
+        private void ShouldSaveCustomClass()
+        {
+            DaggerfallMessageBox messageBox;
+            messageBox = new DaggerfallMessageBox(uiManager, this);
+            messageBox.SetText("Save this class for future use?");
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
+            messageBox.OnButtonClick += ConfirmSavePopup_OnButtonClick;
+            messageBox.Show();
+
+        }
+
+        void ConfirmSavePopup_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
+        {
+            if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.No)
+            {
+                CloseWindow();
+                return;
+            }
+
+            createdClass.Strength = Stats.WorkingStats.LiveStrength;
+            createdClass.Intelligence = Stats.WorkingStats.LiveIntelligence;
+            createdClass.Willpower = Stats.WorkingStats.LiveWillpower;
+            createdClass.Agility = Stats.WorkingStats.LiveAgility;
+            createdClass.Endurance = Stats.WorkingStats.LiveEndurance;
+            createdClass.Personality = Stats.WorkingStats.LivePersonality;
+            createdClass.Speed = Stats.WorkingStats.LiveSpeed;
+            createdClass.Luck = Stats.WorkingStats.LiveLuck;
+            createdClass.Name = ClassName;
+
+            // Read all CLASS*.CFG files and add to listbox
+            string[] files = Directory.GetFiles(DaggerfallUnity.Instance.Arena2Path, "CLASS*.CFG");
+            List<string> coreClasses = new List<string>();
+            if (files.Length > 0)
+            {
+                for (int i = 0; i < files.Length - 1; i++)
+                {
+                    DaggerfallConnect.Arena2.ClassFile classFile = new DaggerfallConnect.Arena2.ClassFile(files[i]);
+                    coreClasses.Add(classFile.Career.Name);
+                }
+            }
+
+            if (coreClasses.Contains(createdClass.Name))
+            {
+                var msgBox = new DaggerfallMessageBox(uiManager, this);
+                msgBox.EnableVerticalScrolling(80);
+                msgBox.SetText("Class Name overwrites core game class names, custom class cannot be saved.");
+
+                msgBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK);
+                msgBox.OnButtonClick += (sndr, button) =>
+                {
+                    sndr.CancelWindow();
+                    CloseWindow();
+                };
+
+                msgBox.Show();
+                return;
+            }
+
+
+            if (myDfCareers.DfCareers.Count == 0 ||  !myDfCareers.DfCareers.ContainsKey(createdClass.Name))
+            {
+                myDfCareers.DfCareers.Add(createdClass.Name, createdClass);
+                SaveCreatedClass();
+                CloseWindow();
+            }
+            else
+            {
+                DaggerfallMessageBox messageBox;
+                messageBox = new DaggerfallMessageBox(uiManager, this);
+                messageBox.SetText("Custom class with the same name already exists, do you want to overwrite it with this new class?");
+                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
+                messageBox.OnButtonClick += ConfirmReplacePopup_OnButtonClick;
+                messageBox.Show();
+            }
+
+            return;
+        }
+
+        void ConfirmReplacePopup_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageBoxButton)
+        {
+            if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
+            {
+                myDfCareers.DfCareers.Remove(createdClass.Name);
+                myDfCareers.DfCareers.Add(createdClass.Name, createdClass);
+                SaveCreatedClass();
+                CloseWindow();
+            }
+            else
+            {
+                CloseWindow();
+            }
+
+            return;
+        }
+
+        void SaveCreatedClass()
+        {
+            if (myDfCareers.DfCareers.Count == 0)
+                return;
+            fsData sData = null;
+
+            var result = _serializer.TrySerialize<DFCareerArray>(myDfCareers, out sData);
+            if (result.Failed)
+                return;
+
+            var filename = Application.persistentDataPath + @"/customClass.json";
+            File.WriteAllText(filename, fsJsonPrinter.PrettyJson(sData));
+            return;
+        }
+
+        DFCareerArray LoadCreatedClass()
+        {
+            var filename = Application.persistentDataPath + @"/customClass.json";
+            var careers = new DFCareerArray();
+
+            if (!File.Exists(filename))
+            {
+                return careers;
+            }
+            else
+            {
+               if( _serializer.TryDeserialize(fsJsonParser.Parse(File.ReadAllText(filename)), ref careers).Failed)
+                return careers;
+
+               return careers;
+
+            }
+        }
 
         private void UpdateDifficulty()
         {
