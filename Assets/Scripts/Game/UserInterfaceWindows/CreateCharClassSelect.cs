@@ -13,6 +13,7 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Collections;
+using FullSerializer;
 using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
@@ -28,7 +29,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
     public class CreateCharClassSelect : DaggerfallListPickerWindow
     {
         const int startClassDescriptionID = 2100;
-
+        public static readonly fsSerializer _serializer = new fsSerializer();
         List<DFCareer> classList = new List<DFCareer>();
         DFCareer selectedClass;
         int selectedClassIndex = 0;
@@ -58,10 +59,36 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     listBox.AddItem(TextManager.Instance.GetLocalizedText(classFile.Career.Name));
                 }
             }
+
+            AddCustomClasses();
+
             // Last option is for creating custom classes
             listBox.AddItem(TextManager.Instance.GetLocalizedText("Custom"));
 
             OnItemPicked += DaggerfallClassSelectWindow_OnItemPicked;
+        }
+
+        void AddCustomClasses()
+        {
+            var filename = Application.persistentDataPath + @"/customClass.json";
+            var careers = new DFCareerArray();
+            if (!File.Exists(filename))
+            {
+                return;
+            }
+            else
+            {
+
+                if (_serializer.TryDeserialize(fsJsonParser.Parse(File.ReadAllText(filename)), ref careers).Failed)
+                    return;
+
+                foreach (KeyValuePair<string, DFCareer> c in careers.DfCareers)
+                {
+                    classList.Add(c.Value);
+                    listBox.AddItem(c.Key);
+                }
+                return;
+            }
         }
 
         void DaggerfallClassSelectWindow_OnItemPicked(int index, string className)
@@ -74,21 +101,40 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else
             {
-                selectedClass = classList[index];
-                selectedClass.Name = className; // Ensures any localized display names are assigned after selection from list
-                selectedClassIndex = index;
+                if (index <= 17) // core classes
+                {
+                    selectedClass = classList[index];
+                    selectedClass.Name = className; // Ensures any localized display names are assigned after selection from list
+                    selectedClassIndex = index;
+                    TextFile.Token[] textTokens =
+                        DaggerfallUnity.Instance.TextProvider.GetRSCTokens(startClassDescriptionID + index);
+                    DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+                    messageBox.SetTextTokens(textTokens);
+                    messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+                    Button noButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
+                    noButton.ClickSound = DaggerfallUI.Instance.GetAudioClip(SoundClips.ButtonClick);
+                    messageBox.OnButtonClick += ConfirmClassPopup_OnButtonClick;
+                    uiManager.PushWindow(messageBox);
 
-                TextFile.Token[] textTokens = DaggerfallUnity.Instance.TextProvider.GetRSCTokens(startClassDescriptionID + index);
-                DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-                messageBox.SetTextTokens(textTokens);
-                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
-                Button noButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
-                noButton.ClickSound = DaggerfallUI.Instance.GetAudioClip(SoundClips.ButtonClick);
-                messageBox.OnButtonClick += ConfirmClassPopup_OnButtonClick;
-                uiManager.PushWindow(messageBox);
+                    AudioClip clip = DaggerfallUnity.Instance.SoundReader.GetAudioClip(SoundClips.SelectClassDrums);
+                    DaggerfallUI.Instance.AudioSource.PlayOneShot(clip, DaggerfallUnity.Settings.SoundVolume);
+                }
+                else // custom classes
+                {
+                    selectedClass = classList[index];
+                    selectedClassIndex = index;
 
-                AudioClip clip = DaggerfallUnity.Instance.SoundReader.GetAudioClip(SoundClips.SelectClassDrums);
-                DaggerfallUI.Instance.AudioSource.PlayOneShot(clip, DaggerfallUnity.Settings.SoundVolume);
+                    DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+                    messageBox.SetText($"you have selected {classList[index].Name}, Is that correct?");
+                    messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+                    Button noButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
+                    noButton.ClickSound = DaggerfallUI.Instance.GetAudioClip(SoundClips.ButtonClick);
+                    messageBox.OnButtonClick += ConfirmClassPopup_OnButtonClick;
+                    uiManager.PushWindow(messageBox);
+
+                    AudioClip clip = DaggerfallUnity.Instance.SoundReader.GetAudioClip(SoundClips.SelectClassDrums);
+                    DaggerfallUI.Instance.AudioSource.PlayOneShot(clip, DaggerfallUnity.Settings.SoundVolume);
+                }
             }
         }
 
