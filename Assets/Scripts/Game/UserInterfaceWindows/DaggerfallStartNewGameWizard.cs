@@ -362,6 +362,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 {
                     characterDocument.career = createCharClassSelectWindow.SelectedClass;
                     characterDocument.classIndex = createCharClassSelectWindow.SelectedClassIndex;
+                    if (characterDocument.classIndex > 17)
+                    {
+                        characterDocument.isCustom = true;
+                        var cd = createCharClassSelectWindow.SelectCharacterDocument;
+                        characterDocument.reputationCommoners = cd.reputationCommoners;
+                        characterDocument.reputationMerchants = cd.reputationMerchants;
+                        characterDocument.reputationNobility = cd.reputationNobility;
+                        characterDocument.reputationScholars = cd.reputationScholars;
+                        characterDocument.reputationUnderworld = cd.reputationUnderworld;
+                    }
                     SetChooseBioWindow();
                 }
             }
