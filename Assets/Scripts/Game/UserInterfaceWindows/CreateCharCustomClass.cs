@@ -17,6 +17,7 @@ using FullSerializer;
 using DaggerfallConnect;
 using DaggerfallWorkshop.Game.UserInterface;
 using System.Collections;
+using DaggerfallWorkshop.Game.Player;
 using Mono.CSharp;
 using Enum = System.Enum;
 
@@ -25,11 +26,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
     [FullSerializer.fsObject("v1")]
     public class DFCareerArray
     {
-        public Dictionary<string, DFCareer> DfCareers;
+        public Dictionary<string, CharacterDocument> DfCareers;
 
         public DFCareerArray()
         {
-            DfCareers = new Dictionary<string, DFCareer>();
+            DfCareers = new Dictionary<string, CharacterDocument>();
         }
     }
 
@@ -558,7 +559,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             if (myDfCareers.DfCareers.Count == 0 ||  !myDfCareers.DfCareers.ContainsKey(createdClass.Name))
             {
-                myDfCareers.DfCareers.Add(createdClass.Name, createdClass);
+                var cd = new CharacterDocument
+                {
+                    career = createdClass,
+                    reputationMerchants = merchantsRep,
+                    reputationCommoners = peasantsRep,
+                    reputationNobility =  nobilityRep,
+                    reputationScholars =  scholarsRep,
+                    reputationUnderworld = underworldRep,
+                    isCustom = true
+                };
+                myDfCareers.DfCareers.Add(createdClass.Name, cd);
                 SaveCreatedClass();
                 CloseWindow();
             }
@@ -581,7 +592,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
                 myDfCareers.DfCareers.Remove(createdClass.Name);
-                myDfCareers.DfCareers.Add(createdClass.Name, createdClass);
+                var cd = new CharacterDocument
+                {
+                    career = createdClass,
+                    reputationMerchants = merchantsRep,
+                    reputationCommoners = peasantsRep,
+                    reputationNobility = nobilityRep,
+                    reputationScholars = scholarsRep,
+                    reputationUnderworld = underworldRep,
+                    isCustom =  true,
+                };
+                myDfCareers.DfCareers.Add(createdClass.Name, cd);
                 SaveCreatedClass();
                 CloseWindow();
             }
