@@ -34,10 +34,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         DFCareer selectedClass;
         int selectedClassIndex = 0;
 
-        public DFCareer SelectedClass
-        {
-            get { return selectedClass; }
-        }
+        private DFCareerArray myDFCareers = new DFCareerArray();
+        public DFCareer SelectedClass => selectedClass;
+
+        public CharacterDocument SelectCharacterDocument => myDFCareers.DfCareers[selectedClass.Name];
 
         public CreateCharClassSelect(IUserInterfaceManager uiManager, DaggerfallBaseWindow previous = null)
             : base(uiManager, previous)
@@ -82,9 +82,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 if (_serializer.TryDeserialize(fsJsonParser.Parse(File.ReadAllText(filename)), ref careers).Failed)
                     return;
 
-                foreach (KeyValuePair<string, DFCareer> c in careers.DfCareers)
+                foreach (KeyValuePair<string, CharacterDocument> c in careers.DfCareers)
                 {
-                    classList.Add(c.Value);
+                    myDFCareers.DfCareers.Add(c.Key, c.Value);
+                    classList.Add(c.Value.career);
                     listBox.AddItem(c.Key);
                 }
                 return;
@@ -152,14 +153,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        public int SelectedClassIndex
-        {
-            get { return selectedClassIndex; }
-        }
+        public int SelectedClassIndex => selectedClassIndex;
 
-        public List<DFCareer> ClassList
-        {
-            get { return classList; }
-        }
+        public List<DFCareer> ClassList => classList;
     }
 }
