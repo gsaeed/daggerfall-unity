@@ -42,14 +42,6 @@ namespace DaggerfallWorkshop.Game.UserInterface
             GameSetupSaveAndClose,
             GameSetupExit,
 
-            //Book Reader
-            BookPageUp,
-            BookPageDown,
-            BookLineUp,
-            BookLineDown,
-            BookPageRight,
-            BookPageLeft,
-
             // Main menu
             MainMenuLoad,
             MainMenuStart,
@@ -78,7 +70,6 @@ namespace DaggerfallWorkshop.Game.UserInterface
             DebuggerToggle,
             DebuggerPrevQuest,
             DebuggerNextQuest,
-            DebuggerActiveQuestToggle,
             DebuggerPrevMarker,
             DebuggerNextMarker,
 
@@ -344,4 +335,3 @@ namespace DaggerfallWorkshop.Game.UserInterface
         }
     }
 }
-
