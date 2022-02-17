@@ -338,7 +338,9 @@ namespace DaggerfallWorkshop.Game
                 }
                 else if (isClickAttack)
                 {
+
                     attackDirection = (MouseDirections)UnityEngine.Random.Range((int)MouseDirections.UpRight, (int)MouseDirections.DownRight + 1);
+
                     isClickAttack = false;
                 }
                 else

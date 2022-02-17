@@ -87,9 +87,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Add buttons
             Button nextPageButton = DaggerfallUI.AddButton(new Rect(208, 188, 14, 8), NativePanel);
             nextPageButton.OnMouseClick += NextPageButton_OnMouseClick;
+            nextPageButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.BookPageDown);
 
             Button previousPageButton = DaggerfallUI.AddButton(new Rect(181, 188, 14, 48), NativePanel);
             previousPageButton.OnMouseClick += PreviousPageButton_OnMouseClick;
+            previousPageButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.BookPageUp);
 
             Button exitButton = DaggerfallUI.AddButton(new Rect(277, 187, 32, 10), NativePanel);
             exitButton.OnMouseClick += ExitButton_OnMouseClick;
@@ -99,6 +101,22 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             LayoutBookLabels();
             DaggerfallUI.Instance.PlayOneShot(openBook);
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            HotkeySequence.KeyModifiers keyModifiers = HotkeySequence.GetKeyboardKeyModifiers();
+            if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.BookPageRight).IsDownWith(keyModifiers))
+                ScrollBook(-scrollAmount);
+            else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.BookPageLeft).IsDownWith(keyModifiers))
+                ScrollBook(scrollAmount);
+            else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.BookLineUp).IsDownWith(keyModifiers))
+                ScrollBook(1);
+            else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.BookLineDown).IsDownWith(keyModifiers))
+                ScrollBook(-1);
+
         }
 
         private void NextPageButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)

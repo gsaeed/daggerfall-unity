@@ -240,8 +240,10 @@ namespace DaggerfallWorkshop.Game
                     state = WeaponStates.StrikeDownRight;
                     break;
                 case WeaponManager.MouseDirections.Up:
+
                 case WeaponManager.MouseDirections.UpLeft:
                 case WeaponManager.MouseDirections.UpRight:
+
                     state = WeaponStates.StrikeUp;
                     break;
                 default:
