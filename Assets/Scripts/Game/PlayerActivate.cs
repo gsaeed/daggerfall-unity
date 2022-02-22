@@ -1276,7 +1276,7 @@ namespace DaggerfallWorkshop.Game
             bool unlocked = false;
 
             DFLocation.BuildingTypes type = buildingSummary.BuildingType;
-            Debug.LogFormat("type: {0}, factionId: {1}", type, buildingSummary.FactionId);
+            //Debug.LogFormat("type: {0}, factionId: {1}", type, buildingSummary.FactionId);
 
             // Handle guild halls
             if (type == DFLocation.BuildingTypes.GuildHall)
