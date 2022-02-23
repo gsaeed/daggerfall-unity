@@ -578,13 +578,13 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                     if (disableConflicts)
                     {
                         conflictStr +=
-                            $"{fields[0]} conflicts with {fields[2]}, {fields[2]} was disabled.\n\n";
+                            $"{fields[0]} conflicts with {fields[2]}, {fields[2]} was disabled.\n";
                         depTarget.Enabled = false;
                     }
                     else
                     {
                         conflictStr +=
-                            $"{fields[0]} conflicts with {fields[2]}, you should disable one of them.\n\n";
+                            $"{fields[0]} conflicts with {fields[2]}, you should disable one of them.\n";
                     }
 
                     conflictFound = true;
@@ -638,7 +638,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
         if (conflictFound)
         {
-            var msgBox = new DaggerfallMessageBox(uiManager, this);
+            var msgBox = new DaggerfallMessageBox(uiManager, this, true);
             msgBox.EnableVerticalScrolling(80);
             msgBox.SetText(conflictStr);
 
