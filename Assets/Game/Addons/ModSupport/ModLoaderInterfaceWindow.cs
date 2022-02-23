@@ -55,8 +55,9 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     readonly Button enableAllButton          = new Button();
     readonly Button disableAllButton         = new Button();
     readonly Button saveAndCloseButton       = new Button();
-    readonly Button buildModSupport = new Button();
+    readonly Button buildModSupport          = new Button();
     readonly Button extractFilesButton       = new Button();
+    readonly Button extractAllFilesButton = new Button();
     readonly Button showModDescriptionButton = new Button();
     readonly Button modSettingsButton        = new Button();
 
@@ -266,6 +267,16 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         buildModSupport.Label.Text = "Build Mod File";
         buildModSupport.OnMouseClick += BuildModSupportFile;
         ModPanel.Components.Add(buildModSupport);
+
+
+        extractAllFilesButton.Size = new Vector2(50, 12);
+        extractAllFilesButton.Outline.Enabled = true;
+        extractAllFilesButton.BackgroundColor = textColor;
+        extractAllFilesButton.VerticalAlignment = VerticalAlignment.Bottom;
+        extractAllFilesButton.HorizontalAlignment = HorizontalAlignment.Center;
+        extractAllFilesButton.Label.Text = "Extract all Text";
+        extractAllFilesButton.OnMouseClick += ExtractAllTextFiles;
+        ModPanel.Components.Add(extractAllFilesButton);
 
         extractFilesButton.Size = new Vector2(60, 12);
         extractFilesButton.Position = new Vector2(5, 117);
@@ -876,6 +887,57 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         }
 
     }
+
+    void ExtractAllTextFiles(BaseScreenComponent sender, Vector2 position)
+    {
+        ModManager.Instance.SortMods();
+
+        foreach (Mod mod in ModManager.Instance.Mods)
+        {
+            string[] assets = mod.AssetNames;
+            if (assets == null)
+                continue;
+
+            string path = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles", mod.FileName);
+            Directory.CreateDirectory(path);
+
+            for (int i = 0; i < assets.Length; i++)
+            {
+                string extension = Path.GetExtension(assets[i]);
+
+                var asset = mod.GetAsset<TextAsset>(assets[i]);
+                if (asset == null)
+                    continue;
+
+                if (assets[i].EndsWith(".bytes", StringComparison.Ordinal))
+                {
+                    // Export binary asset without .bytes extension
+                    File.WriteAllBytes(Path.Combine(path, asset.name), asset.bytes);
+                }
+                else if (assets[i].EndsWith(".cs.txt", StringComparison.Ordinal))
+                {
+                    // Export C# script without .txt extension
+                    File.WriteAllText(Path.Combine(path, asset.name), asset.text);
+                }
+                else
+                {
+                    // Export text asset with original extension
+                    File.WriteAllText(Path.Combine(path, asset.name + extension), asset.text);
+                }
+            }
+        }
+
+
+        var dirPath = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
+
+        var messageBox = new DaggerfallMessageBox(uiManager, this, true);
+        messageBox.AllowCancel = true;
+        messageBox.ClickAnywhereToClose = true;
+        messageBox.ParentPanel.BackgroundTexture = null;
+        messageBox.SetText($"all mods extracted to folders in {dirPath}");
+        uiManager.PushWindow(messageBox);
+    }
+
 
     string RemoveComma(string str)
     {
