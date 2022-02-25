@@ -39,7 +39,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         const string nativeImgName = "CUST01I0.IMG";
         const string nativeImgOverlayName = "CUST02I0.IMG";
-        const int maxItems = 7;
+        const int maxItems = 8;
         const int maxLabels = maxItems * 2;
         const int labelSpacing = 8;
         const int tandemLabelSpacing = 6;
@@ -47,8 +47,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         const float defaultSpellPointMod = .5f;
 
         DFCareer advantageData;
-        List<SpecialAdvDis> advDisList;
-        List<SpecialAdvDis> otherList;
+        public List<SpecialAdvDis> advDisList;
+        public List<SpecialAdvDis> otherList;
 
         Texture2D nativeTexture;
         Texture2D nativeOverlayTexture;
@@ -183,7 +183,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Difficulty adjustment dictionary
 
-        Dictionary<string, int> difficultyDict;
+        static Dictionary<string, int> difficultyDict;
 
         #endregion
 
@@ -248,6 +248,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 overlayPanel.HorizontalAlignment = HorizontalAlignment.Left;
                 overlayPanel.VerticalAlignment = VerticalAlignment.Top;
                 overlayPanel.BackgroundTexture = nativeOverlayTexture;
+
                 overlayPanel.BackgroundTextureLayout = BackgroundLayout.StretchToFill;
                 advantagePanel.Components.Add(overlayPanel);
                 buttonPanel = overlayPanel;
@@ -473,7 +474,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Helper methods
 
-        int GetAdvDisAdjustment(string primary, string secondary)
+        public static int GetAdvDisAdjustment(string primary, string secondary)
         {
             switch (primary)
             {
@@ -488,7 +489,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 case HardStrings.phobia:
                     return difficultyDict[primary];
                 default:
-                    return difficultyDict[primary + secondary];
+                    var str = primary + secondary;
+                    return difficultyDict[str];
             }
         }
 
@@ -510,6 +512,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 advantageLabels[j].Tag = i;
                 if (advDisList[i].secondaryStringKey != string.Empty)
                 {
+                    Debug.Log($"GDS j+1 = {j+1}, label = {advantageLabels[j+1]}");
                     advantageLabels[j + 1].Text = TextManager.Instance.GetLocalizedText(advDisList[i].secondaryStringKey);
                     advantageLabels[j + 1].Tag = i;
                     // squish labels together if they represent the same item
@@ -1028,7 +1031,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        void InitializeAdjustmentDict()
+        public void InitializeAdjustmentDict()
         {
             difficultyDict = new Dictionary<string, int> {
                 { HardStrings.acuteHearing, 1 },

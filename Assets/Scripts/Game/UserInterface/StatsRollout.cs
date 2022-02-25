@@ -194,7 +194,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
         #region Private Methods
 
-        void UpdateStatLabels()
+        public void UpdateStatLabels()
         {
             // Update primary stat labels
             for (int i = 0; i < DaggerfallStats.Count; i++)
