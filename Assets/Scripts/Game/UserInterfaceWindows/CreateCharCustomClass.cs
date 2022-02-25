@@ -9,16 +9,17 @@
 // Notes:
 //
 
-using UnityEngine;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using FullSerializer;
 using DaggerfallConnect;
-using DaggerfallWorkshop.Game.UserInterface;
-using System.Collections;
 using DaggerfallWorkshop.Game.Player;
-using Mono.CSharp;
+using DaggerfallWorkshop.Game.UserInterface;
+using FullSerializer;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
+using UnityEngine;
+using UnityEngine.Assertions.Must;
 using Enum = System.Enum;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
@@ -52,7 +53,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         const float daggerTrailLingerTime = 1.0f;
 
-        private DFCareerArray myDfCareers;
+        private static DFCareerArray myDfCareers;
+        public static DFCareerArray fullDFCareers;
+        public static DFCareer selectedTemplateCareer = new DFCareer();
+        public static bool templateSelected = false;
 
         const int strNameYourClass = 301;
         const int strSetSkills = 300;
@@ -117,6 +121,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         Rect hitPointsUpButtonRect = new Rect(252, 46, 8, 10);
         Rect hitPointsDownButtonRect = new Rect(252, 57, 8, 10);
         Rect helpButtonRect = new Rect(249, 74, 66, 22);
+        Rect templateButtonRect = new Rect(249, 0, 66, 16);
         Rect specialAdvantageButtonRect = new Rect(249, 98, 66, 22);
         Rect specialDisadvantageButtonRect = new Rect(249, 122, 66, 22);
         Rect reputationButtonRect = new Rect(249, 146, 66, 22);
@@ -135,6 +140,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         Button specialDisadvantageButton;
         Button reputationButton;
         Button resetButton;
+        private Button templateButton;
         Button exitButton;
 
         #endregion
@@ -218,6 +224,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             skillsList = new List<string>(skillsDict.Keys);
             skillsList.Sort(); // Sort skills alphabetically a la classic.
 
+            createCharSpecialAdvantageWindow = new CreateCharSpecialAdvantageWindow(uiManager, advantages, disadvantages, createdClass, this);
+            createCharSpecialDisadvantageWindow = new CreateCharSpecialAdvantageWindow(uiManager, disadvantages, advantages, createdClass, this, true);
+
             IsSetup = true;
         }
 
@@ -275,10 +284,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             reputationButton.OnMouseClick += ReputationButton_OnMouseClick;
             reputationButton.ClickSound = DaggerfallUI.Instance.GetAudioClip(SoundClips.ButtonClick);
 
+
             // (Hidden) Reset bonus pool
             resetButton = DaggerfallUI.AddButton(resetButtonRect, NativePanel);
             resetButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.ResetBonusPool);
             resetButton.OnKeyboardEvent += ResetButton_OnKeyboardEvent;
+            //Template Button
+            templateButton = DaggerfallUI.AddButton(templateButtonRect, NativePanel);
+            templateButton.Label.Text = "Use Template";
+            templateButton.OnMouseClick += templateButton_OnMouseClick;
+            templateButton.ClickSound = DaggerfallUI.Instance.GetAudioClip(SoundClips.ButtonClick);
 
             // Exit button
             exitButton = DaggerfallUI.AddButton(exitButtonRect, NativePanel);
@@ -405,10 +420,491 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             messageBox.Show();
         }
 
+        public void templateButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
+        {
+            var createCharTemplateSelectWindow = new CreateCharTemplateSelect(uiManager);
+            createCharTemplateSelectWindow.OnClose += createCharTemplateSelect_OnClose;
+            uiManager.PushWindow(createCharTemplateSelectWindow);
+        }
+
+        public void createCharTemplateSelect_OnClose()
+        {
+            if (templateSelected)
+            {
+                var cd = new CharacterDocument();
+                if (!fullDFCareers.DfCareers.TryGetValue(selectedTemplateCareer.Name, out cd))
+                {
+                    Debug.LogError($"Create Custom Class unable to find template for {selectedTemplateCareer.Name}");
+                }
+                else
+                {
+                    //reputations
+                    merchantsRep = cd.reputationMerchants;
+                    peasantsRep = cd.reputationCommoners;
+                    nobilityRep = cd.reputationNobility;
+                    scholarsRep = cd.reputationScholars;
+                    underworldRep = cd.reputationUnderworld;
+
+                    //stats
+                    statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Strength, cd.career.Strength);
+                    statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Intelligence, cd.career.Intelligence);
+                    statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Willpower, cd.career.Willpower);
+                    statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Agility, cd.career.Agility);
+                    statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Endurance, cd.career.Endurance);
+                    statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Personality, cd.career.Personality);
+                    statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Speed, cd.career.Speed);
+                    statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Luck, cd.career.Luck);
+
+                    //primary skills
+                    createdClass.PrimarySkill1 = cd.career.PrimarySkill1;
+                    skillLabels[0].Text = createdClass.PrimarySkill1.ToString();
+
+                    createdClass.PrimarySkill2 = cd.career.PrimarySkill2;
+                    skillLabels[1].Text = createdClass.PrimarySkill2.ToString();
+
+                    createdClass.PrimarySkill3 = cd.career.PrimarySkill3;
+                    skillLabels[2].Text = createdClass.PrimarySkill3.ToString();
+
+                    //major skills
+                    createdClass.MajorSkill1 = cd.career.MajorSkill1;
+                    skillLabels[3].Text = createdClass.MajorSkill1.ToString();
+
+                    createdClass.MajorSkill2 = cd.career.MajorSkill2;
+                    skillLabels[4].Text = createdClass.MajorSkill2.ToString();
+
+                    createdClass.MajorSkill3 = cd.career.MajorSkill3;
+                    skillLabels[5].Text = createdClass.MajorSkill3.ToString();
+
+                    //minor skills
+                    createdClass.MinorSkill1 = cd.career.MinorSkill1;
+                    skillLabels[6].Text = createdClass.MinorSkill1.ToString();
+
+                    createdClass.MinorSkill2 = cd.career.MinorSkill2;
+                    skillLabels[7].Text = createdClass.MinorSkill2.ToString();
+
+                    createdClass.MinorSkill3 = cd.career.MinorSkill3;
+                    skillLabels[8].Text = createdClass.MinorSkill3.ToString();
+
+                    createdClass.MinorSkill4 = cd.career.MinorSkill4;
+                    skillLabels[9].Text = createdClass.MinorSkill4.ToString();
+
+                    createdClass.MinorSkill5 = cd.career.MinorSkill5;
+                    skillLabels[10].Text = createdClass.MinorSkill5.ToString();
+
+                    createdClass.MinorSkill6 = cd.career.MinorSkill6;
+                    skillLabels[11].Text = createdClass.MinorSkill6.ToString();
+
+                    //special advantages
+                    PopulateSpecialAdvantages(cd);
+
+
+                    //hit points
+                    createdClass.HitPointsPerLevel = cd.career.HitPointsPerLevel;
+                    hpLabel.Text = createdClass.HitPointsPerLevel.ToString();
+
+
+                    statsRollout.UpdateStatLabels();
+                    UpdateDifficulty();
+                }
+            }
+        }
+
+        void AddSpecialAdvantage(string primary, string secondary, bool isDisadvantage)
+        {
+            var sd = new CreateCharSpecialAdvantageWindow.SpecialAdvDis
+            {
+                primaryStringKey = primary,
+                secondaryStringKey = secondary,
+                difficulty = CreateCharSpecialAdvantageWindow.GetAdvDisAdjustment(primary, secondary),
+            };
+
+            if (isDisadvantage)
+                disadvantages.Add(sd);
+            else
+                advantages.Add(sd);
+        }
+
+        void PopulateSpecialAdvantages(CharacterDocument cd)
+        {
+            createCharSpecialAdvantageWindow.InitializeAdjustmentDict();
+            advantages = new List<CreateCharSpecialAdvantageWindow.SpecialAdvDis>();
+            disadvantages = new List<CreateCharSpecialAdvantageWindow.SpecialAdvDis>();
+
+            if (cd.career.AnimalsAttackModifier == DFCareer.AttackModifier.Bonus)
+                AddSpecialAdvantage(HardStrings.bonusToHit, HardStrings.animals, false);
+
+            if (cd.career.DaedraAttackModifier == DFCareer.AttackModifier.Bonus)
+                AddSpecialAdvantage(HardStrings.bonusToHit, HardStrings.daedra, false);
+
+            if (cd.career.HumanoidAttackModifier == DFCareer.AttackModifier.Bonus)
+                AddSpecialAdvantage(HardStrings.bonusToHit, HardStrings.humanoid, false);
+
+            if (cd.career.UndeadAttackModifier == DFCareer.AttackModifier.Bonus)
+                AddSpecialAdvantage(HardStrings.bonusToHit, HardStrings.undead, false);
+
+            if (cd.career.AnimalsAttackModifier == DFCareer.AttackModifier.Phobia)
+                AddSpecialAdvantage(HardStrings.phobia, HardStrings.animals, true);
+
+            if (cd.career.DaedraAttackModifier == DFCareer.AttackModifier.Phobia)
+                AddSpecialAdvantage(HardStrings.phobia, HardStrings.daedra, true);
+
+            if (cd.career.HumanoidAttackModifier == DFCareer.AttackModifier.Phobia)
+                AddSpecialAdvantage(HardStrings.phobia, HardStrings.humanoid, true);
+
+            if (cd.career.UndeadAttackModifier == DFCareer.AttackModifier.Phobia)
+                AddSpecialAdvantage(HardStrings.phobia, HardStrings.undead, true);
+
+            if (cd.career.ExpertProficiencies > 0)
+            {
+                if ((cd.career.ExpertProficiencies & DFCareer.ProficiencyFlags.Axes) > 0)
+                    AddSpecialAdvantage(HardStrings.expertiseIn, HardStrings.axe, false);
+                if ((cd.career.ExpertProficiencies & DFCareer.ProficiencyFlags.BluntWeapons) > 0)
+                    AddSpecialAdvantage(HardStrings.expertiseIn, HardStrings.bluntWeapon, false);
+                if ((cd.career.ExpertProficiencies & DFCareer.ProficiencyFlags.HandToHand) > 0)
+                    AddSpecialAdvantage(HardStrings.expertiseIn, HardStrings.handToHand, false);
+                if ((cd.career.ExpertProficiencies & DFCareer.ProficiencyFlags.LongBlades) > 0)
+                    AddSpecialAdvantage(HardStrings.expertiseIn, HardStrings.longBlade, false);
+                if ((cd.career.ExpertProficiencies & DFCareer.ProficiencyFlags.MissileWeapons) > 0)
+                    AddSpecialAdvantage(HardStrings.expertiseIn, HardStrings.missileWeapon, false);
+                if ((cd.career.ExpertProficiencies & DFCareer.ProficiencyFlags.ShortBlades) > 0)
+                    AddSpecialAdvantage(HardStrings.expertiseIn, HardStrings.shortBlade, false);
+            }
+
+            if (cd.career.ForbiddenProficiencies > 0)
+            {
+                if ((cd.career.ForbiddenProficiencies & DFCareer.ProficiencyFlags.Axes) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenWeaponry, HardStrings.axe, true);
+                if ((cd.career.ForbiddenProficiencies & DFCareer.ProficiencyFlags.BluntWeapons) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenWeaponry, HardStrings.bluntWeapon, true);
+                if ((cd.career.ForbiddenProficiencies & DFCareer.ProficiencyFlags.HandToHand) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenWeaponry, HardStrings.handToHand, true);
+                if ((cd.career.ForbiddenProficiencies & DFCareer.ProficiencyFlags.LongBlades) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenWeaponry, HardStrings.longBlade, true);
+                if ((cd.career.ForbiddenProficiencies & DFCareer.ProficiencyFlags.MissileWeapons) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenWeaponry, HardStrings.missileWeapon, true);
+                if ((cd.career.ForbiddenProficiencies & DFCareer.ProficiencyFlags.ShortBlades) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenWeaponry, HardStrings.shortBlade, true);
+            }
+
+            if (cd.career.Disease > 0)
+            {
+                switch (cd.career.Disease)
+                {
+                    case DFCareer.Tolerance.CriticalWeakness:
+                        AddSpecialAdvantage(HardStrings.criticalWeakness, HardStrings.toDisease, true);
+                        break;
+                    case DFCareer.Tolerance.LowTolerance:
+                        AddSpecialAdvantage(HardStrings.lowTolerance, HardStrings.toDisease, true);
+                        break;
+                    case DFCareer.Tolerance.Resistant:
+                        AddSpecialAdvantage(HardStrings.resistance, HardStrings.toDisease, false);
+                        break;
+                    case DFCareer.Tolerance.Immune:
+                        AddSpecialAdvantage(HardStrings.immunity, HardStrings.toDisease, false);
+                        break;
+                }
+            }
+
+            if (cd.career.Fire > 0)
+            {
+                switch (cd.career.Fire)
+                {
+                    case DFCareer.Tolerance.CriticalWeakness:
+                        AddSpecialAdvantage(HardStrings.criticalWeakness, HardStrings.toFire, true);
+                        break;
+                    case DFCareer.Tolerance.LowTolerance:
+                        AddSpecialAdvantage(HardStrings.lowTolerance, HardStrings.toFire, true);
+                        break;
+                    case DFCareer.Tolerance.Resistant:
+                        AddSpecialAdvantage(HardStrings.resistance, HardStrings.toFire, false);
+                        break;
+                    case DFCareer.Tolerance.Immune:
+                        AddSpecialAdvantage(HardStrings.immunity, HardStrings.toFire, false);
+                        break;
+                }
+            }
+
+            if (cd.career.Frost > 0)
+            {
+                switch (cd.career.Frost)
+                {
+                    case DFCareer.Tolerance.CriticalWeakness:
+                        AddSpecialAdvantage(HardStrings.criticalWeakness, HardStrings.toFrost, true);
+                        break;
+                    case DFCareer.Tolerance.LowTolerance:
+                        AddSpecialAdvantage(HardStrings.lowTolerance, HardStrings.toFrost, true);
+                        break;
+                    case DFCareer.Tolerance.Resistant:
+                        AddSpecialAdvantage(HardStrings.resistance, HardStrings.toFrost, false);
+                        break;
+                    case DFCareer.Tolerance.Immune:
+                        AddSpecialAdvantage(HardStrings.immunity, HardStrings.toFrost, false);
+                        break;
+                }
+            }
+
+            if (cd.career.Magic > 0)
+            {
+                switch (cd.career.Magic)
+                {
+                    case DFCareer.Tolerance.CriticalWeakness:
+                        AddSpecialAdvantage(HardStrings.criticalWeakness, HardStrings.toMagic, true);
+                        break;
+                    case DFCareer.Tolerance.LowTolerance:
+                        AddSpecialAdvantage(HardStrings.lowTolerance, HardStrings.toMagic, true );
+                        break;
+                    case DFCareer.Tolerance.Resistant:
+                        AddSpecialAdvantage(HardStrings.resistance, HardStrings.toMagic, false);
+                        break;
+                    case DFCareer.Tolerance.Immune:
+                        AddSpecialAdvantage(HardStrings.immunity, HardStrings.toMagic, false);
+                        break;
+                }
+            }
+
+
+            if (cd.career.Paralysis > 0)
+            {
+                switch (cd.career.Paralysis)
+                {
+                    case DFCareer.Tolerance.CriticalWeakness:
+                        AddSpecialAdvantage(HardStrings.criticalWeakness, HardStrings.toParalysis, true);
+                        break;
+                    case DFCareer.Tolerance.LowTolerance:
+                        AddSpecialAdvantage(HardStrings.lowTolerance, HardStrings.toParalysis, true);
+                        break;
+                    case DFCareer.Tolerance.Resistant:
+                        AddSpecialAdvantage(HardStrings.resistance, HardStrings.toParalysis, false);
+                        break;
+                    case DFCareer.Tolerance.Immune:
+                        AddSpecialAdvantage(HardStrings.immunity, HardStrings.toParalysis, false);
+                        break;
+                }
+            }
+
+            if (cd.career.Poison > 0)
+            {
+                switch (cd.career.Poison)
+                {
+                    case DFCareer.Tolerance.CriticalWeakness:
+                        AddSpecialAdvantage(HardStrings.criticalWeakness, HardStrings.toPoison, true);
+                        break;
+                    case DFCareer.Tolerance.LowTolerance:
+                        AddSpecialAdvantage(HardStrings.lowTolerance, HardStrings.toPoison, true);
+                        break;
+                    case DFCareer.Tolerance.Resistant:
+                        AddSpecialAdvantage(HardStrings.resistance, HardStrings.toPoison, false);
+                        break;
+                    case DFCareer.Tolerance.Immune:
+                        AddSpecialAdvantage(HardStrings.immunity, HardStrings.toPoison, false);
+                        break;
+                }
+            }
+
+            if (cd.career.Shock > 0)
+            {
+                switch (cd.career.Shock)
+                {
+                    case DFCareer.Tolerance.CriticalWeakness:
+                        AddSpecialAdvantage(HardStrings.criticalWeakness, HardStrings.toShock, true);
+                        break;
+                    case DFCareer.Tolerance.LowTolerance:
+                        AddSpecialAdvantage(HardStrings.lowTolerance, HardStrings.toShock, true);
+                        break;
+                    case DFCareer.Tolerance.Resistant:
+                        AddSpecialAdvantage(HardStrings.resistance, HardStrings.toShock, false);
+                        break;
+                    case DFCareer.Tolerance.Immune:
+                        AddSpecialAdvantage(HardStrings.immunity, HardStrings.toShock, false);
+                        break;
+                }
+            }
+
+            if (cd.career.RapidHealing > 0)
+            {
+                switch (cd.career.RapidHealing)
+                {
+                    case DFCareer.RapidHealingFlags.Always:
+                        AddSpecialAdvantage(HardStrings.rapidHealing, HardStrings.general, false);
+                        break;
+                    case DFCareer.RapidHealingFlags.InDarkness:
+                        AddSpecialAdvantage(HardStrings.rapidHealing, HardStrings.inDarkness, false);
+                        break;
+                    case DFCareer.RapidHealingFlags.InLight:
+                        AddSpecialAdvantage(HardStrings.rapidHealing, HardStrings.inLight, false);
+                        break;
+
+                }
+
+            }
+
+            if (cd.career.SpellAbsorption > 0)
+            {
+                switch (cd.career.SpellAbsorption)
+                {
+                    case DFCareer.SpellAbsorptionFlags.Always:
+                        AddSpecialAdvantage(HardStrings.spellAbsorption, HardStrings.general, false);
+                        break;
+                    case DFCareer.SpellAbsorptionFlags.InDarkness:
+                        AddSpecialAdvantage(HardStrings.spellAbsorption, HardStrings.inDarkness, false);
+                        break;
+                    case DFCareer.SpellAbsorptionFlags.InLight:
+                        AddSpecialAdvantage(HardStrings.spellAbsorption, HardStrings.inLight, false);
+                        break;
+
+                }
+
+            }
+
+
+            if (cd.career.Regeneration > 0)
+            {
+                switch (cd.career.Regeneration)
+                {
+                    case DFCareer.RegenerationFlags.Always:
+                        AddSpecialAdvantage(HardStrings.regenerateHealth, HardStrings.general, false);
+                        break;
+                    case DFCareer.RegenerationFlags.InDarkness:
+                        AddSpecialAdvantage(HardStrings.regenerateHealth, HardStrings.inDarkness, false);
+                        break;
+                    case DFCareer.RegenerationFlags.InLight:
+                        AddSpecialAdvantage(HardStrings.regenerateHealth, HardStrings.inLight, false);
+                        break;
+                    case DFCareer.RegenerationFlags.InWater:
+                        AddSpecialAdvantage(HardStrings.regenerateHealth, HardStrings.whileImmersed, false);
+                        break;
+
+                }
+
+            }
+
+            if (cd.career.DamageFromHolyPlaces)
+            {
+                AddSpecialAdvantage(HardStrings.damage, HardStrings.fromHolyPlaces, true);
+            }
+
+            if (cd.career.DamageFromSunlight)
+            {
+                AddSpecialAdvantage(HardStrings.damage, HardStrings.fromSunlight, true);
+            }
+
+            if (cd.career.SpellPointMultiplierValue > 0f)
+            {
+                if (cd.career.SpellPointMultiplierValue > 2f )
+                    AddSpecialAdvantage(HardStrings.increasedMagery, HardStrings.intInSpellPoints3, false);
+                else if (cd.career.SpellPointMultiplierValue > 1.8f)
+                    AddSpecialAdvantage(HardStrings.increasedMagery, HardStrings.intInSpellPoints2, false);
+                else if (cd.career.SpellPointMultiplierValue > 1.6f)
+                    AddSpecialAdvantage(HardStrings.increasedMagery, HardStrings.intInSpellPoints175, false);
+                else if (cd.career.SpellPointMultiplierValue > 1.4f)
+                    AddSpecialAdvantage(HardStrings.increasedMagery, HardStrings.intInSpellPoints15, false);
+                else if (cd.career.SpellPointMultiplierValue > 0.6f)
+                    AddSpecialAdvantage(HardStrings.increasedMagery, HardStrings.intInSpellPoints, false);
+
+            }
+
+            if (cd.career.DarknessPoweredMagery > 0)
+            {
+                switch (cd.career.DarknessPoweredMagery)
+                {
+                    case DFCareer.DarknessMageryFlags.ReducedPowerInLight:
+                        AddSpecialAdvantage(HardStrings.darknessPoweredMagery, HardStrings.lowerMagicAbilityDaylight, true);
+                        break;
+                    case DFCareer.DarknessMageryFlags.UnableToCastInLight:
+                        AddSpecialAdvantage(HardStrings.darknessPoweredMagery, HardStrings.unableToUseMagicInDaylight, true);
+                        break;
+                }
+
+            }
+
+            if (cd.career.ForbiddenArmors > 0)
+            {
+                if ((cd.career.ForbiddenArmors & DFCareer.ArmorFlags.Chain) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenArmorType, HardStrings.chain, true);
+                if ((cd.career.ForbiddenArmors & DFCareer.ArmorFlags.Leather) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenArmorType, HardStrings.leather, true);
+                if ((cd.career.ForbiddenArmors & DFCareer.ArmorFlags.Plate) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenArmorType, HardStrings.plate, true);
+            }
+
+            if (cd.career.ForbiddenMaterials > 0)
+            {
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Adamantium) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.adamantium, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Daedric) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.daedric, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Dwarven) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.dwarven, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Ebony) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.ebony, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Elven) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.elven, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Iron) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.iron, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Mithril) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.mithril, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Orcish) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.orcish, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Silver) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.silver, true);
+                if ((cd.career.ForbiddenMaterials & DFCareer.MaterialFlags.Steel) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenMaterial, HardStrings.steel, true);
+
+            }
+
+            if (cd.career.ForbiddenShields > 0)
+            {
+                if ((cd.career.ForbiddenShields & DFCareer.ShieldFlags.Buckler) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenShieldTypes, HardStrings.buckler, true);
+                if ((cd.career.ForbiddenShields & DFCareer.ShieldFlags.KiteShield) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenShieldTypes, HardStrings.kiteShield, true);
+                if ((cd.career.ForbiddenShields & DFCareer.ShieldFlags.RoundShield) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenShieldTypes, HardStrings.roundShield, true);
+                if ((cd.career.ForbiddenShields & DFCareer.ShieldFlags.TowerShield) > 0)
+                    AddSpecialAdvantage(HardStrings.forbiddenShieldTypes, HardStrings.towerShield, true);
+            }
+
+            if (cd.career.LightPoweredMagery > 0)
+            {
+                switch (cd.career.LightPoweredMagery)
+                {
+                    case DFCareer.LightMageryFlags.ReducedPowerInDarkness:
+                        AddSpecialAdvantage(HardStrings.lightPoweredMagery, HardStrings.lowerMagicAbilityDarkness, true);
+                        break;
+                    case DFCareer.LightMageryFlags.UnableToCastInDarkness:
+                        AddSpecialAdvantage(HardStrings.lightPoweredMagery, HardStrings.unableToUseMagicInDarkness, true);
+                        break;
+                }
+
+            }
+
+            if (cd.career.NoRegenSpellPoints)
+            {
+                AddSpecialAdvantage(HardStrings.inabilityToRegen, string.Empty, true);
+            }
+
+            if (cd.career.AcuteHearing)
+            {
+                AddSpecialAdvantage(HardStrings.acuteHearing, string.Empty, false);
+            }
+
+            if (cd.career.Athleticism)
+            {
+                AddSpecialAdvantage(HardStrings.athleticism, string.Empty, false);
+            }
+
+            if (cd.career.AdrenalineRush)
+            {
+                AddSpecialAdvantage(HardStrings.adrenalineRush, string.Empty, false);
+            }
+        }
+
+
         public void specialAdvantageButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
         {
             createCharSpecialAdvantageWindow = new CreateCharSpecialAdvantageWindow(uiManager, advantages, disadvantages, createdClass, this);
             uiManager.PushWindow(createCharSpecialAdvantageWindow);
+
         }
 
         public void specialDisadvantageButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
@@ -513,10 +1009,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.No)
             {
+                sender.CloseWindow();
                 CloseWindow();
                 return;
             }
-
+            sender.CloseWindow();
             createdClass.Strength = Stats.WorkingStats.LiveStrength;
             createdClass.Intelligence = Stats.WorkingStats.LiveIntelligence;
             createdClass.Willpower = Stats.WorkingStats.LiveWillpower;
@@ -535,11 +1032,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 for (int i = 0; i < files.Length - 1; i++)
                 {
                     DaggerfallConnect.Arena2.ClassFile classFile = new DaggerfallConnect.Arena2.ClassFile(files[i]);
-                    coreClasses.Add(classFile.Career.Name);
+                    coreClasses.Add(classFile.Career.Name.ToUpper());
                 }
             }
 
-            if (coreClasses.Contains(createdClass.Name))
+            if (coreClasses.Contains(createdClass.Name.ToUpper()))
             {
                 var msgBox = new DaggerfallMessageBox(uiManager, this);
                 msgBox.EnableVerticalScrolling(80);
@@ -549,15 +1046,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 msgBox.OnButtonClick += (sndr, button) =>
                 {
                     sndr.CancelWindow();
-                    CloseWindow();
                 };
 
                 msgBox.Show();
                 return;
             }
 
+            var myDFCareersUpper = new DFCareerArray();
+            foreach (KeyValuePair<string, CharacterDocument> cd in myDfCareers.DfCareers)
+                myDFCareersUpper.DfCareers.Add(cd.Key.ToUpper(), cd.Value);
 
-            if (myDfCareers.DfCareers.Count == 0 ||  !myDfCareers.DfCareers.ContainsKey(createdClass.Name))
+            if (myDfCareers.DfCareers.Count == 0 ||  !myDFCareersUpper.DfCareers.ContainsKey(createdClass.Name.ToUpper()))
             {
                 var cd = new CharacterDocument
                 {
@@ -603,13 +1102,15 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     isCustom =  true,
                 };
                 myDfCareers.DfCareers.Add(createdClass.Name, cd);
+                sender.CloseWindow();
                 SaveCreatedClass();
                 CloseWindow();
             }
             else
             {
-                CloseWindow();
+                sender.CloseWindow();
             }
+
 
             return;
         }
