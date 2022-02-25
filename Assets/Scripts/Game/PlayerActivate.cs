@@ -162,7 +162,7 @@ namespace DaggerfallWorkshop.Game
         /// <param name="customActivation">A callback that implements the custom action.</param>
         private static void HandleRegisterCustomActivation(Mod provider, string goFlatModelName, CustomActivation customActivation, float activationDistance)
         {
-            DaggerfallUnity.LogMessage("HandleRegisterCustomActivation: " + goFlatModelName, true);
+            DaggerfallUnity.LogMessage($"HandleRegisterCustomActivation: {goFlatModelName} from mod: {provider.FileName}", true);
             CustomModActivation existingActivation;
             if (customModActivations.TryGetValue(goFlatModelName, out existingActivation) && existingActivation.Provider.LoadPriority > provider.LoadPriority)
             {
