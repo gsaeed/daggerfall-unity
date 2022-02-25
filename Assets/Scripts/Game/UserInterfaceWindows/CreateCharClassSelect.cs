@@ -55,6 +55,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 for (int i = 0; i < files.Length - 1; i++)
                 {
                     ClassFile classFile = new ClassFile(files[i]);
+                    var cd = new CharacterDocument();
+                    cd.career = classFile.Career;
+                    if (CreateCharCustomClass.fullDFCareers == null)
+                        CreateCharCustomClass.fullDFCareers = new DFCareerArray();
+                    CreateCharCustomClass.fullDFCareers.DfCareers.Add(cd.career.Name, cd);
                     classList.Add(classFile.Career);
                     listBox.AddItem(TextManager.Instance.GetLocalizedText(classFile.Career.Name));
                 }
@@ -85,6 +90,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 foreach (KeyValuePair<string, CharacterDocument> c in careers.DfCareers)
                 {
                     myDFCareers.DfCareers.Add(c.Key, c.Value);
+                    if (CreateCharCustomClass.fullDFCareers == null)
+                        CreateCharCustomClass.fullDFCareers = new DFCareerArray();
+                    CreateCharCustomClass.fullDFCareers.DfCareers.Add(c.Key, c.Value);
                     classList.Add(c.Value.career);
                     listBox.AddItem(c.Key);
                 }
