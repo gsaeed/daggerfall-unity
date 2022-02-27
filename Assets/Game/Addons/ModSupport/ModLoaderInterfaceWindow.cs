@@ -831,6 +831,23 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         MoveNextStage();
     }
 
+    void ClearDirectory(string path)
+    {
+        if (!Directory.Exists(path))
+            return;
+
+        System.IO.DirectoryInfo di = new DirectoryInfo(path);
+
+        foreach (FileInfo file in di.GetFiles())
+        {
+            file.Delete();
+        }
+        foreach (DirectoryInfo dir in di.GetDirectories())
+        {
+            dir.Delete(true);
+        }
+    }
+
     void ExtractFilesButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
     {
         if (modSettings.Length < 1)
@@ -848,6 +865,9 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             return;
 
         string path = Path.Combine(DaggerfallUnityApplication.PersistentDataPath, "Mods", "ExtractedFiles", mod.FileName);
+
+        ClearDirectory(path);
+
         Directory.CreateDirectory(path);
 
         for (int i = 0; i < assets.Length; i++)
@@ -967,6 +987,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                 continue;
 
             string path = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles", mod.FileName);
+            ClearDirectory(path);
             Directory.CreateDirectory(path);
 
             for (int i = 0; i < assets.Length; i++)
