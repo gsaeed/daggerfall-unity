@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
@@ -57,9 +58,11 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     readonly Button saveAndCloseButton       = new Button();
     readonly Button buildModSupport          = new Button();
     readonly Button extractFilesButton       = new Button();
-    readonly Button extractAllFilesButton = new Button();
-    readonly Button showModDescriptionButton = new Button();
-    readonly Button modSettingsButton        = new Button();
+
+    readonly Button extractAllFilesButton        = new Button();
+    readonly Button showModDescriptionButton     = new Button();
+    readonly Button modSettingsButton            = new Button();
+    readonly TextLabel modCount            = new TextLabel();
 
     readonly Checkbox modEnabledCheckBox         = new Checkbox();
     readonly TextLabel modLoadPriorityLabel      = new TextLabel();
@@ -68,7 +71,10 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     readonly TextLabel modAuthorLabel            = new TextLabel();
     readonly TextLabel modAuthorContactLabel     = new TextLabel();
     readonly TextLabel modDFTFUVersionLabel      = new TextLabel();
-    readonly TextLabel modsFound                 = new TextLabel();
+    readonly TextLabel modsFound = new TextLabel();
+
+    private string modFilterText = string.Empty;
+    private TextBox modFilter = new TextBox();
 
     readonly Color backgroundColor = new Color(0, 0, 0, 0.7f);
     readonly Color unselectedTextColor = new Color(0.6f, 0.6f, 0.6f, 1f);
@@ -107,10 +113,23 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         ModListPanel.Size = new Vector2(120, 175);
         NativePanel.Components.Add(ModListPanel);
 
-        modsFound.HorizontalAlignment = HorizontalAlignment.Center;
-        modsFound.Position = new Vector2(10, 20);
-        modsFound.Text = string.Format("{0}: ", ModManager.GetText("modsFound"));
-        ModListPanel.Components.Add(modsFound);
+        //modsFound.HorizontalAlignment = HorizontalAlignment.Left;
+        //modsFound.Position = new Vector2(0, 20);
+        //modsFound.Text = string.Format("{0}: ", ModManager.GetText("modsFound"));
+        //ModListPanel.Components.Add(modsFound);
+
+        modFilter.HorizontalAlignment = HorizontalAlignment.Left;
+        modFilter.Position = new Vector2(10, 20);
+        modFilter.TextOffset = 3;
+        modFilter.Text = "";
+        modFilter.DefaultText = "Enter Filter";
+        modFilter.OnType += filterMods;
+        ModListPanel.Components.Add(modFilter);
+
+        modCount.HorizontalAlignment = HorizontalAlignment.Right;
+        modCount.Text = "        ";
+        modCount.Position = new Vector2(10, 20);
+        ModListPanel.Components.Add(modCount);
 
         modList.BackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
         modList.Size = new Vector2(110, 115);
@@ -147,7 +166,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         backButton.VerticalAlignment = VerticalAlignment.Top;
         backButton.HorizontalAlignment = HorizontalAlignment.Left;
         backButton.OnMouseClick +=  BackButton_OnMouseClick;
-        backButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupBackToOptions);
+        //backButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupBackToOptions);
         ModListPanel.Components.Add(backButton);
 
         increaseLoadOrderButton.Size = new Vector2(40, 12);
@@ -245,7 +264,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         refreshButton.Label.Text = ModManager.GetText("refresh");
         refreshButton.Label.ToolTipText = ModManager.GetText("RrefreshInfo");
         refreshButton.OnMouseClick += RefreshButton_OnMouseClick;
-        refreshButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupRefresh);
+        //refreshButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupRefresh);
         ModPanel.Components.Add(refreshButton);
 
         saveAndCloseButton.Size = new Vector2(70, 12);
@@ -256,7 +275,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         saveAndCloseButton.Label.Text = ModManager.GetText("saveClose");
         saveAndCloseButton.Label.ToolTipText = ModManager.GetText("saveCloseInfo");
         saveAndCloseButton.OnMouseClick += SaveAndCloseButton_OnMouseClick;
-        saveAndCloseButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupSaveAndClose);
+        //saveAndCloseButton.Hotkey = DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.GameSetupSaveAndClose);
         ModPanel.Components.Add(saveAndCloseButton);
 
         buildModSupport.Size = new Vector2(50, 12);
@@ -302,12 +321,30 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         GetLoadedMods();
         UpdateModPanel();
     }
+    void modFilterMeButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+    {
+        modFilterText = modFilter.Text;
+
+        GetLoadedMods();
+    }
+    void filterMods()
+    {
+        modFilterText = modFilter.Text;
+        GetLoadedMods();
+        UpdateModPanel();
+    }
 
     public override void Update()
     {
         base.Update();
 
-        if(currentSelection != modList.SelectedIndex && modList.Count > 0)
+        if (modFilter.HasFocus() && (Input.GetKeyDown(KeyCode.Return)))
+        {
+            SetFocus(null);
+            filterMods();
+        }
+
+        if (currentSelection != modList.SelectedIndex && modList.Count > 0)
         {
             currentSelection = modList.SelectedIndex;
             UpdateModPanel();
@@ -341,18 +378,45 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
          return ms.modInfo != null;
     }
 
-    void GetLoadedMods()
+    void GetLoadedMods(bool allMods = false)
     {
-        var mods = ModManager.Instance.GetAllMods();
+        List<Mod> mods = new List<Mod>();
+        int n = 0;
+        if (allMods || modFilterText.Length == 0)
+        {
+            modCount.Text = $"{ModManager.Instance.GetAllModsCount()} Mods   ";
+            increaseLoadOrderButton.Enabled = true;
+            decreaseLoadOrderButton.Enabled = true;
+            enableAllButton.Enabled = true;
+            disableAllButton.Enabled = true;
+            mods = ModManager.Instance.GetAllMods().ToList<Mod>();
+        }
+        else
+        {
+            increaseLoadOrderButton.Enabled = false;
+            decreaseLoadOrderButton.Enabled = false;
+            enableAllButton.Enabled = false;
+            disableAllButton.Enabled = false;
+            foreach (var m in ModManager.Instance.GetAllMods())
+            {
+                if (m.ModInfo.ModTitle.ToUpper().Contains(modFilterText.ToUpper()))
+                {
+                    mods.Add(m);
+                    n++;
+                }
+            }
+            modCount.Text = $"{mods.Count} of {ModManager.Instance.GetAllModsCount()} Mods   ";
+        }
 
         modList.ClearItems();
 
-        if(modSettings == null || modSettings.Length != mods.Length)
+        if(modSettings == null || modSettings.Length != mods.Count)
         {
-            modSettings = new ModSettings[mods.Length];
+            modSettings = new ModSettings[mods.Count];
         }
 
-        for (int i = 0; i < mods.Length; i++)
+        Debug.Log($"count = {mods.Count}");
+        for (int i = 0; i < mods.Count; i++)
         {
             ModSettings modsett = new ModSettings();
             modsett.modInfo = mods[i].ModInfo;
@@ -383,6 +447,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             return;
         }
 
+
         ModSettings ms = modSettings[modList.SelectedIndex];
 
         if (ms.modInfo == null)
@@ -396,7 +461,10 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         modAuthorContactLabel.Text  += ms.modInfo.ContactInfo;
         modDFTFUVersionLabel.Text   += ms.modInfo.DFUnity_Version;
 
+
         Mod mod = ModManager.Instance.GetMod(ms.modInfo.ModTitle);
+        if (enableAllButton.Enabled == false)
+            modLoadPriorityLabel.Text += " - " + mod.LoadPriority;
 
         modDFTFUVersionLabel.TextColor = mod.IsGameVersionSatisfied() == false ? Color.red : DaggerfallUI.DaggerfallDefaultTextColor;
 
@@ -735,6 +803,12 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         modSettings[modList.SelectedIndex] = modSettings[modList.SelectedIndex + 1];
         modSettings[modList.SelectedIndex + 1] = temp;
 
+        var m1 = ModManager.Instance.mods[modList.SelectedIndex];
+        var m2 = ModManager.Instance.mods[modList.SelectedIndex + 1];
+        m1.LoadPriority += 1;
+        m2.LoadPriority -= 1;
+        ModManager.Instance.mods[modList.SelectedIndex] = m2;
+        ModManager.Instance.mods[modList.SelectedIndex+ 1] = m1;
         modList.SelectedIndex++;
     }
 
@@ -746,10 +820,16 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             return;
 
         modList.SwapItems(modList.SelectedIndex, modList.SelectedIndex - 1);
-
         ModSettings temp = modSettings[modList.SelectedIndex];
         modSettings[modList.SelectedIndex] = modSettings[modList.SelectedIndex - 1];
         modSettings[modList.SelectedIndex - 1] = temp;
+        var m1 = ModManager.Instance.mods[modList.SelectedIndex -1];
+        var m2 = ModManager.Instance.mods[modList.SelectedIndex];
+        m1.LoadPriority += 1;
+        m2.LoadPriority -= 1;
+        ModManager.Instance.mods[modList.SelectedIndex - 1] = m2;
+        ModManager.Instance.mods[modList.SelectedIndex] = m1;
+
 
         modList.SelectedIndex--;
     }
@@ -770,6 +850,8 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         {
             return;
         }
+
+        GetLoadedMods(true);
 
         for (int i = 0; i < modSettings.Length; i++)
         {
@@ -872,6 +954,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         {
             modSettings[i].enabled = true;
             modList.GetItem(i).textColor = unselectedTextColor;
+            ModManager.Instance.mods[i].Enabled = true;
         }
         UpdateModPanel();
     }
@@ -884,6 +967,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         for (int i = 0; i < modSettings.Length; i++)
         {
             modSettings[i].enabled = false;
+            ModManager.Instance.mods[i].Enabled = false;
             modList.GetItem(i).textColor = disabledModTextColor;
         }
 
@@ -1003,6 +1087,10 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
         modSettings[modList.SelectedIndex].enabled = modEnabledCheckBox.IsChecked;
         modList.SelectedValue.textColor = modEnabledCheckBox.IsChecked ? unselectedTextColor : disabledModTextColor;
+
+        var m = ModManager.Instance.GetMod(modSettings[modList.SelectedIndex].modInfo.ModTitle);
+        m.Enabled = modSettings[modList.SelectedIndex].enabled;
+
         UpdateModPanel();
     }
 
