@@ -43,7 +43,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         bool alreadyAtStartMenuState            = false;
         static bool alreadyStartedInit          = false;
         [SerializeField]
-        List<Mod> mods;
+        public List<Mod> mods;
         public static readonly fsSerializer _serializer = new fsSerializer();
 
         public static string[] textExtensions = new string[]
@@ -262,6 +262,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public Mod[] GetAllMods()
         {
             return mods.ToArray();
+        }
+
+        public int GetAllModsCount()
+        {
+            return mods.Count;
         }
 
         /// <summary>
