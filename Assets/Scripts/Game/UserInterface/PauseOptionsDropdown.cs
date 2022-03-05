@@ -259,6 +259,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             var modTitles = ModManager.Instance.Mods
                 .Where(x => x.HasSettings && x.LoadSettingsCallback != null)
                 .Select(x => x.Title)
+                .OrderBy(x => x.ToUpper())
                 .ToArray();
 
             var listPicker = new DaggerfallListPickerWindow(uiManager);
