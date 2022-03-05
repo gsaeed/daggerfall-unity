@@ -761,8 +761,12 @@ namespace DaggerfallWorkshop.Game
             foreach (DaggerfallEntityBehaviour targetBehaviour in GetActiveTargetEntityBehaviours())
             {
                 EnemyEntity targetEntity = null;
+                EnemyMotor enemyMotor = null;
                 if (targetBehaviour != player)
+                {
                     targetEntity = targetBehaviour.Entity as EnemyEntity;
+                    enemyMotor = targetBehaviour.gameObject.GetComponent<EnemyMotor>();
+                }
 
                 // Can't target self
                 if (targetBehaviour == entityBehaviour)
@@ -791,6 +795,10 @@ namespace DaggerfallWorkshop.Game
                     // Can't target ally
                     if (targetBehaviour == player && enemyEntity.Team == MobileTeams.PlayerAlly)
                         continue;
+
+                    if (enemyMotor != null && !enemyMotor.IsHostile)
+                        continue;
+
                     else if (DaggerfallUnity.Settings.EnemyInfighting && !enemyEntity.SuppressInfighting && targetEntity != null && !targetEntity.SuppressInfighting)
                     {
                         if (targetEntity.Team == enemyEntity.Team)
@@ -811,8 +819,8 @@ namespace DaggerfallWorkshop.Game
                         targetSenses = targetBehaviour.GetComponent<EnemySenses>();
 
                     // For now, quest AI can't be targeted
-                    if (targetSenses && targetSenses.QuestBehaviour && !targetSenses.QuestBehaviour.IsAttackableByAI)
-                        continue;
+                    //if (targetSenses && targetSenses.QuestBehaviour && !targetSenses.QuestBehaviour.IsAttackableByAI)
+                    //    continue;
 
                     Vector3 toTarget = targetBehaviour.transform.position - transform.position;
                     directionToTarget = toTarget.normalized;
