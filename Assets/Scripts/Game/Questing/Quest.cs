@@ -560,6 +560,7 @@ namespace DaggerfallWorkshop.Game.Questing
             entry.messageID = messageID;
             entry.dateTime = new DaggerfallDateTime(DaggerfallUnity.Instance.WorldTime.Now);
             activeLogMessages.Add(stepID, entry);
+            DaggerfallUI.AddHUDText("I've updated my quest log with this new information.", 5);
         }
 
         /// <summary>
@@ -823,7 +824,7 @@ namespace DaggerfallWorkshop.Game.Questing
             {
                 DaggerfallMessageBox messageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager);
                 messageBox.SetTextTokens(chunks[i], ExternalMCP);
-                messageBox.ClickAnywhereToClose = false;
+                messageBox.ClickAnywhereToClose = true;
                 messageBox.AllowCancel = true;
                 messageBox.ParentPanel.BackgroundColor = Color.clear;
                 pendingMessageBoxStack.Push(messageBox);
