@@ -844,7 +844,8 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Apply monster modifier and biography adjustments.
             chanceToHit += CalculateAdjustmentsToHit(attacker, target);
 
-            chanceToHit = Mathf.Clamp(chanceToHit, 3, 97);
+            //chanceToHit = Mathf.Clamp(chanceToHit, 3, 97);
+            chanceToHit = Mathf.Clamp(chanceToHit, 0, 94);
 
             return Dice100.SuccessRoll(chanceToHit);
         }
