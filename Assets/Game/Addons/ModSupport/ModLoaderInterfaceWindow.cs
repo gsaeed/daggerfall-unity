@@ -610,13 +610,13 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                     if (disableConflicts)
                     {
                         conflictStr +=
-                            $"{fields[0]} conflicts with {fields[2]}, {fields[2]} was disabled.\n";
+                            $"\r{fields[0]} conflicts with {fields[2]}, {fields[2]} was disabled.";
                         depTarget.Enabled = false;
                     }
                     else
                     {
                         conflictStr +=
-                            $"{fields[0]} conflicts with {fields[2]}, you should disable one of them.\n";
+                            $"\r{fields[0]} conflicts with {fields[2]}, you should disable one of them.\r";
                     }
 
                     conflictFound = true;
