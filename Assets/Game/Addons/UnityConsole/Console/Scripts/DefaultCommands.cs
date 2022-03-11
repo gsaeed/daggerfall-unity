@@ -1734,55 +1734,42 @@ namespace Wenzil.Console
                     {
                         case "book":
                             newItem = ItemBuilder.CreateRandomBook();
-                            items.AddItem(newItem);
                             break;
                         case "weapon":
                             newItem = ItemBuilder.CreateRandomWeapon(playerEntity.Level);
-                            items.AddItem(newItem);
                             break;
                         case "armor":
                             newItem = ItemBuilder.CreateRandomArmor(playerEntity.Level, playerEntity.Gender, playerEntity.Race);
-                            items.AddItem(newItem);
                             break;
                         case "cloth":
                             newItem = ItemBuilder.CreateRandomClothing(playerEntity.Gender, playerEntity.Race);
-                            items.AddItem(newItem);
                             break;
                         case "ingr":
                             newItem = ItemBuilder.CreateRandomIngredient();
-                            items.AddItem(newItem);
                             break;
                         case "relig":
                             newItem = ItemBuilder.CreateRandomReligiousItem();
-                            items.AddItem(newItem);
                             break;
                         case "soul":
                             newItem = ItemBuilder.CreateRandomlyFilledSoulTrap();
-                            items.AddItem(newItem);
                             break;
                         case "magic":
                             newItem = ItemBuilder.CreateRandomMagicItem(playerEntity.Level, playerEntity.Gender, playerEntity.Race);
-                            items.AddItem(newItem);
                             break;
                         case "drug":
                             newItem = ItemBuilder.CreateRandomDrug();
-                            items.AddItem(newItem);
                             break;
                         case "map":
                             newItem = ItemBuilder.CreateItem(ItemGroups.MiscItems, (int)MiscItems.Map);
-                            items.AddItem(newItem);
                             break;
                         case "torch":
                             newItem = ItemBuilder.CreateItem(ItemGroups.UselessItems2, (int)UselessItems2.Torch);
-                            items.AddItem(newItem);
                             break;
                         case "soultrap":
                             newItem = ItemBuilder.CreateItem(ItemGroups.MiscItems, (int)MiscItems.Soul_trap);
-                            items.AddItem(newItem);
                             break;
                         case "potion":
                             newItem = ItemBuilder.CreateRandomPotion();
-                            items.AddItem(newItem);
                             break;
                         case "recipe":
                             newItem = ItemBuilder.CreateRandomRecipe();
@@ -1793,7 +1780,7 @@ namespace Wenzil.Console
                         default:
                             return "unrecognized keyword. see usage";
                     }
-
+                    items.AddItem(newItem);
                 }
                 return "success";
 
