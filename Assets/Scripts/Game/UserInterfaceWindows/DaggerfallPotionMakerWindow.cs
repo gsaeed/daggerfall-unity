@@ -284,20 +284,38 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             PotionRecipe recipe = recipes[index];
             Dictionary<int, DaggerfallUnityItem> recipeIngreds = new Dictionary<int, DaggerfallUnityItem>();
+            var str = "Missing some ingredients, need to find: ";
+
             foreach (PotionRecipe.Ingredient ingred in recipe.Ingredients)
+            {
                 recipeIngreds.Add(ingred.id, null);
+            }
 
             // Find matching items for the recipe ingredients
             for (int i = 0; i < ingredients.Count; i++)
             {
                 DaggerfallUnityItem item = ingredients.GetItem(i);
                 if (item.IsIngredient && recipeIngreds.ContainsKey(item.TemplateIndex) && recipeIngreds[item.TemplateIndex] == null)
+                {
                     recipeIngreds[item.TemplateIndex] = item;
+                }
+
             }
             // If player doesn't have all the required ingredients, display message else move ingredients into cauldron.
             if (recipeIngreds.ContainsValue(null))
             {
-                DaggerfallUI.MessageBox(TextManager.Instance.GetLocalizedText("reqIngredients"));
+                foreach (KeyValuePair<int, DaggerfallUnityItem> kv in recipeIngreds)
+                {
+                    if (kv.Value == null)
+                    {
+                        str += $"\r{((AllIngredients) kv.Key).ToString()}";
+                    }
+
+                }
+                DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+                messageBox.SetText(str, lineBreak:true);
+                messageBox.ClickAnywhereToClose = true;
+                uiManager.PushWindow(messageBox);
             }
             else
             {
