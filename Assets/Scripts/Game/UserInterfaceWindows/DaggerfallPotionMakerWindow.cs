@@ -306,16 +306,21 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 foreach (KeyValuePair<int, DaggerfallUnityItem> kv in recipeIngreds)
                 {
-                    if (kv.Value == null)
+                    var rawName = ((AllIngredients) kv.Key).ToString();
+                    var cleanName = string.Empty;
+                    foreach (var c in rawName)
                     {
-                        str += $"\r{((AllIngredients) kv.Key).ToString()}";
+                        if (c == '_')
+                            cleanName += " ";
+                        else
+                            cleanName += c;
                     }
 
+                    if (kv.Value == null)
+                        str += $"\r{cleanName}";
                 }
-                DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-                messageBox.SetText(str, lineBreak:true);
-                messageBox.ClickAnywhereToClose = true;
-                uiManager.PushWindow(messageBox);
+
+                DaggerfallUI.MessageBox(str);
             }
             else
             {
