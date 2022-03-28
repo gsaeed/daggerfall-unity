@@ -12,7 +12,14 @@
 using DaggerfallWorkshop.Game.UserInterface;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using DaggerfallWorkshop.Game.Utility.ModSupport;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -112,6 +119,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             { UIWindowType.WitchesCovenPopup, typeof(DaggerfallWitchesCovenPopupWindow) },
         };
 
+        private static Dictionary<UIWindowType, Mod> uiWindowModded = new Dictionary<UIWindowType, Mod>();
+
+
         /// <summary>
         /// Register a custom UI Window implementation class. Overwrites the previous class type.
         /// </summary>
@@ -119,9 +129,94 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         /// <param name="windowClassType">The c# class Type of the implementation class to replace with</param>
         public static void RegisterCustomUIWindow(UIWindowType windowType, Type windowClassType)
         {
-            DaggerfallUnity.LogMessage("RegisterCustomUIWindow: " + windowType, true);
-            uiWindowImplementations[windowType] = windowClassType;
-            DaggerfallUI.Instance.ReinstantiatePersistentWindowInstances();
+            Mod curMod = null;
+            Mod prevMod = null;
+            var stackTrace = new StackTrace();
+            var thisFrame = string.Empty;
+            thisFrame = stackTrace.GetFrame(1).GetMethod()?.ReflectedType?.ToString();
+            string fileName = string.Empty;
+
+            thisFrame = thisFrame.Trim();
+
+            fileName = thisFrame;
+
+            if (fileName.Length > 0 && fileName.Contains('.'))
+                fileName = fileName.Substring(fileName.LastIndexOf('.') + 1);
+
+            if (fileName.Length > 0 && fileName.Contains(' '))
+                fileName = fileName.Substring(fileName.LastIndexOf(' ') + 1);
+
+            var scr = GetChildWithName(GameManager.Instance.gameObject,fileName);
+            if (scr != null)
+            {
+                curMod = ModManager.Instance.GetMod(scr.name);
+                if (curMod == null)
+                    Debug.Log($"RegisterCustomUIWindow: {scr.name} could not find a mod for {thisFrame}");
+            }
+            else
+            {
+                Debug.LogError(
+                    $"RegisterCustomUIWindow: {fileName} could not find a GameObject [{thisFrame}]");
+                uiWindowImplementations[windowType] = windowClassType;
+                DaggerfallUI.Instance.ReinstantiatePersistentWindowInstances();
+                return;
+            }
+
+            if (curMod == null || !uiWindowModded.TryGetValue(windowType, out prevMod) || (prevMod != null && prevMod.LoadPriority < curMod.LoadPriority))
+            {
+                if (prevMod == null)
+                {
+                    if (curMod != null)
+                        DaggerfallUnity.LogMessage($"RegisterCustomUIWindow: {windowType} from mod {curMod.Title}:{curMod.FileName}", true);
+                    else
+                        Debug.LogError($"RegisterCustomUIWindow: {windowType} was unable to find mod for {scr.name} {thisFrame}");
+
+                    uiWindowModded[windowType] = curMod;
+                    uiWindowImplementations[windowType] = windowClassType;
+                    DaggerfallUI.Instance.ReinstantiatePersistentWindowInstances();
+                    return;
+                }
+                else
+                {
+                    DaggerfallUnity.LogMessage($"RegisterCustomUIWindow: {windowType} from mod {curMod.Title}:[{curMod.LoadPriority}] overrides {prevMod.Title}:[{prevMod.LoadPriority}]" , true);
+                    uiWindowModded[windowType] = curMod;
+                    uiWindowImplementations[windowType] = windowClassType;
+                    DaggerfallUI.Instance.ReinstantiatePersistentWindowInstances();
+                    return;
+                }
+            }
+            else 
+            {
+                DaggerfallUnity.LogMessage($"RegisterCustomUIWindow: {windowType} from mod {curMod.Title}:[{curMod.LoadPriority}] cannot override {prevMod.Title}:[{prevMod.LoadPriority}] due to load position.", true);
+                return;
+            }
+
+        }
+
+        private static GameObject GetChildWithName(GameObject obj, string name)
+        {
+            Transform trans = obj.transform;
+
+            foreach (var go in UnityEngine.Object.FindObjectsOfType<GameObject>())
+            {
+                if (go.GetComponents<MonoBehaviour>().Any(child => child.name.ToUpper() == name.ToUpper()))
+                {
+                    return go;
+                }
+
+                foreach (var child in go.GetComponents<MonoBehaviour>())
+                {
+                    var chNoSp = child.ToString().Substring(child.ToString().LastIndexOf('.') + 1);
+                    chNoSp = chNoSp.Remove(chNoSp.Length - 1).ToUpper();
+                    var pNoSp = Regex.Replace(name, @"\s+", "").ToUpper();
+                    if ( chNoSp == pNoSp || (chNoSp.Length >= pNoSp.Length && pNoSp == chNoSp.Substring(chNoSp.Length - pNoSp.Length)))
+                    {
+                        return go;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public static IUserInterfaceWindow GetInstance(UIWindowType windowType, IUserInterfaceManager uiManager)
