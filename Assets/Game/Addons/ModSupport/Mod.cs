@@ -636,6 +636,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             if (string.IsNullOrEmpty(assetName))
             {
+                Debug.LogWarning($"LoadAssetFromBundle warning: assetname is null or empty, returning null");
                 return null;
             }
             try
@@ -693,7 +694,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     return la.Obj as T;
                 }
                 else
+                {
+                    Debug.LogWarning($"LoadAssetFromBundle warning: {assetName} was not found in {AssetBundle}");
                     return null;
+                }
             }
             catch (Exception ex)
             {
