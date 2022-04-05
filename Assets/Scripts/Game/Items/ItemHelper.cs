@@ -66,7 +66,7 @@ namespace DaggerfallWorkshop.Game.Items
         public delegate bool ItemUseHandler(DaggerfallUnityItem item, ItemCollection collection);
         Dictionary<int, ItemUseHandler> itemUseHandlers = new Dictionary<int, ItemUseHandler>();
 
-        Dictionary<int, Type> customItemTypes = new Dictionary<int, Type>();
+        static Dictionary<int, Type> customItemTypes = new Dictionary<int, Type>();
         Dictionary<ItemGroups, List<int>> customItemGroups = new Dictionary<ItemGroups, List<int>>();
 
         #endregion
