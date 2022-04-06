@@ -100,6 +100,7 @@ namespace DaggerfallWorkshop
             public DFLocation.BuildingTypes buildingType;
             public int lastLockpickAttempt;
             public string customUserDisplayName;
+            public bool hasVisited;
         }
 
         public struct NearbyObject
@@ -915,7 +916,7 @@ namespace DaggerfallWorkshop
         /// </summary>
         /// <param name="buildingKey">Building key of building to be discovered</param>
         /// <param name="overrideName">If provided, ignore previous discovery and override the name</param>
-        public void DiscoverBuilding(int buildingKey, string overrideName = null)
+        public void DiscoverBuilding(int buildingKey, string overrideName = null, bool visiting = true)
         {
             // Ensure current location also discovered before processing building
             DiscoverCurrentLocation();
@@ -924,14 +925,6 @@ namespace DaggerfallWorkshop
             if (!CurrentLocation.Loaded)
                 return;
 
-            // Do nothing if building already discovered, unless overriding name
-            if (overrideName == null && HasDiscoveredBuilding(buildingKey))
-                return;
-
-            // Get building information
-            DiscoveredBuilding db;
-            if (!GetBaseBuildingDiscoveryData(buildingKey, out db))
-                return;
 
             // Get location discovery
             int mapPixelID = MapsFile.GetMapPixelIDFromLongitudeLatitude((int)CurrentLocation.MapTableData.Longitude, CurrentLocation.MapTableData.Latitude);
@@ -940,6 +933,20 @@ namespace DaggerfallWorkshop
             {
                 dl = discoveredLocations[mapPixelID];
             }
+
+            // Do nothing if building already discovered, unless overriding name
+            if (overrideName == null && HasDiscoveredBuilding(buildingKey))
+            {
+                var buildingVisit = dl.discoveredBuildings[buildingKey];
+                if (buildingVisit.hasVisited)
+                    return;
+            }
+
+            // Get building information
+            DiscoveredBuilding db;
+            if (!GetBaseBuildingDiscoveryData(buildingKey, out db))
+                return;
+
 
             // Ensure the building dict is created
             if (dl.discoveredBuildings == null)
@@ -968,6 +975,8 @@ namespace DaggerfallWorkshop
                 db.displayName = overrideName;
                 db.isOverrideName = true;
             }
+
+            db.hasVisited = visiting;
 
             if (db.oldDisplayName == db.displayName)
                 db.isOverrideName = false;
@@ -1078,7 +1087,6 @@ namespace DaggerfallWorkshop
 
             // Get discovery data for building
             discoveredBuildingOut = dl.discoveredBuildings[buildingKey];
-
             return true;
         }
 
