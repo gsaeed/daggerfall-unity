@@ -495,6 +495,8 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
     private void CleanConfigurationDirectory()
     {
+        DaggerfallMessageBox clean2ConfigMessageBox = new DaggerfallMessageBox(uiManager, this);
+
         var unknownDirectories = Directory.GetDirectories(ModManager.Instance.ModDataDirectory)
             .Select(x => new DirectoryInfo(x))
             .Where(x => ModManager.Instance.GetModFromGUID(x.Name) == null)
@@ -509,14 +511,34 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             cleanConfigMessageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
             cleanConfigMessageBox.OnButtonClick += (messageBox, messageBoxButton) =>
             {
+
+                var checkDel = false;
                 if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
                 {
-                    foreach (var directory in unknownDirectories)
-                        directory.Delete(true);
-                }
+                    checkDel = true;
+                    clean2ConfigMessageBox.ParentPanel.BackgroundTexture = null;
+                    clean2ConfigMessageBox.SetText("Are you sure?");
+                    clean2ConfigMessageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+                    clean2ConfigMessageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
+                    clean2ConfigMessageBox.OnButtonClick += (message2Box, messageBox2Button) =>
+                    {
+                        if (messageBox2Button == DaggerfallMessageBox.MessageBoxButtons.Yes)
+                        {
+                            foreach (var directory in unknownDirectories)
+                                directory.Delete(true);
+                        }
 
-                messageBox.CancelWindow();
-                moveNextStage = true;
+                        message2Box.CancelWindow();
+                        moveNextStage = true;
+                    };
+                    
+
+                }
+                cleanConfigMessageBox.CloseWindow();
+                if (checkDel)
+                    uiManager.PushWindow(clean2ConfigMessageBox);
+                else
+                    moveNextStage = true;
             };
             uiManager.PushWindow(cleanConfigMessageBox);
         }
