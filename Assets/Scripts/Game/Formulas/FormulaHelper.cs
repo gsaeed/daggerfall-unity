@@ -3191,7 +3191,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
             else
             {
-                if (overrides.TryGetValue(formulaName, out formulaOverride))
+                if (overrides.TryGetValue(formulaName, out formulaOverride) && formulaOverride.Provider.LoadPriority != provider.LoadPriority)
                     Debug.LogWarning(
                     $"Mod Override for {formulaName}: Mod {provider.FileName}:{provider.LoadPriority} could not overwrite {formulaOverride.Provider.FileName}:{formulaOverride.Provider.LoadPriority} because it is lower in the load priority.");
             }
