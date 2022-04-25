@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Questing;
+using UnityEngine;
 
 namespace DaggerfallWorkshop.Game.Items
 {
@@ -33,7 +34,7 @@ namespace DaggerfallWorkshop.Game.Items
 
         #region Custom item registry.
 
-        private static Dictionary<string, Type> customItems = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> customItems = new Dictionary<string, Type>();
 
         public static bool RegisterCustomItem(string itemClassName, Type itemClassType)
         {
@@ -42,6 +43,10 @@ namespace DaggerfallWorkshop.Game.Items
             {
                 customItems.Add(itemClassName, itemClassType);
                 return true;
+            }
+            else
+            {
+                Debug.LogError($"{itemClassName} could not be registered because the item was previously registered.");
             }
             return false;
         }
