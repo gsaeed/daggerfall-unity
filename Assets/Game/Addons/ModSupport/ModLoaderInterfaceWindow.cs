@@ -118,9 +118,8 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         //modsFound.Text = string.Format("{0}: ", ModManager.GetText("modsFound"));
         //ModListPanel.Components.Add(modsFound);
 
-        modFilter.HorizontalAlignment = HorizontalAlignment.Left;
-        modFilter.Position = new Vector2(10, 20);
-        modFilter.TextOffset = 3;
+        //modFilter.HorizontalAlignment = HorizontalAlignment.Left;
+        modFilter.Position = new Vector2(10, 12); ;
         modFilter.Text = "";
         modFilter.DefaultText = "Enter Filter";
         modFilter.OnType += filterMods;
