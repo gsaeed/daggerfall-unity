@@ -501,11 +501,20 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             .Where(x => ModManager.Instance.GetModFromGUID(x.Name) == null)
             .ToArray();
 #if !UNITY_EDITOR
+
+        var unknownDirStr = string.Empty;
         if (unknownDirectories.Length > 0)
         {
+            unknownDirStr = ModManager.GetText("cleanConfigurationDir");
+            foreach (var dir in unknownDirectories)
+            {
+                unknownDirStr += $"\r{dir.Name}";
+            }
+
             var cleanConfigMessageBox = new DaggerfallMessageBox(uiManager, this);
             cleanConfigMessageBox.ParentPanel.BackgroundTexture = null;
-            cleanConfigMessageBox.SetText(ModManager.GetText("cleanConfigurationDir"));
+            cleanConfigMessageBox.EnableVerticalScrolling(80);
+            cleanConfigMessageBox.SetText(unknownDirStr);
             cleanConfigMessageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
             cleanConfigMessageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
             cleanConfigMessageBox.OnButtonClick += (messageBox, messageBoxButton) =>
