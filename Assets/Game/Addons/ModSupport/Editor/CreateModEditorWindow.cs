@@ -141,6 +141,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             }
 
             fileOpen = true;
+            precompiledMod = info.ModPreCompile;
             return info;
         }
 
@@ -447,6 +448,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         bool SaveModFile(bool supressWindow = false)
         {
+            modInfo.ModPreCompile = precompiledMod;
             ModManager.SeekModContributes(modInfo, automaticallyRegisterQuestLists);
 
             string path = currentFilePath;
