@@ -14,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FullSerializer;
+using Mono.CSharp;
+using Attribute = System.Attribute;
 
 namespace DaggerfallWorkshop.Game.Utility.ModSupport
 {
@@ -49,6 +51,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public string ModDescription;
         public string GUID = "invalid";
         public List<string> Files;      //list of assets to add to mod (only used during creation)
+        public bool ModPreCompile = false;
 
 #pragma warning disable 649
         /// <summary>
