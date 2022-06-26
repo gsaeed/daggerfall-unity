@@ -232,8 +232,6 @@ namespace DaggerfallWorkshop
 
         public float DisplayHUDScaleAdjust { get; set; }
 
-        public bool DisplayMobileEnemyDeathMsg { get; set; }
-
         public bool DisplayMobileEnemyHealthStatus { get; set; }
 
         public bool ShowOptionsAtStart { get; set; }
@@ -498,7 +496,6 @@ namespace DaggerfallWorkshop
             AccelerateUICopyTexture = GetBool(sectionGUI, "AccelerateUICopyTexture");
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
-            DisplayMobileEnemyDeathMsg = GetBool(sectionGUI, "DisplayMobileEnemyDeathMsg");
             DisplayMobileEnemyHealthStatus = GetBool(sectionGUI, "DisplayMobileEnemyHealthStatus");
 
             SDFFontRendering = GetBool(sectionGUI, "SDFFontRendering");
