@@ -1130,7 +1130,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     }
 
                     // Check minimum version (ignore pre-release identifiers after hyphen).
-                    if (target.Enabled && dependency.Version != null)
+                    if (target.Enabled && dependency.Version != null && dependency.Version.Trim().Length > 0)
                     {
                         if (target.ModInfo.ModVersion == null)
                         {
