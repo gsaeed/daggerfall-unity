@@ -22,6 +22,9 @@ namespace UnityEngine
 
         public static void PlayOneShotWhenReady(this AudioSource audioSource, AudioClip audioClip, float volumeScale)
         {
+            if (audioClip == null)
+                return;
+
             DaggerfallUnity.Instance.StartCoroutine(WhenClipReadyCoroutine(audioClip, audioClipMaxDelay,
                 clip =>
                 {
