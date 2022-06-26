@@ -682,7 +682,13 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                             target.ModInfo.Dependencies[l].IsOptional = fields[3].Trim().ToLower() == "true" ? true : false;
                             target.ModInfo.Dependencies[l].IsPeer = fields[4].Trim().ToLower() == "true" ? true : false;
                             if (fields.Length > 6)
-                                target.ModInfo.Dependencies[l].Version = fields[6].Trim().ToLower();
+                            {
+                                var str = fields[6].Trim().ToLower();
+                                if (!(str.Length > 0 && str[0] >= '0' && str[0] <= '9'))
+                                    str = null;
+
+                                target.ModInfo.Dependencies[l].Version = str;
+                            }
                         }
                     }
                 }
