@@ -169,7 +169,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     if (curMod != null)
                         DaggerfallUnity.LogMessage($"RegisterCustomUIWindow: {windowType} from mod {curMod.Title}:{curMod.FileName}", true);
                     else
-                        Debug.LogError($"RegisterCustomUIWindow: {windowType} was unable to find mod for {scr.name} {thisFrame}");
+                        Debug.LogWarning($"RegisterCustomUIWindow: {windowType} was unable to find mod for {scr.name} {thisFrame}");
 
                     uiWindowModded[windowType] = curMod;
                     uiWindowImplementations[windowType] = windowClassType;
