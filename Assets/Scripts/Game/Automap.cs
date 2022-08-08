@@ -1840,6 +1840,12 @@ namespace DaggerfallWorkshop.Game
         /// <param name="nearestHit">[out] the nearest RaycastHit with automap layer geometry, might be null if no geometry was hit</param>
         private void GetRayCastNearestHitOnAutomapLayer(Vector2 screenPosition, out RaycastHit? nearestHit)
         {
+            if (cameraAutomap == null)
+            {
+                nearestHit = null;
+                return;
+            }
+
             Ray ray = cameraAutomap.ScreenPointToRay(screenPosition);
 
             RaycastHit[] hits = Physics.RaycastAll(ray, 10000, 1 << layerAutomap);
