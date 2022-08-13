@@ -1,3 +1,11 @@
+If you change inventory or trade windows - you need to recompile
+    inventory filter
+    inventory info filter
+    hidden map locations
+    limited gold shops
+
+
+
 This folder is the place for development files of Daggerfall Unity mods. Its content is not tracked by git for the core project.
 
 Each mod should be in a subfolder with an appropriate name, i.e. Mods/Example.
