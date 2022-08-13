@@ -993,7 +993,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         /// <summary>
         /// Updates accessory items display.
         /// </summary>
-        protected void UpdateAccessoryItemsDisplay()
+        protected virtual void UpdateAccessoryItemsDisplay()
         {
             // Follow same order as equip slots
             int minSlot = (int)EquipSlots.Amulet0;
