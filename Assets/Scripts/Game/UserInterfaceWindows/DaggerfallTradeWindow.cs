@@ -440,7 +440,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 {
                     DaggerfallUnityItem item = basketItems.GetItem(i);
                     modeActionEnabled = true;
-                    int itemPrice = FormulaHelper.CalculateCost(item.value, buildingDiscoveryData.quality) * item.stackCount;
+                    int itemPrice = FormulaHelper.CalculateCost(item.value, buildingDiscoveryData.quality, item.ConditionPercentage) * item.stackCount;
                     if ((holidayId == (int)DFLocation.Holidays.Merchants_Festival && Guild == null) ||
                         (holidayId == (int)DFLocation.Holidays.Tales_and_Tallow && Guild != null && Guild.GetFactionId() == (int)FactionFile.FactionIDs.The_Mages_Guild) ||
                         (holidayId == (int)DFLocation.Holidays.Warriors_Festival && Guild == null && item.ItemGroup == ItemGroups.Weapons))
