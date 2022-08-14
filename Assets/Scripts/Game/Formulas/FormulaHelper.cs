@@ -1903,6 +1903,25 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         /// <summary>
+        /// Calculate the cost of something.
+        /// </summary>
+        /// <param name="item">DaggerfallUnityItem</param>
+        /// <returns>Shop specific cost</returns>
+        public static int CalculateBaseCost(DaggerfallUnityItem item)
+        {
+            Func<DaggerfallUnityItem, int> del;
+            if (TryGetOverride("CalculateBaseCost", out del))
+                return del(item);
+
+            int cost = item.value;
+
+            if (cost < 1)
+                cost = 1;
+
+            return cost;
+        }
+
+        /// <summary>
         /// Calculate the cost of something in a given shop.
         /// </summary>
         /// <param name="baseValue">Base value</param>
