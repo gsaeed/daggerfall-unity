@@ -342,6 +342,11 @@ namespace DaggerfallWorkshop.Game.Serialization
                     File.Delete(Path.Combine(path, GetModDataFilename(mod)));
             }
 
+            var dir = new DirectoryInfo(path);
+            //Delete any remaining mod files
+            foreach (var file in dir.EnumerateFiles("mod*.txt"))
+                file.Delete();
+            
             // Check if folder is empty
             if (!Directory.GetFileSystemEntries(path, "*", SearchOption.AllDirectories).Any())
             {
