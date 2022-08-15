@@ -52,6 +52,8 @@ namespace DaggerfallWorkshop.Game.Items
         public Poisons poisonType = Poisons.None;
         public uint timeHealthLeechLastUsed;
         public uint timeEffectsLastRerolled;
+        // Potion recipe
+        public int potionRecipeKey;
 
         // Private item fields
         int playerTextureArchive;
@@ -66,8 +68,7 @@ namespace DaggerfallWorkshop.Game.Items
 
         // Soul trapped
         MobileTypes trappedSoulType = MobileTypes.None;
-        // Potion recipe
-        int potionRecipeKey;
+
 
         // Time for magically-created item to disappear
         uint timeForItemToDisappear = 0;
