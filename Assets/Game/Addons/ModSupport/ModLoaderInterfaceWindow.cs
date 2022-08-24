@@ -633,7 +633,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
             var fields = line.Split(sep.ToCharArray());
             var target = GetModFromName(fields[0]);
-            if (target != null)
+            if (target != null && target.Enabled)
             {
                 var depTarget = GetModFromName(fields[2]);
                 if (target.Enabled &&  depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
@@ -1031,7 +1031,53 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
     void ExtractAllTextFiles(BaseScreenComponent sender, Vector2 position)
     {
-        
+        foreach (Mod mod in ModManager.Instance.Mods)
+        {
+            Debug.Log($"Mod Extract - extracting {mod.Title}");
+            string path = string.Empty;
+            try
+            {
+                string[] assets = mod.AssetNames;
+                if (assets == null)
+                    continue;
+
+                path = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles", mod.FileName);
+                ClearDirectory(path);
+                Directory.CreateDirectory(path);
+
+                for (int i = 0; i < assets.Length; i++)
+                {
+                    string extension = Path.GetExtension(assets[i]);
+
+                    var asset = mod.GetAsset<TextAsset>(assets[i]);
+                    if (asset == null)
+                        continue;
+
+                    if (assets[i].EndsWith(".bytes", StringComparison.Ordinal))
+                    {
+                        // Export binary asset without .bytes extension
+                        File.WriteAllBytes(Path.Combine(path, asset.name), asset.bytes);
+                    }
+                    else if (assets[i].EndsWith(".cs.txt", StringComparison.Ordinal))
+                    {
+                        // Export C# script without .txt extension
+                        File.WriteAllText(Path.Combine(path, asset.name), asset.text);
+                    }
+                    else
+                    {
+                        // Export text asset with original extension
+                        File.WriteAllText(Path.Combine(path, asset.name + extension), asset.text);
+                    }
+                }
+            }
+
+            catch (Exception e)
+            {
+                Debug.Log($"Mod Extract - unable to extract text for {mod.Title} at {path}, error {e.Message}");
+            }
+        }
+
+        var dirPath = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
 
 
         var messageBox = new DaggerfallMessageBox(uiManager, this, true);
@@ -1084,12 +1130,12 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                         }
                     }
                 }
-                var dirPath = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
 
                 var message3Box = new DaggerfallMessageBox(uiManager, this, true);
                 message3Box.AllowCancel = true;
                 message3Box.ClickAnywhereToClose = true;
                 message3Box.ParentPanel.BackgroundTexture = null;
+                dirPath = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
                 message3Box.SetText($"all mods extracted to folders in {dirPath}");
                 uiManager.PushWindow(message3Box);
             }
