@@ -1049,19 +1049,22 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             for (int i = 0; i < assemblies.Count; i++)
             {
+                int x = 0;
                 try
                 {
                     Type[] types = assemblies[i].GetTypes();
-
+                    x = 0;
                     foreach (Type t in types)
                     {
                         if (t.IsClass)
                             FindModLoaders(state, t, modLoaders);
+                        x++;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Failed to seek mod loader on {Title}: {ex.Message}");
+                    Debug.LogError($"Failed to seek mod loader on {Title} for {assemblies[i]}: {ex.Message}");
+                    Debug.LogError($"Failed at Type # {x}, type {assemblies[i].GetTypes()[x]}");
                     CheckMissingReferences(assemblies[i]);
                     continue;
                 }
