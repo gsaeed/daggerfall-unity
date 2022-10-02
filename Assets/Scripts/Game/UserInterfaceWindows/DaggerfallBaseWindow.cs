@@ -28,6 +28,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         bool isSetup;
         DaggerfallUnity dfUnity;
         Panel nativePanel = new Panel();
+        public const KeyCode exitKey = KeyCode.Escape;
 
         protected ToolTip defaultToolTip = null;
         protected bool allowFreeScaling = true;
