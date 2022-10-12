@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect.Save;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Serialization;
@@ -22,6 +23,7 @@ using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.MagicAndEffects
 {
@@ -1090,7 +1092,16 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         protected virtual void RaiseOnNewMagicRoundEvent()
         {
             if (OnNewMagicRound != null)
-                OnNewMagicRound();
+                try
+                {
+                    OnNewMagicRound();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnRegisterCustomEffects
@@ -1099,7 +1110,16 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         protected virtual void RaiseOnRegisterCustomEffectsEvent()
         {
             if (OnRegisterCustomEffects != null)
-                OnRegisterCustomEffects();
+                try
+                {
+                    OnRegisterCustomEffects();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnEndSyntheticTimeIncrease
@@ -1108,7 +1128,16 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         protected virtual void RaiseOnEndSyntheticTimeIncreaseEvent()
         {
             if (OnEndSyntheticTimeIncrease != null)
-                OnEndSyntheticTimeIncrease();
+                try
+                {
+                    OnEndSyntheticTimeIncrease();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

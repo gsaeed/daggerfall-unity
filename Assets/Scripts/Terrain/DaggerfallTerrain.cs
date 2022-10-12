@@ -17,6 +17,8 @@ using DaggerfallWorkshop.Utility;
 using Unity.Collections;
 using Unity.Jobs;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop
 {
@@ -386,7 +388,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnInstantiateTerrainEvent()
         {
             if (OnInstantiateTerrain != null)
-                OnInstantiateTerrain(this);
+                try
+                {
+                    OnInstantiateTerrain(this);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnPromoteTerrainData
@@ -395,7 +406,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnPromoteTerrainDataEvent(TerrainData terrainData)
         {
             if (OnPromoteTerrainData != null)
-                OnPromoteTerrainData(this, terrainData);
+                try
+                {
+                    OnPromoteTerrainData(this, terrainData);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion
