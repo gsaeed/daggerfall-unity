@@ -9,8 +9,11 @@
 // Notes:
 //
 
+using System;
+using System.Diagnostics;
 using UnityEngine;
 using DaggerfallWorkshop.Game.UserInterface;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -105,7 +108,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         void RaiseOnCancelEvent(DaggerfallPopupWindow sender)
         {
             if (OnCancel != null)
-                OnCancel(sender);
+                try
+                {
+                    OnCancel(sender);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion
