@@ -10,6 +10,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Utility;
@@ -22,6 +23,7 @@ using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Utility;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -1140,7 +1142,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void RaiseOnTradeHandler(int numItems, int value)
         {
             if (OnTrade != null)
-                OnTrade(WindowMode, numItems, value);
+                try
+                {
+                    OnTrade(WindowMode, numItems, value);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         protected override void StartGameBehaviour_OnNewGame()

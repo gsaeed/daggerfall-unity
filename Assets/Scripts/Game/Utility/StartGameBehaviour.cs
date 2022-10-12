@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Utility;
@@ -25,6 +26,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.Utility
 {
@@ -1057,7 +1059,16 @@ namespace DaggerfallWorkshop.Game.Utility
         protected virtual void RaiseOnNewGameEvent()
         {
             if (OnNewGame != null)
-                OnNewGame();
+                try
+                {
+                    OnNewGame();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Save;
 using DaggerfallConnect.FallExe;
@@ -20,7 +21,7 @@ using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.Formulas;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.Items
 {
@@ -1878,7 +1879,16 @@ namespace DaggerfallWorkshop.Game.Items
         public void RaiseOnWeaponStrikeEvent(DaggerfallEntityBehaviour receiver, int damage)
         {
             if (OnWeaponStrike != null)
-                OnWeaponStrike(this, receiver, damage);
+                try
+                {
+                    OnWeaponStrike(this, receiver, damage);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion
