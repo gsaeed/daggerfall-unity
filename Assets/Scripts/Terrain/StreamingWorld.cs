@@ -16,6 +16,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Utility;
@@ -24,6 +25,7 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Serialization;
 using Unity.Jobs;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop
 {
@@ -1765,7 +1767,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnReadyEvent()
         {
             if (OnReady != null)
-                OnReady();
+                try
+                {
+                    OnReady();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnTeleportToCoordinates
@@ -1774,7 +1785,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnTeleportToCoordinatesEvent(DFPosition worldPos)
         {
             if (OnTeleportToCoordinates != null)
-                OnTeleportToCoordinates(worldPos);
+                try
+                {
+                    OnTeleportToCoordinates(worldPos);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnPreInitWorld
@@ -1783,7 +1803,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnPreInitWorldEvent()
         {
             if (OnPreInitWorld != null)
-                OnPreInitWorld();
+                try
+                {
+                    OnPreInitWorld();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnInitWorld
@@ -1792,7 +1821,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnInitWorldEvent()
         {
             if (OnInitWorld != null)
-                OnInitWorld();
+                try
+                {
+                    OnInitWorld();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnUpdateTerrainsStart
@@ -1801,7 +1839,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnUpdateTerrainsStartEvent()
         {
             if (OnUpdateTerrainsStart != null)
-                OnUpdateTerrainsStart();
+                try
+                {
+                    OnUpdateTerrainsStart();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnUpdateTerrainsEnd
@@ -1810,7 +1857,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnUpdateTerrainsEndEvent()
         {
             if (OnUpdateTerrainsEnd != null)
-                OnUpdateTerrainsEnd();
+                try
+                {
+                    OnUpdateTerrainsEnd();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnClearStreamingWorld
@@ -1819,7 +1875,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnClearStreamingWorldEvent()
         {
             if (OnClearStreamingWorld != null)
-                OnClearStreamingWorld();
+                try
+                {
+                    OnClearStreamingWorld();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnCreateLocationGameObject
@@ -1828,7 +1893,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnCreateLocationGameObjectEvent(DaggerfallLocation dfLocation)
         {
             if (OnCreateLocationGameObject != null)
-                OnCreateLocationGameObject(dfLocation);
+                try
+                {
+                    OnCreateLocationGameObject(dfLocation);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnUpdateLocationGameObject
@@ -1837,7 +1911,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnUpdateLocationGameObjectEvent(GameObject locationObject, bool allowYeld)
         {
             if (OnUpdateLocationGameObject != null)
-                OnUpdateLocationGameObject(locationObject, allowYeld);
+                try
+                {
+                    OnUpdateLocationGameObject(locationObject, allowYeld);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnAvailableLocationGameObject
@@ -1846,7 +1929,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnAvailableLocationGameObjectEvent()
         {
             if (OnAvailableLocationGameObject != null)
-                OnAvailableLocationGameObject();
+                try
+                {
+                    OnAvailableLocationGameObject();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnFloatingOriginChange
@@ -1855,7 +1947,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnFloatingOriginChangeEvent()
         {
             if (OnFloatingOriginChange != null)
-                OnFloatingOriginChange();
+                try
+                {
+                    OnFloatingOriginChange();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

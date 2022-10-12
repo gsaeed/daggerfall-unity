@@ -14,12 +14,14 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallWorkshop.Game.MagicAndEffects;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -317,7 +319,16 @@ namespace DaggerfallWorkshop.Game
         protected virtual void RaiseOnReleaseFrameEvent()
         {
             if (OnReleaseFrame != null)
-                OnReleaseFrame();
+                try
+                {
+                    OnReleaseFrame();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion
