@@ -9,9 +9,12 @@
 // Notes:
 //
 
+using System;
+using System.Diagnostics;
 using UnityEngine;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -168,7 +171,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void RaiseOnVideoStartGlobalEvent()
         {
             if (OnVideoStart != null)
-                OnVideoStart();
+                try
+                {
+                    OnVideoStart();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnVideoEnd (global)
@@ -177,7 +189,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void RaiseOnVideoEndGlobalEvent()
         {
             if (OnVideoEnd != null)
-                OnVideoEnd();
+                try
+                {
+                    OnVideoEnd();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnVideoFinished
@@ -186,7 +207,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void RaiseOnVideoFinishedHandler()
         {
             if (OnVideoFinished != null)
-                OnVideoFinished();
+                try
+                {
+                    OnVideoFinished();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

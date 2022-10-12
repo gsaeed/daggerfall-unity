@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Formulas;
@@ -23,6 +24,7 @@ using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.Entity
 {
@@ -879,7 +881,16 @@ namespace DaggerfallWorkshop.Game.Entity
         protected void RaiseOnDeathEvent()
         {
             if (OnDeath != null && !quiesce)
-                OnDeath(this);
+                try
+                {
+                    OnDeath(this);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         public delegate void OnExhaustedHandler(DaggerfallEntity entity);
@@ -887,7 +898,16 @@ namespace DaggerfallWorkshop.Game.Entity
         void RaiseOnExhaustedEvent()
         {
             if (OnExhausted != null && !quiesce)
-                OnExhausted(this);
+                try
+                {
+                    OnExhausted(this);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         public delegate void OnMagickaDepletedHandler(DaggerfallEntity entity);
@@ -895,7 +915,16 @@ namespace DaggerfallWorkshop.Game.Entity
         void RaiseOnMagickaDepletedEvent()
         {
             if (OnMagickaDepleted != null && !quiesce)
-                OnMagickaDepleted(this);
+                try
+                {
+                    OnMagickaDepleted(this);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

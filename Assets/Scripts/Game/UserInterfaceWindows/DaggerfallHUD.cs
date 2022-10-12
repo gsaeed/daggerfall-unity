@@ -9,10 +9,13 @@
 // Notes:
 //
 
+using System;
+using System.Diagnostics;
 using UnityEngine;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Utility;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -408,7 +411,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void RaiseOnLargeHUDToggleEvent()
         {
             if (OnLargeHUDToggle != null)
-                OnLargeHUDToggle();
+                try
+                {
+                    OnLargeHUDToggle();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

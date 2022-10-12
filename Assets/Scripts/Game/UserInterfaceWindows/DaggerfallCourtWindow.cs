@@ -11,6 +11,7 @@
 
 using UnityEngine;
 using System;
+using System.Diagnostics;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallConnect.Utility;
@@ -19,7 +20,11 @@ using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Guilds;
+
 using DaggerfallWorkshop.Localization;
+
+using Debug = UnityEngine.Debug;
+
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -496,7 +501,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void RaiseOnCourtScreenEvent()
         {
             if (OnCourtScreen != null)
-                OnCourtScreen();
+                try
+                {
+                    OnCourtScreen();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnEndPrisonTime
@@ -505,7 +519,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void RaiseOnEndPrisonTimeEvent()
         {
             if (OnEndPrisonTime != null)
-                OnEndPrisonTime();
+                try
+                {
+                    OnEndPrisonTime();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         protected virtual void SwitchToPrisonScreen()

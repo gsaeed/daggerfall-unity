@@ -13,6 +13,8 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 using DaggerfallWorkshop.Utility;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
@@ -22,6 +24,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -1445,13 +1448,31 @@ namespace DaggerfallWorkshop.Game
         {
             TransitionEventArgs args = new TransitionEventArgs(transitionType);
             if (OnPreTransition != null)
-                OnPreTransition(args);
+                try
+                {
+                    OnPreTransition(args);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
         protected virtual void RaiseOnPreTransitionEvent(TransitionType transitionType, StaticDoor staticDoor)
         {
             TransitionEventArgs args = new TransitionEventArgs(transitionType, staticDoor);
             if (OnPreTransition != null)
-                OnPreTransition(args);
+                try
+                {
+                    OnPreTransition(args);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnTransitionInterior
@@ -1461,7 +1482,16 @@ namespace DaggerfallWorkshop.Game
         {
             TransitionEventArgs args = new TransitionEventArgs(TransitionType.ToBuildingInterior, staticDoor, daggerfallInterior);
             if (OnTransitionInterior != null)
-                OnTransitionInterior(args);
+                try
+                {
+                    OnTransitionInterior(args);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnTransitionExterior
@@ -1471,7 +1501,16 @@ namespace DaggerfallWorkshop.Game
         {
             TransitionEventArgs args = new TransitionEventArgs(TransitionType.ToBuildingExterior);
             if (OnTransitionExterior != null)
-                OnTransitionExterior(args);
+                try
+                {
+                    OnTransitionExterior(args);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnTransitionDungeonInterior
@@ -1481,7 +1520,16 @@ namespace DaggerfallWorkshop.Game
         {
             TransitionEventArgs args = new TransitionEventArgs(TransitionType.ToDungeonInterior, staticDoor, null, daggerfallDungeon);
             if (OnTransitionDungeonInterior != null)
-                OnTransitionDungeonInterior(args);
+                try
+                {
+                    OnTransitionDungeonInterior(args);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnTransitionDungeonExterior
@@ -1491,7 +1539,16 @@ namespace DaggerfallWorkshop.Game
         {
             TransitionEventArgs args = new TransitionEventArgs(TransitionType.ToDungeonExterior);
             if (OnTransitionDungeonExterior != null)
-                OnTransitionDungeonExterior(args);
+                try
+                {
+                    OnTransitionDungeonExterior(args);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         /// <summary>
@@ -1503,7 +1560,16 @@ namespace DaggerfallWorkshop.Game
         protected virtual void RaiseOnFailedTransition(TransitionType transitionType)
         {
             if (OnFailedTransition != null)
-                OnFailedTransition(new TransitionEventArgs(transitionType));
+                try
+                {
+                    OnFailedTransition(new TransitionEventArgs(transitionType));
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnMovePlayerToDungeonStart
@@ -1512,7 +1578,16 @@ namespace DaggerfallWorkshop.Game
         protected virtual void RaiseOnMovePlayerToDungeonStartEvent()
         {
             if (OnMovePlayerToDungeonStart != null)
-                OnMovePlayerToDungeonStart();
+                try
+                {
+                    OnMovePlayerToDungeonStart();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnRespawnerComplete
@@ -1521,7 +1596,16 @@ namespace DaggerfallWorkshop.Game
         protected virtual void RaiseOnRespawnerCompleteEvent()
         {
             if (OnRespawnerComplete != null)
-                OnRespawnerComplete();
+                try
+                {
+                    OnRespawnerComplete();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

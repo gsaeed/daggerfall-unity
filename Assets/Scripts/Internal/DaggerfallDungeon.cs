@@ -15,6 +15,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
@@ -22,6 +23,8 @@ using DaggerfallConnect.Utility;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game;
 using Unity.Profiling;
+using Debug = UnityEngine.Debug;
+
 
 namespace DaggerfallWorkshop
 {
@@ -523,7 +526,16 @@ namespace DaggerfallWorkshop
         private void RaiseOnSetDungeonEvent()
         {
             if (OnSetDungeon != null)
-                OnSetDungeon(this);
+                try
+                {
+                    OnSetDungeon(this);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
     }
 }

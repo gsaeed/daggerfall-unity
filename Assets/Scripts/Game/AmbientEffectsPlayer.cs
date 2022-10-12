@@ -9,9 +9,13 @@
 // Notes:
 //
 
+using System;
 using UnityEngine;
 using System.Collections;
+using System.Diagnostics;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
+using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -512,7 +516,16 @@ namespace DaggerfallWorkshop.Game
         {
             AmbientEffectsEventArgs args = new AmbientEffectsEventArgs(clip);
             if (OnPlayEffect != null)
-                OnPlayEffect(args);
+                try
+                {
+                    OnPlayEffect(args);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         void PlayerGPS_OnEnterLocationRect(DaggerfallConnect.DFLocation location)

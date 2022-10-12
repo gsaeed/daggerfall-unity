@@ -1,4 +1,4 @@
-﻿// Project:         Daggerfall Unity
+// Project:         Daggerfall Unity
 // Copyright:       Copyright (C) 2009-2023 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -12,7 +12,9 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Diagnostics;
 using DaggerfallWorkshop.Utility;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop
 {
@@ -155,7 +157,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnDawnEvent()
         {
             if (OnDawn != null)
-                OnDawn();
+                try
+                {
+                    OnDawn();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnDusk
@@ -164,7 +175,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnDuskEvent()
         {
             if (OnDusk != null)
-                OnDusk();
+                try
+                {
+                    OnDusk();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnMidday
@@ -173,7 +193,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnMiddayEvent()
         {
             if (OnMidday != null)
-                OnMidday();
+                try
+                {
+                    OnMidday();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnMidnight
@@ -182,7 +211,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnMidnightEvent()
         {
             if (OnMidnight != null)
-                OnMidnight();
+                try
+                {
+                    OnMidnight();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnCityLightsOn
@@ -191,7 +229,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnCityLightsOnEvent()
         {
             if (OnCityLightsOn != null)
-                OnCityLightsOn();
+                try
+                {
+                    OnCityLightsOn();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnCityLightsOff
@@ -200,7 +247,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnCityLightsOffEvent()
         {
             if (OnCityLightsOff != null)
-                OnCityLightsOff();
+                try
+                {
+                    OnCityLightsOff();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnNewHour
@@ -209,7 +265,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnNewHourEvent()
         {
             if (OnNewHour != null)
-                OnNewHour();
+                try
+                {
+                    OnNewHour();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnNewDay
@@ -218,7 +283,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnNewDayEvent()
         {
             if (OnNewDay != null)
-                OnNewDay();
+                try
+                {
+                    OnNewDay();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnNewMonth
@@ -227,7 +301,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnNewMonthEvent()
         {
             if (OnNewMonth != null)
-                OnNewMonth();
+                try
+                {
+                    OnNewMonth();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnNewYear
@@ -236,7 +319,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnNewYearEvent()
         {
             if (OnNewYear != null)
-                OnNewYear();
+                try
+                {
+                    OnNewYear();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

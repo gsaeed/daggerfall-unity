@@ -10,12 +10,14 @@
 //
 
 using System;
+using System.Diagnostics;
 using UnityEngine;
 using DaggerfallConnect.Save;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.Items;
 using FullSerializer;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.Questing
 {
@@ -467,7 +469,16 @@ namespace DaggerfallWorkshop.Game.Questing
         protected void RaiseOnGameObjectDestroyEvent()
         {
             if (OnGameObjectDestroy != null)
-                OnGameObjectDestroy(this);
+                try
+                {
+                    OnGameObjectDestroy(this);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

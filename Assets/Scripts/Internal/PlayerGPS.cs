@@ -13,6 +13,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Utility;
@@ -25,6 +26,7 @@ using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop
 {
@@ -1370,7 +1372,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnMapPixelChangedEvent(DFPosition mapPixel)
         {
             if (OnMapPixelChanged != null)
-                OnMapPixelChanged(mapPixel);
+                try
+                {
+                    OnMapPixelChanged(mapPixel);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         //OnDiscoverLocation
@@ -1381,7 +1392,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnDiscoverLocationEvent(DFLocation location)
         {
             if (OnDiscoverLocation != null)
-                OnDiscoverLocation(location);
+                try
+                {
+                    OnDiscoverLocation(location);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnRegionIndexChanged
@@ -1390,7 +1410,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnRegionIndexChangedEvent(int regionIndex)
         {
             if (OnRegionIndexChanged != null)
-                OnRegionIndexChanged(regionIndex);
+                try
+                {
+                    OnRegionIndexChanged(regionIndex);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnClimateIndexChanged
@@ -1399,7 +1428,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnClimateIndexChangedEvent(int climateIndex)
         {
             if (OnClimateIndexChanged != null)
-                OnClimateIndexChanged(climateIndex);
+                try
+                {
+                    OnClimateIndexChanged(climateIndex);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnPoliticIndexChanged
@@ -1408,7 +1446,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnPoliticIndexChangedEvent(int politicIndex)
         {
             if (OnPoliticIndexChanged != null)
-                OnPoliticIndexChanged(politicIndex);
+                try
+                {
+                    OnPoliticIndexChanged(politicIndex);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnEnterLocationRect
@@ -1417,7 +1464,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnEnterLocationRectEvent(DFLocation location)
         {
             if (OnEnterLocationRect != null)
-                OnEnterLocationRect(location);
+                try
+                {
+                    OnEnterLocationRect(location);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnExitLocationRect
@@ -1426,7 +1482,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnExitLocationRectEvent()
         {
             if (OnExitLocationRect != null)
-                OnExitLocationRect();
+                try
+                {
+                    OnExitLocationRect();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion
