@@ -9,9 +9,11 @@
 // Notes:
 //
 
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Save;
@@ -19,6 +21,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.MagicAndEffects;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop
 {
@@ -899,7 +902,16 @@ namespace DaggerfallWorkshop
         protected static void RaiseOnTeleportActionEvent(GameObject triggerObj, GameObject nextObj)
         {
             if (OnTeleportAction != null)
-                OnTeleportAction(triggerObj, nextObj);
+                try
+                {
+                    OnTeleportAction(triggerObj, nextObj);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

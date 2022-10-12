@@ -12,6 +12,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.FallExe;
 using DaggerfallConnect.Save;
@@ -24,6 +25,7 @@ using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Items;
 using FullSerializer;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.MagicAndEffects
 {
@@ -2397,7 +2399,16 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         protected virtual void RaiseOnAssignBundle(LiveEffectBundle bundleAdded)
         {
             if (OnAssignBundle != null)
-                OnAssignBundle(bundleAdded);
+                try
+                {
+                    OnAssignBundle(bundleAdded);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnRemoveBundle
@@ -2406,7 +2417,16 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         protected virtual void RaiseOnRemoveBundle(LiveEffectBundle bundleRemoved)
         {
             if (OnRemoveBundle != null)
-                OnRemoveBundle(bundleRemoved);
+                try
+                {
+                    OnRemoveBundle(bundleRemoved);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnAddIncumbentState
@@ -2415,7 +2435,16 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         protected virtual void RaiseOnAddIncumbentState()
         {
             if (OnAddIncumbentState != null)
-                OnAddIncumbentState();
+                try
+                {
+                    OnAddIncumbentState();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnNewReadySpell
@@ -2424,7 +2453,16 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         protected virtual void RaiseOnNewReadySpell(EntityEffectBundle spell)
         {
             if (OnNewReadySpell != null)
-                OnNewReadySpell(spell);
+                try
+                {
+                    OnNewReadySpell(spell);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnCastReadySpell
@@ -2433,7 +2471,16 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         protected virtual void RaiseOnCastReadySpell(EntityEffectBundle spell)
         {
             if (OnCastReadySpell != null)
-                OnCastReadySpell(spell);
+                try
+                {
+                    OnCastReadySpell(spell);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

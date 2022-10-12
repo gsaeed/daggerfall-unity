@@ -14,6 +14,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
@@ -25,7 +26,9 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.Guilds;
 using DaggerfallWorkshop.Game.MagicAndEffects;
+using Mono.CSharp;
 using UnityEngine.Rendering.PostProcessing;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -1115,7 +1118,16 @@ namespace DaggerfallWorkshop.Game
         public virtual void RaiseOnEncounterEvent()
         {
             if (OnEncounter != null)
-                OnEncounter();
+                try
+                {
+                    OnEncounter();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         //OnEnemySpawn
@@ -1129,7 +1141,16 @@ namespace DaggerfallWorkshop.Game
         public virtual void RaiseOnEnemySpawnEvent(GameObject enemy)
         {
             if (OnEnemySpawn != null)
-                OnEnemySpawn(enemy);
+                try
+                {
+                    OnEnemySpawn(enemy);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

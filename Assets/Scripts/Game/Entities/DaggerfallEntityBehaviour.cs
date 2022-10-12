@@ -9,10 +9,13 @@
 // Notes:
 //
 
+using System;
+using System.Diagnostics;
 using UnityEngine;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 using DaggerfallWorkshop.Game.Questing;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.Entity
 {
@@ -311,7 +314,16 @@ namespace DaggerfallWorkshop.Game.Entity
         void RaiseOnSetEntityHandler(DaggerfallEntity oldEntity, DaggerfallEntity newEntity)
         {
             if (OnSetEntity != null)
-                OnSetEntity(oldEntity, newEntity);
+                try
+                {
+                    OnSetEntity(oldEntity, newEntity);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion
