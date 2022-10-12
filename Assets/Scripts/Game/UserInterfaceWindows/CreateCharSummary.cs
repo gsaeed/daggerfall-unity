@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop;
@@ -21,6 +22,7 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Player;
 using DaggerfallWorkshop.Game.Entity;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -156,7 +158,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         void RaiseOnRestartEvent()
         {
             if (OnRestart != null)
-                OnRestart();
+                try
+                {
+                    OnRestart();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

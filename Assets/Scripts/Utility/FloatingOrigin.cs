@@ -14,9 +14,11 @@
 
 using UnityEngine;
 using System;
+using System.Diagnostics;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Utility;
 using DaggerfallWorkshop.Game;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Utility
 {
@@ -199,7 +201,16 @@ namespace DaggerfallWorkshop.Utility
         public void RaiseOnPositionUpdateEvent(Vector3 offset)
         {
             if (OnPositionUpdate != null)
-                OnPositionUpdate(offset);
+                try
+                {
+                    OnPositionUpdate(offset);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

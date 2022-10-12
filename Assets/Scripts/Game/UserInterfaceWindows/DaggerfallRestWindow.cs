@@ -9,6 +9,8 @@
 // Notes:
 //
 
+using System;
+using System.Diagnostics;
 using UnityEngine;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.UserInterface;
@@ -17,6 +19,7 @@ using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallConnect;
 using DaggerfallWorkshop.Game.Banking;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -834,7 +837,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         void RaiseOnSleepTickEvent()
         {
             if (OnSleepTick != null)
-                OnSleepTick();
+                try
+                {
+                    OnSleepTick();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnSleepEnd
@@ -843,7 +855,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         void RaiseOnSleepEndEvent()
         {
             if (OnSleepEnd != null)
-                OnSleepEnd();
+                try
+                {
+                    OnSleepEnd();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion
