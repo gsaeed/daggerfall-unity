@@ -13,6 +13,7 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 using FullSerializer;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Utility;
@@ -22,6 +23,8 @@ using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using UnityEngine.Localization.Settings;
 using System.Globalization;
+using Debug = UnityEngine.Debug;
+
 
 namespace DaggerfallWorkshop.Game.Questing
 {
@@ -1976,7 +1979,16 @@ namespace DaggerfallWorkshop.Game.Questing
         protected virtual void RaiseOnRegisterCustomerActionsEvent()
         {
             if (OnRegisterCustomActions != null)
-                OnRegisterCustomActions();
+                try
+                {
+                    OnRegisterCustomActions();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnTick
@@ -1985,7 +1997,16 @@ namespace DaggerfallWorkshop.Game.Questing
         protected virtual void RaiseOnTickEvent()
         {
             if (OnTick != null)
-                OnTick();
+                try
+                {
+                    OnTick();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnQuestStarted
@@ -1994,7 +2015,16 @@ namespace DaggerfallWorkshop.Game.Questing
         protected virtual void RaiseOnQuestStartedEvent(Quest quest)
         {
             if (OnQuestStarted != null)
-                OnQuestStarted(quest);
+                try
+                {
+                    OnQuestStarted(quest);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnQuestEnded
@@ -2003,7 +2033,16 @@ namespace DaggerfallWorkshop.Game.Questing
         protected virtual void RaiseOnQuestEndedEvent(Quest quest)
         {
             if (OnQuestEnded != null)
-                OnQuestEnded(quest);
+                try
+                {
+                    OnQuestEnded(quest);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnQuestErrorTermination
@@ -2012,7 +2051,16 @@ namespace DaggerfallWorkshop.Game.Questing
         protected virtual void RaiseOnQuestErrorTerminationEvent(Quest quest)
         {
             if (OnQuestErrorTermination != null)
-                OnQuestErrorTermination(quest);
+                try
+                {
+                    OnQuestErrorTermination(quest);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

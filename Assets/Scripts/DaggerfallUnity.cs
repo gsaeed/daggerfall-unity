@@ -16,6 +16,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
@@ -25,6 +26,7 @@ using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop
 {
@@ -544,7 +546,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnReadyEvent()
         {
             if (OnReady != null)
-                OnReady();
+                try
+                {
+                    OnReady();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnSetArena2Source
@@ -553,7 +564,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnSetArena2SourceEvent()
         {
             if (OnSetArena2Source != null)
-                OnSetArena2Source();
+                try
+                {
+                    OnSetArena2Source();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnSetTerrainSampler
@@ -562,7 +582,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnSetTerrainSamplerEvent()
         {
             if (OnSetTerrainSampler != null)
-                OnSetTerrainSampler();
+                try
+                {
+                    OnSetTerrainSampler();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         // OnSetTextProvider
@@ -571,7 +600,16 @@ namespace DaggerfallWorkshop
         protected virtual void RaiseOnSetTextProviderEvent()
         {
             if (OnSetTextProvider != null)
-                OnSetTextProvider();
+                try
+                {
+                    OnSetTextProvider();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         public delegate void OnPruneCacheEventHandler(float time, float threshold);
@@ -579,7 +617,16 @@ namespace DaggerfallWorkshop
         private void RaiseOnPruneCacheEvent(float time, float threshold)
         {
             if (OnPruneCache != null)
-                OnPruneCache(time, threshold);
+                try
+                {
+                    OnPruneCache(time, threshold);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

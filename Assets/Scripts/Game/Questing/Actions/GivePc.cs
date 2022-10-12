@@ -10,11 +10,12 @@
 //
 
 using System;
-using UnityEngine;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using FullSerializer;
+using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.Questing.Actions
 {
@@ -239,7 +240,16 @@ namespace DaggerfallWorkshop.Game.Questing.Actions
         protected virtual void RaiseOnOfferPendingEvent(GivePc sender)
         {
             if (OnOfferPending != null)
-                OnOfferPending(sender);
+                try
+                {
+                    OnOfferPending(sender);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion

@@ -9,6 +9,8 @@
 // Notes:
 //
 
+using System;
+using System.Diagnostics;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Weather;
 using DaggerfallWorkshop.Utility;
@@ -16,6 +18,8 @@ using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
+using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -567,7 +571,16 @@ namespace DaggerfallWorkshop.Game
         static void RaiseOnWeatherChangeEvent(WeatherType weather)
         {
             if (OnWeatherChange != null)
-                OnWeatherChange(weather);
+                try
+                {
+                    OnWeatherChange(weather);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    Debug.LogError($"{e.ToString()}");
+                }
         }
 
         #endregion
