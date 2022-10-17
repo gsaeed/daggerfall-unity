@@ -591,6 +591,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         string conflictStr = "";
         bool conflictFound = false;
         bool disableConflicts = false;
+        string lineNoQuotes;
 
 
         var filename = Application.persistentDataPath + @"/mod_order.txt";
@@ -620,18 +621,25 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
         foreach (string line in System.IO.File.ReadLines(filename))
         {
-            if (line.Length == 0 || line[0] == '#')
+            lineNoQuotes = line;
+            if (line.Contains("\""))
+            {
+
+                lineNoQuotes = line.Replace("\"", "");
+            }
+
+            if (lineNoQuotes.Length == 0 || lineNoQuotes[0] == '#')
                 continue;
 
-            if (line.Length > 0 && line[0] == '$')
+            if (lineNoQuotes.Length > 0 && lineNoQuotes[0] == '$')
             {
-                var flds = line.Split(('='));
+                var flds = lineNoQuotes.Split(('='));
                 if (flds[0].Trim().ToLower() == "$disable conflicts")
                     disableConflicts = flds[1].Trim().ToLower() == "true" ? true : false;
                 continue;
             }
 
-            var fields = line.Split(sep.ToCharArray());
+            var fields = lineNoQuotes.Split(sep.ToCharArray());
             var target = GetModFromName(fields[0]);
             if (target != null && target.Enabled)
             {
