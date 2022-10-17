@@ -912,11 +912,25 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
         foreach (FileInfo file in di.GetFiles())
         {
-            file.Delete();
+            try
+            {
+                file.Delete();
+            }
+            catch(Exception)
+            {
+
+            }
         }
         foreach (DirectoryInfo dir in di.GetDirectories())
         {
-            dir.Delete(true);
+            try
+            {
+                dir.Delete(true);
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 
