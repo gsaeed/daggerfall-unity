@@ -14,8 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
@@ -387,16 +385,20 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             modCount.Text = $"{ModManager.Instance.GetAllModsCount()} Mods   ";
             increaseLoadOrderButton.Enabled = true;
             decreaseLoadOrderButton.Enabled = true;
-            enableAllButton.Enabled = true;
-            disableAllButton.Enabled = true;
+            enableAllButton.Label.Text = "Enable All";
+            disableAllButton.Label.Text = "Disable All";
+            //enableAllButton.Enabled = true;
+            //disableAllButton.Enabled = true;
             mods = ModManager.Instance.GetAllMods().ToList<Mod>();
         }
         else
         {
             increaseLoadOrderButton.Enabled = false;
             decreaseLoadOrderButton.Enabled = false;
-            enableAllButton.Enabled = false;
-            disableAllButton.Enabled = false;
+            enableAllButton.Label.Text = "Enable Sel.";
+            disableAllButton.Label.Text = "Disable Sel.";
+            //enableAllButton.Enabled = false;
+            //disableAllButton.Enabled = false;
             foreach (var m in ModManager.Instance.GetAllMods())
             {
                 if (m.ModInfo.ModTitle.ToUpper().Contains(modFilterText.ToUpper()))
@@ -463,7 +465,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
 
         Mod mod = ModManager.Instance.GetMod(ms.modInfo.ModTitle);
-        if (enableAllButton.Enabled == false)
+        if (modFilter.Text.Length > 0)
             modLoadPriorityLabel.Text += " - " + mod.LoadPriority;
 
         modDFTFUVersionLabel.TextColor = mod.IsGameVersionSatisfied() == false ? Color.red : DaggerfallUI.DaggerfallDefaultTextColor;
@@ -1013,8 +1015,14 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         {
             modSettings[i].enabled = true;
             modList.GetItem(i).textColor = unselectedTextColor;
-            ModManager.Instance.mods[i].Enabled = true;
+            var m =
+                ModManager.Instance.mods.Where(x => x.ModInfo.ModTitle == modSettings[i].modInfo.ModTitle).ToArray();
+            if (m != null && m.Length > 0)
+            {
+                m[0].Enabled = true;
+            }
         }
+
         UpdateModPanel();
     }
 
@@ -1026,8 +1034,13 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         for (int i = 0; i < modSettings.Length; i++)
         {
             modSettings[i].enabled = false;
-            ModManager.Instance.mods[i].Enabled = false;
             modList.GetItem(i).textColor = disabledModTextColor;
+            var m =
+                ModManager.Instance.mods.Where(x => x.ModInfo.ModTitle == modSettings[i].modInfo.ModTitle).ToArray();
+            if (m != null && m.Length > 0)
+            {
+                m[0].Enabled = false;
+            }
         }
 
         UpdateModPanel();
