@@ -877,7 +877,10 @@ namespace DaggerfallWorkshop
             DFLocation location;
             bool found = dfUnity.ContentReader.GetLocation(regionName, locationName, out location);
             if (!found)
-                throw new Exception(String.Format("Error finding location {0} : {1}", regionName, locationName));
+            {
+                UnityEngine.Debug.Log(string.Format("Error finding location {0} : {1}", regionName, locationName));
+                return;
+            }
             // Check if already discovered
             int mapPixelID = MapsFile.GetMapPixelIDFromLongitudeLatitude((int)location.MapTableData.Longitude, location.MapTableData.Latitude);
             if (HasDiscoveredLocation(mapPixelID))
