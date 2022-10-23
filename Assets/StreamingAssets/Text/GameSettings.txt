@@ -49,6 +49,8 @@ soundVolume,                                        Sound volume
 soundVolumeInfo,                                    Volume of sound.
 musicVolume,                                        Music volume
 musicVolumeInfo,                                    Volume of music.
+muteMusicVolume,                                    Music volume muted
+muteMusicVolumeInfo,                                Volume of music disabled because MuteMusic set to True in Settings.ini.
 spellLighting,                                      Spell lighting
 spellLightingInfo,                                  Enable spell lighting
 spellShadows,                                       Spell shadows

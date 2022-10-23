@@ -244,6 +244,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             // make it easier to max out or mute volume
+            if (DaggerfallUnity.Settings.MuteMusic)
+            {
+                DaggerfallUnity.Settings.MusicVolume = 0;
+                return;
+            }
             if ((position.x / barMaxLength) > 0.99f)
                 position.x = barMaxLength;
             else if ((position.x / barMaxLength) < 0.01f)

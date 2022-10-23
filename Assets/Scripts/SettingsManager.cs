@@ -263,6 +263,8 @@ namespace DaggerfallWorkshop
         public bool IllegalRestWarning { get; set; }
         public bool LargeHUD { get; set; }
         public bool LargeHUDDocked { get; set; }
+
+        public bool MuteMusic { get; set; } = true;
         public float LargeHUDUndockedScale { get; set; }
         public int LargeHUDUndockedAlignment { get; set; }
         public bool LargeHUDUndockedOffsetWeapon { get; set; }
@@ -297,7 +299,19 @@ namespace DaggerfallWorkshop
         public bool ToggleSneak { get; set; }
         public int WeaponSwingMode { get; set; }
         public int CameraRecoilStrength { get; set; }
-        public float MusicVolume { get; set; }
+
+        private float _musicVolume;
+        public float MusicVolume
+        {
+            get { return _musicVolume; }
+            set
+            {
+                if (MuteMusic)
+                    _musicVolume = 0;
+                else
+                    _musicVolume = value;
+            } 
+        }
         public float SoundVolume { get; set; }
         public bool InstantRepairs { get; set; }
         public bool AllowMagicRepairs { get; set; }
@@ -538,6 +552,11 @@ namespace DaggerfallWorkshop
             WeaponSwingMode = GetInt(sectionControls, "WeaponSwingMode", 0, 2);
             CameraRecoilStrength = GetInt(sectionControls, "CameraRecoilStrength", 0, 4);
             SoundVolume = GetFloat(sectionControls, "SoundVolume", 0f, 1.0f);
+
+            MuteMusic = GetBool(sectionControls, "MuteMusic");
+            if (MuteMusic && MusicVolume > 0)
+                MusicVolume = 0;
+
             MusicVolume = GetFloat(sectionControls, "MusicVolume", 0f, 1.0f);
             InstantRepairs = GetBool(sectionControls, "InstantRepairs");
             AllowMagicRepairs = GetBool(sectionControls, "AllowMagicRepairs");
@@ -739,6 +758,7 @@ namespace DaggerfallWorkshop
             SetInt(sectionControls, "CameraRecoilStrength", CameraRecoilStrength);
             SetFloat(sectionControls, "SoundVolume", SoundVolume);
             SetFloat(sectionControls, "MusicVolume", MusicVolume);
+            SetBool(sectionControls, "MuteMusic",MuteMusic);
             SetBool(sectionControls, "InstantRepairs", InstantRepairs);
             SetBool(sectionControls, "AllowMagicRepairs", AllowMagicRepairs);
             SetBool(sectionControls, "BowDrawback", BowDrawback);
