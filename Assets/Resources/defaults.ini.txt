@@ -146,6 +146,7 @@ WeaponSwingMode = 0
 CameraRecoilStrength = 3
 SoundVolume = 0.5
 MusicVolume = 0.5
+MuteMusic=False
 InstantRepairs = False
 AllowMagicRepairs = False
 BowDrawback = False
