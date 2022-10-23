@@ -270,9 +270,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             soundVolume.DisplayUnits = 100;
             soundVolume.OnScroll += SoundVolume_OnScroll;
             soundVolume.OnMouseUp += SoundVolume_OnMouseUp;
-            musicVolume = AddSlider(rightPanel, "musicVolume", 0, 100, DaggerfallUnity.Settings.MusicVolume * 100);
-            musicVolume.DisplayUnits = 100;
-            musicVolume.OnScroll += MusicVolume_OnScroll;
+            if (DaggerfallUnity.Settings.MuteMusic)
+            {
+                musicVolume = AddSlider(rightPanel, "muteMusicVolume", 0, 0, DaggerfallUnity.Settings.MusicVolume * 100);
+                musicVolume.OnScroll -= MusicVolume_OnScroll;
+            }
+            else
+            {
+                musicVolume = AddSlider(rightPanel, "musicVolume", 0, 100, DaggerfallUnity.Settings.MusicVolume * 100);
+                musicVolume.DisplayUnits = 100;
+                musicVolume.OnScroll += MusicVolume_OnScroll;
+            }
 
             // Melee Attacks
             AddSectionTitle(rightPanel, "meleeAttacks");
@@ -449,7 +457,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             DaggerfallUnity.Settings.AlternateMusic = alternateMusic.IsChecked;
             DaggerfallUnity.Settings.SoundVolume = soundVolume.GetValue() / 100f;
-            DaggerfallUnity.Settings.MusicVolume = musicVolume.GetValue() / 100f;
+            if (DaggerfallUnity.Settings.MuteMusic)
+                DaggerfallUnity.Settings.MusicVolume = 0;
+            else
+                DaggerfallUnity.Settings.MusicVolume = musicVolume.GetValue() / 100f;
 
             DaggerfallUnity.Settings.EnableSpellLighting = spellLighting.IsChecked;
             DaggerfallUnity.Settings.EnableSpellShadows = spellShadows.IsChecked;
@@ -855,6 +866,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
          private void MusicVolume_OnScroll()
         {
+            if (DaggerfallUnity.Settings.MuteMusic)
+                musicVolume.SetValue(0);
             DaggerfallUnity.Settings.MusicVolume = musicVolume.GetValue() / 100f;
         }
 
