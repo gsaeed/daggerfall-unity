@@ -1,4 +1,4 @@
-﻿// Project:         Daggerfall Unity
+// Project:         Daggerfall Unity
 // Copyright:       Copyright (C) 2009-2023 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -103,7 +103,7 @@ namespace DaggerfallWorkshop
                 CurrentTime = audioSource.timeSamples;
                 EndTime = audioSource.clip.samples;
             }
-            audioSource.volume = IsMuted ? 0f : DaggerfallUnity.Settings.MusicVolume;
+            audioSource.volume = IsMuted || DaggerfallUnity.Settings.MuteMusic ? 0f : DaggerfallUnity.Settings.MusicVolume;
         }
 
         void LateUpdate()
