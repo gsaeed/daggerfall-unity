@@ -753,6 +753,28 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 // Remove loot container if empty
                 if (lootTarget.Items.Count == 0)
                     GameObjectHelper.RemoveLootContainer(lootTarget);
+                else if (lootTarget.Items.Count == 1 && (lootTarget.ContainerType == LootContainerTypes.DroppedLoot || lootTarget.ContainerType == LootContainerTypes.RandomTreasure))
+
+                {
+                    var item = lootTarget.Items.GetItem(0);
+                    var archive = item.WorldTextureArchive;
+                    var record = item.WorldTextureRecord;
+                    var billboard = lootTarget.GetComponent<Billboard>();
+                    if (billboard != null)
+                    {
+                        billboard.SetMaterial(archive, record);
+                    }
+                }
+                else if (lootTarget.Items.Count > 1 && (lootTarget.ContainerType == LootContainerTypes.DroppedLoot || lootTarget.ContainerType == LootContainerTypes.RandomTreasure))
+                {
+                    int iconIndex = UnityEngine.Random.Range(0, DaggerfallLootDataTables.randomTreasureIconIndices.Length);
+                    var iconRecord = DaggerfallLootDataTables.randomTreasureIconIndices[iconIndex];
+                    var billboard = lootTarget.GetComponent<Billboard>();
+                    if (billboard != null)
+                    {
+                        billboard.SetMaterial(DaggerfallLootDataTables.randomTreasureArchive, iconRecord);
+                    }
+                }
 
                 lootTarget.OnInventoryClose();
                 lootTarget = null;
