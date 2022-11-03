@@ -1699,7 +1699,7 @@ namespace Wenzil.Console
         {
             public static readonly string name = "add";
             public static readonly string description = "Adds n inventory items to the character, based on the given keyword. n = 1 by default";
-            public static readonly string usage = "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|drug|map|torch|potion|recipe|painting) [n]";
+            public static readonly string usage = "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|drug|map|torch|potion|recipe|painting) [n] [level]";
 
             public static string Execute(params string[] args)
             {
@@ -1710,12 +1710,17 @@ namespace Wenzil.Console
                 PlayerEntity playerEntity = player.GetComponent<DaggerfallEntityBehaviour>().Entity as PlayerEntity;
                 ItemCollection items = playerEntity.Items;
                 DaggerfallUnityItem newItem = null;
-
+                int level = playerEntity.Level;
                 int n = 1;
                 if (args.Length >= 2)
                 {
                     Int32.TryParse(args[1], out n);
                 }
+                if (args.Length >= 3)
+                {
+                    Int32.TryParse(args[2], out level);
+                }
+
 
                 if (n < 1)
                     return usage;
@@ -1736,10 +1741,12 @@ namespace Wenzil.Console
                             newItem = ItemBuilder.CreateRandomBook();
                             break;
                         case "weapon":
-                            newItem = ItemBuilder.CreateRandomWeapon(playerEntity.Level);
+                            newItem = ItemBuilder.CreateRandomWeapon(level);
+                            newItem.currentCondition = UnityEngine.Random.Range(10, 100) / 100;
                             break;
                         case "armor":
-                            newItem = ItemBuilder.CreateRandomArmor(playerEntity.Level, playerEntity.Gender, playerEntity.Race);
+                            newItem = ItemBuilder.CreateRandomArmor(level, playerEntity.Gender, playerEntity.Race);
+                            newItem.currentCondition = UnityEngine.Random.Range(10, 100) / 100;
                             break;
                         case "cloth":
                             newItem = ItemBuilder.CreateRandomClothing(playerEntity.Gender, playerEntity.Race);
@@ -1754,7 +1761,7 @@ namespace Wenzil.Console
                             newItem = ItemBuilder.CreateRandomlyFilledSoulTrap();
                             break;
                         case "magic":
-                            newItem = ItemBuilder.CreateRandomMagicItem(playerEntity.Level, playerEntity.Gender, playerEntity.Race);
+                            newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender, playerEntity.Race);
                             break;
                         case "drug":
                             newItem = ItemBuilder.CreateRandomDrug();
