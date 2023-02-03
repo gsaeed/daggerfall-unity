@@ -273,6 +273,7 @@ namespace DaggerfallWorkshop
         public int QuestRumorWeight { get; set; }
         public bool DisableEnemyDeathAlert { get; set; }
         public bool HideLoginName { get; set; }
+        public bool IgnoreCombiner { get; set; }
 
         // [Spells]
         public bool EnableSpellLighting { get; set; }
@@ -512,6 +513,7 @@ namespace DaggerfallWorkshop
             LargeHUDOffsetHorse = GetBool(sectionGUI, "LargeHUDOffsetHorse");
             CanDropQuestItems = GetBool(sectionGUI, "CanDropQuestItems");
             EnableQuestDebugger = GetBool(sectionGUI, "EnableQuestDebugger");
+            IgnoreCombiner = GetBool(sectionGUI, "IgnoreCombiner");
             QuestRumorWeight = GetInt(sectionGUI, "QuestRumorWeight", 1, 100);
             DisableEnemyDeathAlert = GetBool(sectionGUI, "DisableEnemyDeathAlert");
             HideLoginName = GetBool(sectionGUI, "HideLoginName");
