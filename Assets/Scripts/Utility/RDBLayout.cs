@@ -663,7 +663,7 @@ namespace DaggerfallWorkshop.Utility
                             }
 
                             // Add or combine
-                            if (combiner == null || hasAction || PlayerActivate.HasCustomActivation(modelId))
+                            if (combiner == null || DaggerfallUnity.Settings.IgnoreCombiner || hasAction || PlayerActivate.HasCustomActivation(modelId))
                             {
                                 standaloneObject = AddStandaloneModel(dfUnity, ref modelData, modelMatrix, parent, isAutomapRun, hasAction);
                                 standaloneObject.GetComponent<DaggerfallMesh>().SetDungeonTextures(textureTable);
