@@ -113,7 +113,7 @@ LargeHUDUndockedAlignment=0
 LargeHUDUndockedOffsetWeapon=False
 LargeHUDOffsetHorse=True
 CanDropQuestItems=False
-EnableQuestDebugger=False
+EnableQuestDebugger=True
 QuestRumorWeight = 50
 HideLoginName=False
 DisableEnemyDeathAlert=True
@@ -121,6 +121,7 @@ DisplayHUDScaleAdjust=0.5
 DisplayMobileEnemyHealthStatus=False
 DisplayHUDScaleAdjust=0.5
 DisplayMobileEnemyHealthStatus=False
+IgnoreCombiner=True
 
 [Spells]
 EnableSpellLighting=True
