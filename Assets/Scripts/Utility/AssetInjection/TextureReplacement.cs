@@ -994,7 +994,19 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                 if (ModManager.Instance && ModManager.Instance.TryGetAsset(name, null, out tex))
                 {
                     if (!readOnly && !tex.isReadable)
-                        Debug.LogWarning($"Texture {name} is not readable.");
+                    {
+                        // Create a new texture with the same dimensions and format as the source texture
+                        //var newTexture = new Texture2D(tex.width, tex.height, tex.format, false);
+
+                        // Copy the source texture data to the new texture
+                        //Graphics.CopyTexture(tex, newTexture);
+
+                        //Graphics.CopyTexture(newTexture, tex);
+                        tex = duplicateTexture(tex);
+
+                        if (!tex.isReadable)
+                            Debug.LogWarning($"Texture {name} is not readable.");
+                    }
 
                     return true;
                 }
@@ -1002,6 +1014,26 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
 
             tex = null;
             return false;
+        }
+
+        static Texture2D duplicateTexture(Texture2D source)
+        {
+            RenderTexture renderTex = RenderTexture.GetTemporary(
+                source.width,
+                source.height,
+                0,
+                RenderTextureFormat.Default,
+                RenderTextureReadWrite.Linear);
+
+            Graphics.Blit(source, renderTex);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = renderTex;
+            Texture2D readableText = new Texture2D(source.width, source.height, TextureFormat.ARGB32, false, true);
+            readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
+            readableText.Apply();
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTex);
+            return readableText;
         }
 
         /// <summary>
