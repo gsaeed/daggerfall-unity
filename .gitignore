@@ -38,6 +38,8 @@ sysinfo.txt
 # DaggerfallUnity logs
 /Assets/DFTFU_Environment.log
 /Assets/DFTFU_Environment.log.meta
+/Assets/StreamingAssets/aa.meta
+/Assets/StreamingAssets/aa/
 
 # DaggerfallUnity Editor settings
 /Assets/Editor/Settings.meta
