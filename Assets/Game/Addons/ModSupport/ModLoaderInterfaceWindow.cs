@@ -635,7 +635,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             if (target != null)
             {
                 var depTarget = GetModFromName(fields[2]);
-                if (depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
+                if (target.Enabled &&  depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
                 {
                     if (disableConflicts)
                     {
