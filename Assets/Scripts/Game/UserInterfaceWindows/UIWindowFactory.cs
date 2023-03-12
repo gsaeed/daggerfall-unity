@@ -207,6 +207,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 foreach (var child in go.GetComponents<MonoBehaviour>())
                 {
                     var chNoSp = child.ToString().Substring(child.ToString().LastIndexOf('.') + 1);
+                    if (chNoSp == null || chNoSp.Length <= 1)
+                        continue;
                     chNoSp = chNoSp.Remove(chNoSp.Length - 1).ToUpper();
                     var pNoSp = Regex.Replace(name, @"\s+", "").ToUpper();
                     if ( chNoSp == pNoSp || (chNoSp.Length >= pNoSp.Length && pNoSp == chNoSp.Substring(chNoSp.Length - pNoSp.Length)))
