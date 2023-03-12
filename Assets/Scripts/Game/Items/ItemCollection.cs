@@ -46,9 +46,12 @@ namespace DaggerfallWorkshop.Game.Items
             }
             else
             {
-                Debug.LogError($"{itemClassName} could not be registered because the item was previously registered.");
+                Type prevKey;
+                customItems.TryGetValue(itemClassName, out prevKey);
+
+                Debug.LogWarning($"{itemClassName} could not be registered because the item {prevKey} was previously registered.");
             }
-            return false;
+            return true;
         }
 
         #endregion
