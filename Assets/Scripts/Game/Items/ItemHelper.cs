@@ -286,7 +286,7 @@ namespace DaggerfallWorkshop.Game.Items
             if (!string.IsNullOrEmpty(templateName))
                 result = result.Replace("%it", templateName);
             else
-                Debug.LogErrorFormat("Item template index {0} has a null templateName", template.index);
+                Debug.LogErrorFormat("Item {0} which resolved to {1} with template index {2} has a null template.name", item.shortName,result, template.index);
 
             return result;
         }
