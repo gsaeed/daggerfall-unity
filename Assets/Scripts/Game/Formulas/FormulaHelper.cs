@@ -1922,6 +1922,21 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         /// <summary>
+        /// Calculate the cost of books.
+        /// </summary>
+        /// <param name="seed">uint</param>
+        /// <returns>book cost</returns>
+        public static uint CalculateBookCost(uint seed)
+        {
+            Func<uint, uint> del;
+            if (TryGetOverride("CalculateBookCost", out del))
+                return del(seed);
+
+            DFRandom.Seed = seed;
+            return (uint)DFRandom.random_range_inclusive(300, 800);
+        }
+
+        /// <summary>
         /// Calculate the cost of something in a given shop.
         /// </summary>
         /// <param name="baseValue">Base value</param>

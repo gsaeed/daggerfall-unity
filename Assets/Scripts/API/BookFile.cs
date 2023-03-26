@@ -13,6 +13,7 @@ using System;
 using System.IO;
 using DaggerfallConnect.Utility;
 using DaggerfallWorkshop;
+using DaggerfallWorkshop.Game.Formulas;
 using UnityEngine;
 
 namespace DaggerfallConnect.Arena2
@@ -183,8 +184,9 @@ namespace DaggerfallConnect.Arena2
                 // Overwrite price field using random seeded with first 4 bytes.
                 // (See https://forums.dfworkshop.net/viewtopic.php?f=23&t=1576)
                 reader.BaseStream.Position = 0;
-                DFRandom.Seed = reader.ReadUInt32(); // first 4 bytes of book file as a uint
-                header.Price = (uint)DFRandom.random_range_inclusive(300, 800);
+
+                var seed = reader.ReadUInt32(); // first 4 bytes of book file as a uint
+                header.Price = FormulaHelper.CalculateBookCost(seed);
             }
             lastSuccessfulBookHeaderRead = "";
             return true;
