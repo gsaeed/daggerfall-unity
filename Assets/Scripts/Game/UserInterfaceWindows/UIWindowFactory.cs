@@ -72,7 +72,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
     public static class UIWindowFactory
     {
-        static Dictionary<UIWindowType, Type> uiWindowImplementations = new Dictionary<UIWindowType, Type>()
+        public static Dictionary<UIWindowType, Type> uiWindowImplementations = new Dictionary<UIWindowType, Type>()
         {
             { UIWindowType.Automap, typeof(DaggerfallAutomapWindow) },
             { UIWindowType.Banking, typeof(DaggerfallBankingWindow) },
