@@ -1835,6 +1835,11 @@ namespace DaggerfallWorkshop.Game
             Ray ray = cameraAutomap.ScreenPointToRay(screenPosition);
 
             RaycastHit[] hits = Physics.RaycastAll(ray, 10000, 1 << layerAutomap);
+            if (hits == null || hits.Length == 0)
+            {
+                nearestHit = null;
+                return;
+            }
 
             nearestHit = null;
             float nearestDistance = float.MaxValue;
