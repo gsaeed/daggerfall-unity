@@ -404,6 +404,9 @@ namespace DaggerfallWorkshop.Utility
         {
             PlayerEnterExit playerEnterExit = GameManager.Instance.PlayerEnterExit;
 
+            if (playerEnterExit == null)
+                return null;
+
             // Place in world near player depending on local area
             if (playerEnterExit.IsPlayerInsideBuilding)
             {
