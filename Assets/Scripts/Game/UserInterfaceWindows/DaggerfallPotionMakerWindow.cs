@@ -15,6 +15,7 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Items;
 using System.Collections.Generic;
 using DaggerfallWorkshop.Game.MagicAndEffects;
+using System.Linq;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -169,7 +170,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             recipes.Sort((x, y) => (x.DisplayName.CompareTo(y.DisplayName)));
             foreach (PotionRecipe potionRecipe in recipes)
-                recipePicker.ListBox.AddItem(potionRecipe.DisplayName);
+            {
+                string missingIngredient = string.Empty;
+                var missingIngredientCount = CountMissingIngredients(potionRecipe, potionRecipe.DisplayName, out missingIngredient);
+                if (missingIngredientCount == 0)
+                    recipePicker.ListBox.AddItem(potionRecipe.DisplayName);
+                else if (missingIngredientCount == 1)
+                    recipePicker.ListBox.AddItem($"{potionRecipe.DisplayName} - missing {missingIngredient}.", Color.grey);
+                else
+                    recipePicker.ListBox.AddItem($"{potionRecipe.DisplayName} - missing {missingIngredientCount} ingredients.", Color.grey);
+            }
         }
 
         private void RefreshIngredientsList()
@@ -330,6 +340,56 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 nameLabel.Text = recipeName;
             }
         }
+
+        protected virtual int CountMissingIngredients(PotionRecipe recipe, string recipeName, out string missingIngredient)
+        {
+            Dictionary<int, DaggerfallUnityItem> recipeIngreds = new Dictionary<int, DaggerfallUnityItem>();
+            missingIngredient = string.Empty;
+            foreach (PotionRecipe.Ingredient ingred in recipe.Ingredients)
+            {
+                recipeIngreds.Add(ingred.id, null);
+            }
+
+            // Find matching items for the recipe ingredients
+            for (int i = 0; i < ingredients.Count; i++)
+            {
+                DaggerfallUnityItem item = ingredients.GetItem(i);
+                if (item.IsIngredient && recipeIngreds.ContainsKey(item.TemplateIndex) && recipeIngreds[item.TemplateIndex] == null)
+                {
+                    recipeIngreds[item.TemplateIndex] = item;
+                }
+
+            }
+            // If player doesn't have all the required ingredients, return false.
+            if (recipeIngreds.ContainsValue(null))
+            {
+                int nullCount = recipeIngreds.Count(pair => pair.Value == null);
+
+                if (nullCount == 1) 
+                {
+                    foreach (KeyValuePair<int, DaggerfallUnityItem> kv in recipeIngreds.Where(pair =>pair.Value == null))
+                    {
+                        var rawName = ((AllIngredients) kv.Key).ToString();
+                        var cleanName = string.Empty;
+                        foreach (var c in rawName)
+                        {
+                            if (c == '_')
+                                cleanName += " ";
+                            else
+                                cleanName += c;
+                        }
+
+                        if (kv.Value == null)
+                            missingIngredient = $"{cleanName}";
+                    }
+                }
+
+                return nullCount;
+            }
+
+            return 0;
+        }
+
 
         protected virtual void MixCauldron()
         {
