@@ -43,7 +43,6 @@ namespace DaggerfallWorkshop.Game.UserInterface
         Color selectedTextColor = DaggerfallUI.DaggerfallDefaultSelectedTextColor;
         Color shadowColor = DaggerfallUI.DaggerfallDefaultShadowColor;
         Color selectedShadowColor = DaggerfallUI.DaggerfallDefaultShadowColor;
-
         public enum VerticalScrollModes
         {
             EntryWise,
@@ -615,6 +614,15 @@ namespace DaggerfallWorkshop.Game.UserInterface
         {
             ListItem itemOut;
             AddItem(text, out itemOut, position, tag);
+        }
+
+        public void AddItem(string text, Color newTextColor,int position = -1, object tag = null)
+        {
+            var oldColor = textColor;
+            textColor = newTextColor;
+            ListItem itemOut;
+            AddItem(text, out itemOut, position, tag);
+            textColor = oldColor;
         }
 
         public void AddItems(IEnumerable<string> items)
