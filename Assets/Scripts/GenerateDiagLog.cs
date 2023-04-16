@@ -1,4 +1,4 @@
-﻿// Project:         Daggerfall Unity
+// Project:         Daggerfall Unity
 // Copyright:       Copyright (C) 2009-2023 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -297,6 +297,13 @@ namespace DaggerfallWorkshop
 
         }
 
+        public static void PrintTrace(string caller = "")
+        {
+            System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+
+            Debug.Log($"stackTrace called from {caller}: {t}");
+            Debug.Log("======================================================");
+        }
 
         private static void OutPutToFile(StringBuilder builder, string fileName)
         {
