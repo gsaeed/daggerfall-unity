@@ -53,7 +53,18 @@ namespace DaggerfallWorkshop.Game.UserInterface
         /// </summary>
         public IUserInterfaceWindow TopWindow
         {
-            get { return (windows.Count > 0) ? windows.Peek() : null; }
+            get
+            {
+                return (windows.Count > 0) ? windows.Peek() : null;
+            }
+        }
+
+        /// <summary>
+        /// Returns array of windows.
+        /// </summary>
+        public Array GetAllWindows()
+        {
+            return (windows.Count > 0) ? windows.ToArray() : null;
         }
 
         /// <summary>
