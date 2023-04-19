@@ -28,6 +28,7 @@ using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using Mono.CSharp;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -759,8 +760,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 if (SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows && (cursorWidth > 32 || cursorHeight > 32))
                     cursorMode = CursorMode.ForceSoftware;
 
-                Cursor.SetCursor(tex, Vector2.zero, cursorMode);
-                Debug.Log("Cursor texture overridden by mods.");
+                try
+                {
+                    Cursor.SetCursor(tex, Vector2.zero, cursorMode);
+                    Debug.Log("Cursor texture overridden by mods.");
+                }
+                catch (Exception e)
+                {
+                    Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                }
+                
             }
             else
             {
