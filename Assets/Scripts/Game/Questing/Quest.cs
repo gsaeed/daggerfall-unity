@@ -560,7 +560,7 @@ namespace DaggerfallWorkshop.Game.Questing
             entry.messageID = messageID;
             entry.dateTime = new DaggerfallDateTime(DaggerfallUnity.Instance.WorldTime.Now);
             activeLogMessages.Add(stepID, entry);
-            DaggerfallUI.AddHUDText("I've updated my quest log with this new information.", 5);
+            //DaggerfallUI.AddHUDText("I've updated my quest log with this new information.", 5);
         }
 
         /// <summary>
@@ -818,6 +818,8 @@ namespace DaggerfallWorkshop.Game.Questing
             // Add final chunk only if not empty
             if (currentChunk.Count > 0)
                 chunks.Add(currentChunk.ToArray());
+
+            AddLogStep(10, id);
 
             // Push message boxes to stack
             for (int i = 0; i < chunks.Count; i++)
