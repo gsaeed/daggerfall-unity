@@ -167,7 +167,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// An optional implementation of the interface that allows mods to take part of load/save process
         /// and store custom data associated to a specific save on disk.
         /// </summary>
-        public IHasModSaveData SaveDataInterface { internal get; set; }
+        public IHasModSaveData SaveDataInterface { get; set; }
 
 #if UNITY_EDITOR
         /// <summary>

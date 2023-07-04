@@ -110,21 +110,22 @@ namespace DaggerfallWorkshop.Game
         public static bool buildingGreetingsEnabled = true;
 
         #region custom mod activation
-        private struct CustomModActivation
+        public struct CustomModActivation
         {
-            internal readonly CustomActivation Action;
+            public readonly CustomActivation Action;
 
-            internal readonly float ActivationDistance;
-            internal readonly Mod Provider;
+            public readonly float ActivationDistance;
+            public readonly Mod Provider;
 
-            internal CustomModActivation(CustomActivation action, float activationDistance, Mod provider)
+            public  CustomModActivation(CustomActivation action, float activationDistance, Mod provider)
             {
                 Action = action;
                 ActivationDistance = activationDistance;
                 Provider = provider;
             }
         }
-        readonly static Dictionary<string, CustomModActivation> customModActivations = new Dictionary<string, CustomModActivation>();
+
+        public static Dictionary<string, CustomModActivation> customModActivations = new Dictionary<string, CustomModActivation>();
         // Allow mods to register custom flat / model activation methods.
         public delegate void CustomActivation(RaycastHit hit);
 
