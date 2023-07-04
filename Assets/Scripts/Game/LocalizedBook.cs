@@ -160,6 +160,9 @@ namespace DaggerfallWorkshop.Game
 
             // Append -LOC if missing from filename
             string fileNoExt = Path.GetFileNameWithoutExtension(filename);
+            if (fileNoExt == null)
+                return false;
+
             if (!fileNoExt.EndsWith(localizedFilenameSuffix))
                 filename = fileNoExt + localizedFilenameSuffix + fileExtension;
 
