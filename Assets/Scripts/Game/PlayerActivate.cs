@@ -163,26 +163,60 @@ namespace DaggerfallWorkshop.Game
         /// <param name="customActivation">A callback that implements the custom action.</param>
         private static void HandleRegisterCustomActivation(Mod provider, string goFlatModelName, CustomActivation customActivation, float activationDistance)
         {
-            DaggerfallUnity.LogMessage($"HandleRegisterCustomActivation: {goFlatModelName} from mod: {provider.FileName}", true);
+            string withoutRep, withRep;
+            if (goFlatModelName.EndsWith(" [Replacement]"))
+            {
+                withRep = goFlatModelName;
+                withoutRep = goFlatModelName.Substring(0, goFlatModelName.Length - " [Replacement]".Length);
+            }
+            else
+            {
+                withRep = goFlatModelName + " [Replacement]";
+                withoutRep = goFlatModelName;
+            }
+
+            DaggerfallUnity.LogMessage($"HandleRegisterCustomActivation: {withRep} from mod: {provider.FileName}", true);
             CustomModActivation existingActivation;
-            if (customModActivations.TryGetValue(goFlatModelName, out existingActivation))
+            if (customModActivations.TryGetValue(withRep, out existingActivation))
             {
                 if (existingActivation.Provider.LoadPriority > provider.LoadPriority)
                 {
                     Debug.LogWarning("Custom Activation: Denied custom activation registration from " + provider.Title +
-                                     " for " + goFlatModelName + " | " + existingActivation.Provider.Title +
+                                     " for " + withRep + " | " + existingActivation.Provider.Title +
                                      " has higher load priority");
                 }
                 else
                 {
                     Debug.LogWarning(
-                        $"Custom Activation: Replaced custom activation registration from {existingActivation.Provider.Title} for {goFlatModelName} with custom activation from {provider.Title} because it has a higher load priority.");
-                    customModActivations[goFlatModelName] = new CustomModActivation(customActivation, activationDistance, provider);
+                        $"Custom Activation: Replaced custom activation registration from {existingActivation.Provider.Title} for {withRep} with custom activation from {provider.Title} because it has a higher load priority.");
+                    customModActivations[withRep] = new CustomModActivation(customActivation, activationDistance, provider);
                 }
             }
             else
             {
-                customModActivations[goFlatModelName] = new CustomModActivation(customActivation, activationDistance, provider);
+                customModActivations[withRep] = new CustomModActivation(customActivation, activationDistance, provider);
+            }
+
+            DaggerfallUnity.LogMessage($"HandleRegisterCustomActivation: {withoutRep} from mod: {provider.FileName}", true);
+
+            if (customModActivations.TryGetValue(withoutRep, out existingActivation))
+            {
+                if (existingActivation.Provider.LoadPriority > provider.LoadPriority)
+                {
+                    Debug.LogWarning("Custom Activation: Denied custom activation registration from " + provider.Title +
+                                     " for " + withoutRep + " | " + existingActivation.Provider.Title +
+                                     " has higher load priority");
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"Custom Activation: Replaced custom activation registration from {existingActivation.Provider.Title} for {withoutRep} with custom activation from {provider.Title} because it has a higher load priority.");
+                    customModActivations[withoutRep] = new CustomModActivation(customActivation, activationDistance, provider);
+                }
+            }
+            else
+            {
+                customModActivations[withoutRep] = new CustomModActivation(customActivation, activationDistance, provider);
             }
         }
 
