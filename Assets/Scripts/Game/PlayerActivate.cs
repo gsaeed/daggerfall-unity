@@ -168,17 +168,18 @@ namespace DaggerfallWorkshop.Game
         private static void HandleRegisterCustomActivation(Mod provider, string goFlatModelName, CustomActivation customActivation, float activationDistance)
         {
             string withoutRep, withRep;
+            bool sentWithRep = false;
             if (goFlatModelName.EndsWith(" [Replacement]"))
             {
                 withRep = goFlatModelName;
                 withoutRep = goFlatModelName.Substring(0, goFlatModelName.Length - " [Replacement]".Length);
+                sentWithRep = true;
             }
             else
             {
                 withRep = goFlatModelName + " [Replacement]";
                 withoutRep = goFlatModelName;
             }
-
             DaggerfallUnity.LogMessage($"HandleRegisterCustomActivation: {withRep} from mod: {provider.FileName}", true);
             CustomModActivation existingActivation;
             if (customModActivations.TryGetValue(withRep, out existingActivation))
@@ -199,6 +200,9 @@ namespace DaggerfallWorkshop.Game
             else
             {
                 customModActivations[withRep] = new CustomModActivation(customActivation, activationDistance, provider);
+                Debug.Log(sentWithRep
+                    ? $"Custom Activation: custom activation registered for {withRep} from {provider.Title}"
+                    : $"Custom Activation: custom activation registered for {withRep} auto added in support of {provider.Title}");
             }
 
             DaggerfallUnity.LogMessage($"HandleRegisterCustomActivation: {withoutRep} from mod: {provider.FileName}", true);
@@ -221,6 +225,9 @@ namespace DaggerfallWorkshop.Game
             else
             {
                 customModActivations[withoutRep] = new CustomModActivation(customActivation, activationDistance, provider);
+                Debug.Log(sentWithRep
+                    ? $"Custom Activation: custom activation registered for {withoutRep} auto added in support of {provider.Title}"
+                    : $"Custom Activation: custom activation registered for {withoutRep} from {provider.Title}");
             }
         }
 
