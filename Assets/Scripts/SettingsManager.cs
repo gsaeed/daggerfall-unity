@@ -342,9 +342,13 @@ namespace DaggerfallWorkshop
         public float TerrainHeightmapPixelError { get; set; }
         public bool SmallerDungeons { get; set; }
         public int AssetCacheThreshold { get; set; }
-
-        // [Enhancements]
+// [Enhancements]
         public bool LypyL_GameConsole { get; set; }
+        public bool PawnShopsSellHorsesAndCarts { get; set; }
+        public int BaseClassMinBonusRoll { get; set; } = 0;
+        public int BaseClassMaxBonusRoll { get; set; } = 10;
+        public int FreePointsMinBonusRoll { get; set; } = 6;
+        public int FreePointsMaxBonusRoll { get; set; } = 14;
         public bool LypyL_ModSystem { get; set; }
         public bool AssetInjection { get; set; }
         public bool CompressModdedTextures { get; set; }
@@ -584,8 +588,13 @@ namespace DaggerfallWorkshop
             TerrainHeightmapPixelError = GetFloat(sectionExperimental, "TerrainHeightmapPixelError", 1, 10);
             SmallerDungeons = GetBool(sectionExperimental, "SmallerDungeons");
             AssetCacheThreshold = GetInt(sectionExperimental, "AssetCacheThreshold", 0, 120);
-
+ 
             LypyL_GameConsole = GetBool(sectionEnhancements, "LypyL_GameConsole");
+            PawnShopsSellHorsesAndCarts = GetBool(sectionEnhancements, "PawnShopsSellHorsesAndCarts");
+            BaseClassMinBonusRoll = GetInt(sectionEnhancements, "BaseClassMinBonusRoll");
+            BaseClassMaxBonusRoll = GetInt(sectionEnhancements, "BaseClassMaxBonusRoll");
+            FreePointsMinBonusRoll = GetInt(sectionEnhancements, "FreePointsMinBonusRoll");
+            FreePointsMaxBonusRoll = GetInt(sectionEnhancements, "FreePointsMaxBonusRoll");
             LypyL_ModSystem = GetBool(sectionEnhancements, "LypyL_ModSystem");
             AssetInjection = GetBool(sectionEnhancements, "AssetInjection");
             CompressModdedTextures = GetBool(sectionEnhancements, "CompressModdedTextures");
@@ -780,8 +789,13 @@ namespace DaggerfallWorkshop
             SetFloat(sectionExperimental, "TerrainHeightmapPixelError", TerrainHeightmapPixelError);
             SetBool(sectionExperimental, "SmallerDungeons", SmallerDungeons);
             SetInt(sectionExperimental, "AssetCacheThreshold", AssetCacheThreshold);
-
+            
             SetBool(sectionEnhancements, "LypyL_GameConsole", LypyL_GameConsole);
+            SetBool(sectionEnhancements, "PawnShopsSellHorsesAndCarts", PawnShopsSellHorsesAndCarts);
+            SetInt(sectionEnhancements, "BaseClassMinBonusRoll", BaseClassMinBonusRoll);
+            SetInt(sectionEnhancements, "BaseClassMaxBonusRoll", BaseClassMaxBonusRoll);
+            SetInt(sectionEnhancements, "FreePointsMinBonusRoll", FreePointsMinBonusRoll);
+            SetInt(sectionEnhancements, "FreePointsMaxBonusRoll", FreePointsMaxBonusRoll);
             SetBool(sectionEnhancements, "LypyL_ModSystem", LypyL_ModSystem);
             SetBool(sectionEnhancements, "AssetInjection", AssetInjection);
             SetBool(sectionEnhancements, "CompressModdedTextures", CompressModdedTextures);

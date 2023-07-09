@@ -661,7 +661,8 @@ namespace DaggerfallWorkshop.Utility
                                 AddStandaloneModel(dfUnity, ref modelData, modelMatrix, modelsParent, isAutomapRun, hasAction, true);
                                 continue;
                             }
-
+                            if (modelId == 41313)
+                                Debug.Log("Hi");
                             // Add or combine
                             if (combiner == null || DaggerfallUnity.Settings.IgnoreCombiner || hasAction || PlayerActivate.HasCustomActivation(modelId))
                             {
@@ -685,6 +686,18 @@ namespace DaggerfallWorkshop.Utility
                         // Add action
                         if (hasAction && standaloneObject != null)
                             AddActionModelHelper(standaloneObject, actionLinkDict, obj, ref blockData, serialize);
+                        if (PlayerActivate.HasCustomActivation(standaloneObject.name))
+                        {
+                            Collider collider = standaloneObject.GetComponent<Collider>();
+                            if (collider == null)
+                            {
+                                collider = standaloneObject.AddComponent<Collider>();
+                            }
+
+                            collider = standaloneObject.GetComponent<Collider>();
+                            if (collider != null && collider.enabled == false)
+                                collider.enabled = true; 
+                        }
                     }
                 }
             }
