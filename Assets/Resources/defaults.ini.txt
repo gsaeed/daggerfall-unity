@@ -178,6 +178,11 @@ AssetCacheThreshold = 25
 
 [Enhancements]
 LypyL_GameConsole=True
+PawnShopsSellHorsesAndCarts=True
+BaseClassMinBonusRoll=0
+BaseClassMaxBonusRoll=10
+FreePointsMinBonusRoll=6
+FreePointsMaxBonusRoll=14
 LypyL_ModSystem=True
 AssetInjection=True
 CompressModdedTextures=True
