@@ -186,8 +186,11 @@ namespace DaggerfallWorkshop
                     break;
                 case DFLocation.BuildingTypes.PawnShop:
                     itemGroups = DaggerfallLootDataTables.itemGroupsPawnShop;
-                    items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Horse));
-                    items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Small_cart));
+                    if (DaggerfallUnity.Settings.PawnShopsSellHorsesAndCarts)
+                    {
+                        items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int) Transportation.Horse));
+                        items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int) Transportation.Small_cart));
+                    }
                     break;
                 case DFLocation.BuildingTypes.WeaponSmith:
                     itemGroups = DaggerfallLootDataTables.itemGroupsWeaponSmith;
