@@ -91,7 +91,7 @@ namespace DaggerfallWorkshop.Game.Banking
 
         [Obsolete("Replace with 'goldPieceWeightInKg'")] public const float goldUnitWeightInKg = 0.0025f;
         private const float deedSellMult = 0.85f;
-        private const float housePriceMult = 1280f;
+        public static float housePriceMult = 1280f;
         private const uint loanRepayMinutes = DaggerfallDateTime.DaysPerYear * DaggerfallDateTime.MinutesPerDay;
 
         #region Ships:
