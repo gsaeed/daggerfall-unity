@@ -89,7 +89,7 @@ namespace DaggerfallWorkshop.Game.Banking
         }
         
         private const float deedSellMult = 0.85f;
-        private const float housePriceMult = 1280f;
+        public static float housePriceMult = 1280f;
         private const uint loanRepayMinutes = DaggerfallDateTime.DaysPerYear * DaggerfallDateTime.MinutesPerDay;
 
         #region Ships:
