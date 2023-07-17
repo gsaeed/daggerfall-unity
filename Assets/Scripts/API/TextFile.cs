@@ -79,6 +79,14 @@ namespace DaggerfallConnect.Arena2
             return textToken;
         }
 
+        public static Token CreateFormatTextToken(string text, Formatting format)
+        {
+            Token textToken = new Token();
+            textToken.formatting = format;
+            textToken.text = text;
+            return textToken;
+        }
+
         public static Token CreateFormatToken(Formatting format)
         {
             Token formatToken = new Token();
