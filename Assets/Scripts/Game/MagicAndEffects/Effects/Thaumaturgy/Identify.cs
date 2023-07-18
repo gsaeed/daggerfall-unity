@@ -24,6 +24,7 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
     public class Identify : BaseEntityEffect
     {
         public static readonly string EffectKey = "Identify";
+        public static int IdentifyCostA = 40, IdentifyCostB = 100;
 
         public override void SetProperties()
         {
@@ -34,7 +35,7 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
             properties.AllowedElements = ElementTypes.Magic;
             properties.AllowedCraftingStations = MagicCraftingStations.SpellMaker;
             properties.MagicSkill = DFCareer.MagicSkills.Thaumaturgy;
-            properties.ChanceCosts = MakeEffectCosts(40, 100, 28);
+            properties.ChanceCosts = MakeEffectCosts(IdentifyCostA, IdentifyCostB, 28);
             properties.ChanceFunction = ChanceFunction.Custom;
         }
 
