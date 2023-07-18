@@ -56,7 +56,7 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         int magicRoundsSinceStartup;
 
         readonly Dictionary<int, string> classicEffectMapping = new Dictionary<int, string>();
-        readonly Dictionary<string, BaseEntityEffect> magicEffectTemplates = new Dictionary<string, BaseEntityEffect>();
+        public Dictionary<string, BaseEntityEffect> magicEffectTemplates = new Dictionary<string, BaseEntityEffect>();
         readonly Dictionary<int, BaseEntityEffect> potionEffectTemplates = new Dictionary<int, BaseEntityEffect>();
         readonly Dictionary<int, SpellRecord.SpellRecordData> standardSpells = new Dictionary<int, SpellRecord.SpellRecordData>();
         readonly Dictionary<string, CustomSpellBundleOffer> customSpellBundleOffers = new Dictionary<string, CustomSpellBundleOffer>();
