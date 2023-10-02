@@ -72,7 +72,7 @@ namespace DaggerfallWorkshop.Game.Questing
 
         int ticksToEnd = 0;
 
-        List<int> oneTimeDisplayedMessages = new List<int>();
+        public List<int> oneTimeDisplayedMessages = new List<int>();
 
         #endregion
 
