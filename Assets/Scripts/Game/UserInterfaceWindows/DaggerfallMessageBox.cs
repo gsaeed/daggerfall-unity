@@ -403,6 +403,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             return null;
         }
 
+        public void SetText(string text, bool lineBreak, IMacroContextProvider mcp = null)
+        {
+            if (lineBreak)
+            {
+                string[] str = Regex.Split(text, @"\r");
+                SetText(str, mcp);
+            }
+            else
+                SetText(text, mcp);
+        }
 
         public void SetText(string text, IMacroContextProvider mcp = null)
         {
