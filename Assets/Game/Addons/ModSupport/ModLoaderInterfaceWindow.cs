@@ -84,6 +84,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
     private string modFilterText = string.Empty;
     private TextBox modFilter = new TextBox();
+    private Checkbox modsettingCheckbox = new Checkbox();
 
 
     readonly Color backgroundColor = new Color(0, 0, 0, 0.7f);
@@ -174,6 +175,13 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         modsNextButton.BackgroundTexture = arrowDownTexture;
         modsNextButton.OnMouseClick += ModsNextButton_OnMouseClick;
         ModListPanel.Components.Add(modsNextButton);
+
+        modsettingCheckbox.IsChecked = false;
+        modsettingCheckbox.Position = new Vector2(0, 20);
+        modsettingCheckbox.Label.Text = "Settings Only";
+        modsettingCheckbox.OnToggleState += ModsettingCheckboxOnOnToggleState;
+        ModListPanel.Components.Add(modsettingCheckbox);
+
 
         modList.BackgroundColor = new Color(0.1f, 0.1f, 0.1f, 0.5f);
         modList.Size = new Vector2(110, 115);
@@ -375,11 +383,19 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         GetLoadedMods();
         UpdateModPanel();
     }
+
+    private void ModsettingCheckboxOnOnToggleState()
+    {
+        GetLoadedMods();
+        UpdateModPanel();
+    }
+
     void modFilterMeButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
     {
         modFilterText = modFilter.Text;
 
         GetLoadedMods();
+        UpdateModPanel();
     }
     void filterMods()
     {
@@ -436,7 +452,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     {
         List<Mod> mods = new List<Mod>();
         int n = 0;
-        if (allMods || modFilterText.Length == 0)
+        if (!modsettingCheckbox.IsChecked && (allMods || modFilterText.Length == 0))
         {
             modCount.Text = $"{ModManager.Instance.GetAllModsCount()} Mods   ";
             increaseLoadOrderButton.Enabled = true;
@@ -457,7 +473,11 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             //disableAllButton.Enabled = false;
             foreach (var m in ModManager.Instance.GetAllMods())
             {
-                if (m.ModInfo.ModTitle.ToUpper().Contains(modFilterText.ToUpper()))
+                if ((modFilterText.Length == 0 && modsettingCheckbox.IsChecked && m.HasSettings) ||
+                    (modFilterText.Length > 0 && modsettingCheckbox.IsChecked && m.HasSettings &&
+                     m.ModInfo.ModTitle.ToUpper().Contains(modFilterText.ToUpper())) ||
+                    (modFilterText.Length > 0 && !modsettingCheckbox.IsChecked &&
+                     m.ModInfo.ModTitle.ToUpper().Contains(modFilterText.ToUpper())))
                 {
                     mods.Add(m);
                     n++;
