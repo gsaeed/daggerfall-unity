@@ -1876,6 +1876,7 @@ namespace DaggerfallWorkshop.Game
             }
 
             // Messages if NPC does know answer to give directions
+            GameManager.Instance.PlayerGPS.DiscoverBuilding(listItem.buildingKey);
             return ExpandRandomTextRecord(answersToDirections[15 + 3 * (int)npcData.socialGroup + reactionToPlayer_0_1_2]);
         }
 
