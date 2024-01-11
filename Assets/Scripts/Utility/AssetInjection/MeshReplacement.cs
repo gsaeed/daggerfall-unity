@@ -140,15 +140,6 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
         /// <returns>Returns the imported model or null if not found.</returns>
         public static GameObject ImportCustomFlatGameobject(int archive, int record, Vector3 position, Transform parent, bool inDungeon = false)
         {
-            void TraverseChildren(Transform thisParent)
-            {
-                var thisName = thisParent.gameObject.name;
-                foreach (Transform child in thisParent)
-                {
-                    child.gameObject.name = thisName;
-                    TraverseChildren(child);
-                }
-            }
 
             GameObject go;
             if (!TryImportGameObject(archive, record, true, out go))
@@ -170,14 +161,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
             var lightSource = go.GetComponent<Light>() != null;
             if (!lightSource)
             {
-                foreach (Transform child in go.transform)
-                {
-                    if (child.gameObject.GetComponent<Light>() != null)
-                    {
-                        lightSource = true;
-                        break;
-                    }
-                }
+                IsLightSource(go.transform);
             }
 
             // Add NPC trigger collider
@@ -185,22 +169,40 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
             {
                 Collider col = go.AddComponent<BoxCollider>();
                 col.isTrigger = true;
-                TraverseChildren(go.transform);
-
-                foreach (Transform child in go.transform)
-                {
-                    if (child.gameObject.GetComponent<Light>() == null)
-                    {
-                        Collider childCol = child.gameObject.AddComponent<BoxCollider>();
-                        childCol.isTrigger = true;
-                    }
-                }
+                RenameChildrenAndAddCollider(go.transform);
             }
 
 
             // Finalise gameobject materials
             FinaliseMaterials(go);
             return go;
+
+            void RenameChildrenAndAddCollider(Transform thisParent)
+            {
+                var thisName = thisParent.gameObject.name;
+                foreach (Transform child in thisParent)
+                {
+                    child.gameObject.name = thisName;
+                    if (child.gameObject.GetComponent<Light>() == null)
+                    {
+                        Collider childCol = child.gameObject.AddComponent<BoxCollider>();
+                        childCol.isTrigger = true;
+                    }
+                    RenameChildrenAndAddCollider(child);
+                }
+            }
+
+            void IsLightSource(Transform thisParent)
+            {
+                foreach (Transform child in thisParent)
+                {
+                    if (child.transform.GetComponent<Light>() != null)
+                    {
+                        lightSource = true;
+                        break;
+                    }
+                }
+            }
         }
 
         /// <summary>
