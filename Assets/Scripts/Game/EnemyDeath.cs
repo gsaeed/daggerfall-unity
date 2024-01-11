@@ -33,6 +33,8 @@ namespace DaggerfallWorkshop.Game
         EnemyEntity enemyEntity;
 
         bool performDeath = false;
+        private Rigidbody rb;
+        private BoxCollider bc;
 
         #endregion
 
@@ -101,6 +103,10 @@ namespace DaggerfallWorkshop.Game
                 enemyEntity,
                 corpseTexture,
                 DaggerfallUnity.NextUID);
+
+            bc = loot.gameObject.AddComponent<BoxCollider>();
+            rb = loot.gameObject.AddComponent<Rigidbody>();
+            rb.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
 
             // Tag corpse loot marker with quest UID
             if (questResourceBehaviour)
