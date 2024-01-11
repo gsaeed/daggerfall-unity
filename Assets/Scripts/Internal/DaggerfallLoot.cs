@@ -45,6 +45,7 @@ namespace DaggerfallWorkshop
         public bool isEnemyClass = false;
         public int stockedDate = 0;
         public ulong corpseQuestUID = 0;
+        private BoxCollider bc;
 
         ulong loadID = 0;
         ItemCollection items = new ItemCollection();
@@ -64,6 +65,13 @@ namespace DaggerfallWorkshop
         {
             // Register as Loot object
             ActiveGameObjectDatabase.RegisterLoot(gameObject);
+        }
+
+        public void Start()
+        {
+            bc = GetComponent<BoxCollider>();
+            if (bc != null)
+                Physics.IgnoreLayerCollision(2, 13);
         }
 
         public static int CreateStockedDate(DaggerfallDateTime date)
