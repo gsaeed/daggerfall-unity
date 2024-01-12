@@ -73,6 +73,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         #region Properties
 
+        private Dictionary<string, List<string>> modMove = new Dictionary<string, List<string>>();
+        private List<string> modMoveOrder = new List<string>();
         /// <summary>
         /// The number of mods loaded by Mod Manager.
         /// </summary>
@@ -1062,8 +1064,46 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <summary>
         /// Automatically assigns load priority from relationships defined by <see cref="ModInfo.Dependencies"/>.
         /// </summary>
+        int GetLoadPriority(string filename)
+        {
+            foreach(var mod in mods)
+                if (mod.FileName == filename)
+                    return mod.LoadPriority;
+            return 0;
+        }
         internal void AutoSortMods()
         {
+            for (int n = modMoveOrder.Count - 1; n >= 0; n--)
+            {
+                var key = GetLoadPriority(modMoveOrder[n]);
+
+                var value = modMove[modMoveOrder[n]];
+                {
+                    int newPos = key;
+                    foreach (var v in value)
+                    {
+
+                        var a = newPos;
+                        var b = GetLoadPriority(v);
+                        if (a < b)
+                        {
+                            Debug.Log(
+                                $"Sending {Instance.mods[a].FileName}:{Instance.mods[a].LoadPriority} below {Instance.mods[b].FileName}:{Instance.mods[b].LoadPriority}");
+                            for (int i = a; i < b; i++)
+                            {
+                                var m1 = Instance.mods[i];
+                                var m2 = Instance.mods[i + 1];
+                                m1.LoadPriority += 1;
+                                newPos = m1.LoadPriority;
+                                m2.LoadPriority -= 1;
+                                Instance.mods[i] = m2;
+                                Instance.mods[i + 1] = m1;
+                            }
+                        }
+                    }
+                }
+            }
+
             try
             {
                 mods = TopologicalSort(mods, mod =>
@@ -1117,15 +1157,30 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     {
                         if (dependency.IsOptional)
                             continue;
-
-                        errorMessages.Add(string.Format(GetText("dependencyNotEnabled"), dependency.Name));
+                        var newError = string.Format(GetText("dependencyNotEnabled"), dependency.Name);
+                        if (!errorMessages.Contains(newError))
+                            errorMessages.Add(newError);
                         continue;
                     }
 
                     // Check load order priority
                     if (target.Enabled && !dependency.IsPeer && mod.LoadPriority < target.LoadPriority)
                     {
-                        errorMessages.Add(string.Format(GetText("dependencyWithIncorrectPosition"), target.Title));
+                        var newError = string.Format(GetText("dependencyWithIncorrectPosition"), target.Title);
+                        if (!errorMessages.Contains(newError))
+                            errorMessages.Add(newError);
+
+                        if (modMove.ContainsKey(mod.FileName))
+                        {
+                            if (!modMove[mod.FileName].Contains(target.FileName))
+                                modMove[mod.FileName].Add(target.FileName);
+                        }
+                        else
+                        {
+                            var nt = new List<string> { target.FileName };
+                            modMove.Add(mod.FileName, nt);
+                            modMoveOrder.Add(mod.FileName);
+                        }
                         hasSortIssues = true;
                     }
 
