@@ -510,9 +510,9 @@ namespace DaggerfallWorkshop.Game.Items
         /// Creates random magic item in same manner as classic.
         /// </summary>
         /// <returns>DaggerfallUnityItem</returns>
-        public static DaggerfallUnityItem CreateRandomMagicItem(int playerLevel, Genders gender, Races race)
+        public static DaggerfallUnityItem CreateRandomMagicItem(int playerLevel, Genders gender, Races race, ItemGroups itemGroup = ItemGroups.None)
         {
-            return CreateRegularMagicItem(chooseAtRandom, playerLevel, gender, race);
+            return CreateRegularMagicItem(chooseAtRandom, playerLevel, gender, race, itemGroup);
         }
 
         /// <summary>
@@ -524,7 +524,7 @@ namespace DaggerfallWorkshop.Game.Items
         /// <param name="race">The race to create an item for.</param>
         /// <returns>DaggerfallUnityItem</returns>
         /// <exception cref="Exception">When a base item cannot be created.</exception>
-        public static DaggerfallUnityItem CreateRegularMagicItem(int chosenItem, int playerLevel, Genders gender, Races race)
+        public static DaggerfallUnityItem CreateRegularMagicItem(int chosenItem, int playerLevel, Genders gender, Races race, ItemGroups itemGroup = ItemGroups.None)
         {
             byte[] itemGroups0 = { 2, 3, 6, 10, 12, 14, 25 };
             byte[] itemGroups1 = { 2, 3, 6, 12, 25 };
@@ -551,9 +551,19 @@ namespace DaggerfallWorkshop.Game.Items
             // Get the item group. The possible groups are determined by the 33rd byte (magicItem.group) of the MAGIC.DEF template being used.
             ItemGroups group = 0;
             if (magicItem.group == 0)
-                group = (ItemGroups)itemGroups0[UnityEngine.Random.Range(0, 7)];
+            {
+                if (itemGroup == ItemGroups.None)
+                    group = (ItemGroups)itemGroups0[UnityEngine.Random.Range(0, 7)];
+                else
+                    group = itemGroup;
+            }
             else if (magicItem.group == 1)
-                group = (ItemGroups)itemGroups1[UnityEngine.Random.Range(0, 5)];
+            {
+                if (itemGroup == ItemGroups.None)
+                    group = (ItemGroups)itemGroups1[UnityEngine.Random.Range(0, 5)];
+                else
+                    group = itemGroup;
+            }
             else if (magicItem.group == 2)
                 group = ItemGroups.Weapons;
 
