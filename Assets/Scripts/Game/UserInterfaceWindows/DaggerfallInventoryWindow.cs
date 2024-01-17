@@ -713,6 +713,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                         var item = droppedItems.GetItem(0);
                         var archive = item.WorldTextureArchive;
                         var record = item.WorldTextureRecord;
+                        if (archive * 1000 + record == 0)
+                        {
+                            archive = item.InventoryTextureArchive;
+                            record = item.InventoryTextureRecord;
+                        }
                         droppedLootContainer = GameObjectHelper.CreateDroppedLootContainer(
                             GameManager.Instance.PlayerObject,
                             DaggerfallUnity.NextUID,
@@ -769,10 +774,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 {
                     int iconIndex = UnityEngine.Random.Range(0, DaggerfallLootDataTables.randomTreasureIconIndices.Length);
                     var iconRecord = DaggerfallLootDataTables.randomTreasureIconIndices[iconIndex];
+                    var archive = lootTarget.TextureArchive;
+                    var record = lootTarget.TextureRecord;
+
                     var billboard = lootTarget.GetComponent<Billboard>();
                     if (billboard != null)
                     {
-                        billboard.SetMaterial(DaggerfallLootDataTables.randomTreasureArchive, iconRecord);
+                        if (archive * 1000 + record == 0)
+                            billboard.SetMaterial(DaggerfallLootDataTables.randomTreasureArchive, iconRecord);
+                        else
+                            billboard.SetMaterial(archive, record, 0);
+
                     }
                 }
 
