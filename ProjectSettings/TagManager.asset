@@ -8,6 +8,7 @@ TagManager:
   - QuestFoe
   - QuestItem
   - StaticGeometry
+  - Looted
   layers:
   - Default
   - TransparentFX
