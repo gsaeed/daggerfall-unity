@@ -11,6 +11,7 @@
 
 using System;
 using System.Diagnostics;
+using DaggerfallWorkshop.Game.Formulas;
 using UnityEngine;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Items;
@@ -200,6 +201,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             poisonTextLabel.ShadowPosition = Vector2.zero;
             poisonTextLabel.Text = "Poison";
             parentPanel.Components.Add(poisonTextLabel);
+
+
         }
 
         public override void Update()
@@ -291,12 +294,20 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Update arrow count if player holding an unsheathed bow
             // TODO: Find a spot for arrow counter when large HUD enabled (remembering player could be in 320x200 retro mode)
             arrowCountTextLabel.Enabled = false;
-            if (!largeHUDEnabled && ShowArrowCount && !GameManager.Instance.WeaponManager.Sheathed)
+            EquipSlots slot = DaggerfallUnity.Settings.BowLeftHandWithSwitching ? EquipSlots.LeftHand : EquipSlots.RightHand;
+            DaggerfallUnityItem held = GameManager.Instance.PlayerEntity.ItemEquipTable.GetItem(slot);
+            EquipSlots otherSlot = !DaggerfallUnity.Settings.BowLeftHandWithSwitching ? EquipSlots.LeftHand : EquipSlots.RightHand;
+            DaggerfallUnityItem otherHeld = GameManager.Instance.PlayerEntity.ItemEquipTable.GetItem(otherSlot);
+
+
+            if (!largeHUDEnabled && ShowArrowCount && (!FormulaHelper.PlayerWeaponSheathed()))
             {
-                EquipSlots slot = DaggerfallUnity.Settings.BowLeftHandWithSwitching ? EquipSlots.LeftHand : EquipSlots.RightHand;
-                DaggerfallUnityItem held = GameManager.Instance.PlayerEntity.ItemEquipTable.GetItem(slot);
+
+                if (otherHeld != null && otherHeld.TemplateIndex == 289)
+                    held = otherHeld;
+
                 if (held != null && held.ItemGroup == ItemGroups.Weapons &&
-                    (held.TemplateIndex == (int)Weapons.Long_Bow || held.TemplateIndex == (int)Weapons.Short_Bow))
+                    (held.TemplateIndex == (int)Weapons.Long_Bow || held.TemplateIndex == (int)Weapons.Short_Bow || held.TemplateIndex == 289))
                 {
                     // Arrow count label position is offset to left of compass and centred relative to compass height
                     // This is done every frame to handle adaptive resolutions
@@ -315,7 +326,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             poisonTextLabel.Enabled = false;
 
-            if (!GameManager.Instance.WeaponManager.Sheathed && GameManager.Instance.WeaponManager.GetWeapon() != null && GameManager.Instance.WeaponManager.GetWeapon().poisonType != Poisons.None)
+            if (!FormulaHelper.PlayerWeaponSheathed() && GameManager.Instance.WeaponManager.GetWeapon() != null
+                                                      && GameManager.Instance.WeaponManager.GetWeapon().poisonType != Poisons.None)
             {
                 poisonTextLabel.Enabled = true;
                 poisonTextLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
