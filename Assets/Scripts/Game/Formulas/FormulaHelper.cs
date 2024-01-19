@@ -438,6 +438,19 @@ namespace DaggerfallWorkshop.Game.Formulas
             return VampireClans.Lyrezi;
         }
 
+        /// <summary>
+        /// Retrieve Sheathed flag
+        /// </summary>
+        /// <returns>false if weapon is drawn.</returns>
+        public static bool PlayerWeaponSheathed()
+        {
+            Func<bool> del;
+            if (TryGetOverride("PlayerWeaponSheathed", out del))
+                return del();
+            else
+                return GameManager.Instance.WeaponManager.Sheathed;
+        }
+
         #endregion
 
         #region Combat & Damage
