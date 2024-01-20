@@ -1742,11 +1742,11 @@ namespace Wenzil.Console
                             break;
                         case "weapon":
                             newItem = ItemBuilder.CreateRandomWeapon(level);
-                            newItem.currentCondition = UnityEngine.Random.Range(10, 100) / 100;
+                            newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
                             break;
                         case "armor":
                             newItem = ItemBuilder.CreateRandomArmor(level, playerEntity.Gender, playerEntity.Race);
-                            newItem.currentCondition = UnityEngine.Random.Range(10, 100) / 100;
+                            newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
                             break;
                         case "cloth":
                             newItem = ItemBuilder.CreateRandomClothing(playerEntity.Gender, playerEntity.Race);
