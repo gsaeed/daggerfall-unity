@@ -1846,7 +1846,7 @@ namespace DaggerfallWorkshop.Game
                 return;
             }
 
-            Ray ray = cameraAutomap.ScreenPointToRay(screenPosition);
+            var ray = cameraAutomap.ScreenPointToRay(screenPosition);
 
             RaycastHit[] hits = Physics.RaycastAll(ray, 10000, 1 << layerAutomap);
             if (hits == null || hits.Length == 0)
@@ -1859,7 +1859,13 @@ namespace DaggerfallWorkshop.Game
             float nearestDistance = float.MaxValue;
             foreach (RaycastHit hit in hits)
             {
-                if ((hit.distance < nearestDistance) && (hit.collider.gameObject.GetComponent<MeshRenderer>().enabled))
+                if (hit.collider == null)
+                    continue;
+                var meshRenderer = hit.collider.gameObject.GetComponent<MeshRenderer>();
+                if (meshRenderer == null)
+                    continue;
+
+                if ((hit.distance < nearestDistance) && (meshRenderer.enabled))
                 {
                     nearestHit = hit;
                     nearestDistance = hit.distance;
