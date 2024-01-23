@@ -655,7 +655,22 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             DaggerfallMessageBox spellEffectPopup = new DaggerfallMessageBox(uiManager, this);
             spellEffectPopup.ClickAnywhereToClose = true;
-            spellEffectPopup.SetTextTokens(effect.SpellBookDescription, effect);
+            var description = effect.SpellBookDescription;
+            string magicSkill = string.Empty;
+            magicSkill = effect.Properties.MagicSkill.ToString();
+            TextFile.Token[] newDescription = new TextFile.Token[description.Length + 4];
+            int n = 0;
+            newDescription[n++] = new TextFile.Token() { formatting = TextFile.Formatting.Text, text = description[0].text }; 
+            newDescription[n++] = new TextFile.Token() { formatting = TextFile.Formatting.JustifyCenter };
+            newDescription[n++] = new TextFile.Token() { formatting = TextFile.Formatting.Text, text = $"Magic School: {magicSkill}" };
+            newDescription[n++] = new TextFile.Token() { formatting = TextFile.Formatting.JustifyCenter };
+            for (int i = 2; i < description.Length; i+=2)
+            {
+                newDescription[n++] = new TextFile.Token() { formatting = TextFile.Formatting.Text, text = description[i].text };
+                newDescription[n++] = new TextFile.Token() { formatting = TextFile.Formatting.JustifyCenter };
+            }
+
+            spellEffectPopup.SetTextTokens(newDescription, effect);
             spellEffectPopup.Show();
         }
 
