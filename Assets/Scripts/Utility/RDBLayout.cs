@@ -685,18 +685,20 @@ namespace DaggerfallWorkshop.Utility
 
                         // Add action
                         if (hasAction && standaloneObject != null)
-                            AddActionModelHelper(standaloneObject, actionLinkDict, obj, ref blockData, serialize);
-                        if (PlayerActivate.HasCustomActivation(standaloneObject.name))
                         {
-                            Collider collider = standaloneObject.GetComponent<Collider>();
-                            if (collider == null)
+                            AddActionModelHelper(standaloneObject, actionLinkDict, obj, ref blockData, serialize);
+                            if (PlayerActivate.HasCustomActivation(standaloneObject.name))
                             {
-                                collider = standaloneObject.AddComponent<Collider>();
-                            }
+                                Collider collider = standaloneObject.GetComponent<Collider>();
+                                if (collider == null)
+                                {
+                                    collider = standaloneObject.AddComponent<Collider>();
+                                }
 
-                            collider = standaloneObject.GetComponent<Collider>();
-                            if (collider != null && collider.enabled == false)
-                                collider.enabled = true; 
+                                collider = standaloneObject.GetComponent<Collider>();
+                                if (collider != null && collider.enabled == false)
+                                    collider.enabled = true;
+                            }
                         }
                     }
                 }
