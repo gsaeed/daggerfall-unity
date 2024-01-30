@@ -216,6 +216,7 @@ namespace DaggerfallWorkshop
         public bool ColorBoostEnable { get; set; }
         public float ColorBoostRadius { get; set; }
         public float ColorBoostIntensity { get; set; }
+        public bool LogHudMessages { get; set; }
         public float ColorBoostDungeonScale { get; set; }
         public float ColorBoostExteriorScale { get; set; }
         public float ColorBoostInteriorScale { get; set; }
@@ -515,6 +516,7 @@ namespace DaggerfallWorkshop
             AccelerateUICopyTexture = GetBool(sectionGUI, "AccelerateUICopyTexture");
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
+            LogHudMessages = GetBool(sectionGUI, "LogHudMessages");
             DisplayMobileEnemyHealthStatus = GetBool(sectionGUI, "DisplayMobileEnemyHealthStatus");
 
             SDFFontRendering = GetBool(sectionGUI, "SDFFontRendering");
@@ -743,7 +745,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "DisableEnemyDeathAlert", DisableEnemyDeathAlert);
             SetBool(sectionGUI, "HideLoginName", HideLoginName);
             SetFloat(sectionGUI, "DisplayHUDScaleAdjust", DisplayHUDScaleAdjust);
-
+            SetBool(sectionGUI, "LogHudMessages", LogHudMessages);
             SetBool(sectionGUI, "DisplayMobileEnemyHealthStatus", DisplayMobileEnemyHealthStatus);
 
             SetBool(sectionSpells, "EnableSpellLighting", EnableSpellLighting);

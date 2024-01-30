@@ -120,6 +120,7 @@ DisableEnemyDeathAlert=True
 DisplayHUDScaleAdjust=0.5
 DisplayMobileEnemyHealthStatus=False
 IgnoreCombiner=True
+LogHudMessages=False
 
 [Spells]
 EnableSpellLighting=True
