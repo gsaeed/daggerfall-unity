@@ -761,6 +761,8 @@ namespace DaggerfallWorkshop.Game
             if (Instance.dfHUD != null)
             {
                 Instance.dfHUD.PopupText.AddText(message);
+                if (DaggerfallUnity.Settings.LogHudMessages)
+                    Debug.Log(message);
             }
         }
 
@@ -769,6 +771,9 @@ namespace DaggerfallWorkshop.Game
             if (Instance.dfHUD != null)
             {
                 Instance.dfHUD.PopupText.AddText(message, delay);
+                if (DaggerfallUnity.Settings.LogHudMessages)
+                    Debug.Log(message);
+
             }
         }
 
@@ -777,6 +782,8 @@ namespace DaggerfallWorkshop.Game
             if (Instance.dfHUD != null)
             {
                 Instance.dfHUD.PopupText.AddText(tokens, delay);
+                if (DaggerfallUnity.Settings.LogHudMessages)
+                    Debug.Log(tokens[0].text);
             }
         }
 
