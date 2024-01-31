@@ -311,7 +311,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             if (asset == null)
             {
-                Debug.LogWarning(string.Format("Failed to load asset: {0} from {1}", assetName, Title));
+                Debug.LogError(string.Format("Failed to load asset: {0} from {1}", assetName, Title));
                 return null;
             }
             else if (clone)
