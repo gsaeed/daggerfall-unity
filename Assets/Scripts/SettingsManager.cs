@@ -219,6 +219,7 @@ namespace DaggerfallWorkshop
         public float ColorBoostRadius { get; set; }
         public float ColorBoostIntensity { get; set; }
         public bool LogHudMessages { get; set; }
+        public int DoorBashEaseMultiplier { get; set; }
         public float ColorBoostDungeonScale { get; set; }
         public float ColorBoostExteriorScale { get; set; }
         public float ColorBoostInteriorScale { get; set; }
@@ -526,6 +527,8 @@ namespace DaggerfallWorkshop
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
             LogHudMessages = GetBool(sectionGUI, "LogHudMessages");
+            DoorBashEaseMultiplier = GetInt(sectionGUI, "DoorBashEaseMultiplier");
+
             DisplayMobileEnemyHealthStatus = GetBool(sectionGUI, "DisplayMobileEnemyHealthStatus");
 
             SDFFontRendering = GetBool(sectionGUI, "SDFFontRendering");
@@ -760,6 +763,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "HideLoginName", HideLoginName);
             SetFloat(sectionGUI, "DisplayHUDScaleAdjust", DisplayHUDScaleAdjust);
             SetBool(sectionGUI, "LogHudMessages", LogHudMessages);
+            SetInt(sectionGUI, "DoorBashEaseMultiplier", DoorBashEaseMultiplier);
             SetBool(sectionGUI, "DisplayMobileEnemyHealthStatus", DisplayMobileEnemyHealthStatus);
 
             SetInt(sectionMeleeAttacks, "MeleeAttackDetection", MeleeAttackDetection);
