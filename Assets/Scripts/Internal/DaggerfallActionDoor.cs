@@ -209,14 +209,16 @@ namespace DaggerfallWorkshop
             else if (!IsMagicallyHeld)
             {
                 // Roll for chance to open
-                int chance = 20 - CurrentLockValue;
+                if (DaggerfallUnity.Settings.DoorBashEaseMultiplier <= 0)
+                    DaggerfallUnity.Settings.DoorBashEaseMultiplier = 1;
+                int chance = (20 - CurrentLockValue) * DaggerfallUnity.Settings.DoorBashEaseMultiplier;
                 if (Dice100.SuccessRoll(chance))
                 {
                     CurrentLockValue = 0;
                     ToggleDoor(true);
                 }
             }
-
+ 
             if (byPlayer && Game.GameManager.Instance.PlayerEnterExit.IsPlayerInsideDungeonCastle)
                 Game.GameManager.Instance.MakeEnemiesHostile();
         }

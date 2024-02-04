@@ -121,6 +121,7 @@ DisplayHUDScaleAdjust=0.5
 DisplayMobileEnemyHealthStatus=False
 IgnoreCombiner=True
 LogHudMessages=False
+DoorBashEaseMultiplier=1
 
 [Spells]
 EnableSpellLighting=True
