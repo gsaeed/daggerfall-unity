@@ -780,7 +780,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             float currentLevel = (playerEntity.CurrentLevelUpSkillSum - playerEntity.StartingLevelUpSkillSum + 28f) / 15f;
             int progress = (int)((currentLevel % 1) * 100);
-            DaggerfallUI.MessageBox(string.Format(TextManager.Instance.GetLocalizedText("levelProgress"), progress));
+            //DaggerfallUI.MessageBox(string.Format(TextManager.Instance.GetLocalizedText("levelProgress"), progress));
+            DaggerfallUI.MessageBox(string.Format("currentLevel = %1, progress = %2", currentLevel, progress));
         }
 
         private void GoldButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
