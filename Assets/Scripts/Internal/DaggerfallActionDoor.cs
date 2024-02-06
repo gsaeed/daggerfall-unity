@@ -17,6 +17,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility;
+using UnityEngine.Localization.SmartFormat.Utilities;
 
 namespace DaggerfallWorkshop
 {
@@ -209,9 +210,9 @@ namespace DaggerfallWorkshop
             else if (!IsMagicallyHeld)
             {
                 // Roll for chance to open
-                if (DaggerfallUnity.Settings.DoorBashEaseMultiplier <= 0)
-                    DaggerfallUnity.Settings.DoorBashEaseMultiplier = 1;
-                int chance = (20 - CurrentLockValue) * DaggerfallUnity.Settings.DoorBashEaseMultiplier;
+                if (DaggerfallUnity.Settings.DoorBashEaseMultiplier <= 0f)
+                    DaggerfallUnity.Settings.DoorBashEaseMultiplier = 1.0f;
+                int chance = (int)((20f - (float)CurrentLockValue) * DaggerfallUnity.Settings.DoorBashEaseMultiplier + 0.5f);
                 if (Dice100.SuccessRoll(chance))
                 {
                     CurrentLockValue = 0;
