@@ -1,4 +1,5 @@
 // Project:         Daggerfall Unity
+// Project:         Daggerfall Unity
 // Copyright:       Copyright (C) 2009-2023 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -39,7 +40,7 @@ namespace DaggerfallWorkshop.Game.Formulas
         {
             internal readonly Delegate Formula;
             internal readonly Mod Provider;
-
+            
             internal FormulaOverride(Delegate formula, Mod provider)
             {
                 Formula = formula;
