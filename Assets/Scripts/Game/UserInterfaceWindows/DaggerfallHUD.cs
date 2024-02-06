@@ -11,10 +11,12 @@
 
 using System;
 using System.Diagnostics;
+using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Formulas;
 using UnityEngine;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Items;
+using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Utility;
 using Debug = UnityEngine.Debug;
 
@@ -37,6 +39,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         TextLabel midScreenTextLabel = new TextLabel();
         TextLabel arrowCountTextLabel = new TextLabel();
         private TextLabel poisonTextLabel = new TextLabel();
+        private TextLabel SelectedSpellLabel = new TextLabel();
         HUDCrosshair crosshair = new HUDCrosshair();
         public HUDVitals vitals = new HUDVitals();
         HUDBreathBar breathBar = new HUDBreathBar();
@@ -202,6 +205,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             poisonTextLabel.Text = "Poison";
             parentPanel.Components.Add(poisonTextLabel);
 
+            SelectedSpellLabel.TextColor = Color.green;
+            SelectedSpellLabel.ShadowPosition = Vector2.zero;
+            SelectedSpellLabel.Text = "Spell:";
+            parentPanel.Components.Add(SelectedSpellLabel);
 
         }
 
@@ -225,6 +232,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             activeSpells.Enabled = ShowActiveSpells;
 
             poisonTextLabel.Enabled = true;
+            SelectedSpellLabel.Enabled = true;
 
             // Large HUD will force certain other HUD elements off as they conflict in space or utility
             bool largeHUDwasEnabled = largeHUD.Enabled;
@@ -269,6 +277,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             interactionModeIcon.Scale = NativePanel.LocalScale;
             arrowCountTextLabel.Scale = new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
             poisonTextLabel.Scale =  new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
+            SelectedSpellLabel.Scale =  new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
 
             interactionModeIcon.displayScaleAdjust = DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
 
@@ -334,7 +343,19 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 poisonTextLabel.Text = GameManager.Instance.WeaponManager.GetWeapon().poisonType.ToString();
                 poisonTextLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - compass.Size.y);
             }
-            
+
+            SelectedSpellLabel.Enabled = false;
+            var playerEffectManager =
+                GameManager.Instance.PlayerEntity.EntityBehaviour.GetComponent<EntityEffectManager>();
+            if (playerEffectManager != null && playerEffectManager.lastSpell != null)
+            {
+                SelectedSpellLabel.Enabled = true;
+                SelectedSpellLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
+                SelectedSpellLabel.TextColor =
+                    GetSpellCost(playerEffectManager.lastSpell) < GameManager.Instance.PlayerEntity.CurrentMagicka ? Color.green : Color.gray;
+                SelectedSpellLabel.Text = playerEffectManager.lastSpell.Settings.Name;
+                SelectedSpellLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - compass.Size.y - 20);
+            }
 
             HotkeySequence.KeyModifiers keyModifiers = HotkeySequence.GetKeyboardKeyModifiers();
             // Cycle quest debugger state
@@ -388,6 +409,19 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             base.Update();
         }
 
+        int GetSpellCost(EntityEffectBundle activeSpell)
+        {
+            var spell = activeSpell.Settings;
+            // Get spell costs
+            // Costs can change based on player skills and stats so must be calculated each time
+            (int _, int spellPointCost) = FormulaHelper.CalculateTotalEffectCosts(spell.Effects, spell.TargetType, null, spell.MinimumCastingCost);
+
+            // Lycanthropy is a free spell, even though it shows a cost in classic
+            // Setting cost to 0 so it displays correctly in spellbook
+            if (spell.Tag == PlayerEntity.lycanthropySpellTag)
+                spellPointCost = 0;
+            return spellPointCost;
+        }
         public override void Draw()
         {
             if (renderHUD)
