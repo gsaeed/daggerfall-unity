@@ -56,7 +56,7 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         public DaggerfallMissile MagicMissilePrefab;
 
         EntityEffectBundle readySpell = null;
-        EntityEffectBundle lastSpell = null;
+        public EntityEffectBundle lastSpell = null;
         bool instantCast = false;
         bool castInProgress = false;
         bool readySpellDoesNotCostSpellPoints = false;
