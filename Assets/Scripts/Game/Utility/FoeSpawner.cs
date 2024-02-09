@@ -38,6 +38,7 @@ namespace DaggerfallWorkshop.Game.Utility
         public Transform Parent = null;
         public bool LineOfSightCheck = true;
         public bool AlliedToPlayer = false;
+        public bool Alerted = false;
 
         public MobileTypes lastFoeType = MobileTypes.None;
         GameObject[] pendingFoeGameObjects;
@@ -56,7 +57,10 @@ namespace DaggerfallWorkshop.Game.Utility
             if (FoeType != MobileTypes.None && FoeType != lastFoeType && SpawnCount > 0)
             {
                 DestroyOldFoeGameObjects(pendingFoeGameObjects);
-                SetFoeGameObjects(GameObjectHelper.CreateFoeGameObjects(Vector3.zero, FoeType, SpawnCount, alliedToPlayer: AlliedToPlayer));
+                if (Alerted)
+                    SetFoeGameObjects(GameObjectHelper.CreateFoeGameObjectsWithAlerts(Vector3.zero, FoeType, SpawnCount, alliedToPlayer: AlliedToPlayer, alerted:Alerted ));
+                else
+                    SetFoeGameObjects(GameObjectHelper.CreateFoeGameObjects(Vector3.zero, FoeType, SpawnCount, alliedToPlayer: AlliedToPlayer ));
                 lastFoeType = FoeType;
             }
 
