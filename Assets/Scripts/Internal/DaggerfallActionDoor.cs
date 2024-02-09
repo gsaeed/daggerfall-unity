@@ -18,6 +18,8 @@ using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility;
 using UnityEngine.Localization.SmartFormat.Utilities;
+using System.Diagnostics;
+using System;
 
 namespace DaggerfallWorkshop
 {
@@ -221,7 +223,14 @@ namespace DaggerfallWorkshop
             }
  
             if (byPlayer && Game.GameManager.Instance.PlayerEnterExit.IsPlayerInsideDungeonCastle)
+            {
                 Game.GameManager.Instance.MakeEnemiesHostile();
+            }
+
+            if (byPlayer && Game.GameManager.Instance.PlayerEnterExit.IsPlayerInsideDungeon)
+            {
+                RaiseOnDoorBashedEvent();
+            }
         }
 
         public void SetInteriorDoorSounds()
@@ -386,6 +395,25 @@ namespace DaggerfallWorkshop
             DaggerfallAction action = GetComponent<DaggerfallAction>();
             if(action != null)
                 action.Receive(gameObject, DaggerfallAction.TriggerTypes.Door);
+        }
+
+        public delegate void OnDoorBashedEventHandler();
+        public static event OnDoorBashedEventHandler OnDoorBashed;
+
+        protected virtual void RaiseOnDoorBashedEvent()
+        {
+            if (OnDoorBashed != null)
+                try
+                {
+                    OnDoorBashed();
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    UnityEngine.Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    UnityEngine.Debug.LogError($"{e.ToString()}");
+                }
+
         }
 
         #endregion
