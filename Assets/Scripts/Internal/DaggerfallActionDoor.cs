@@ -203,9 +203,9 @@ namespace DaggerfallWorkshop
                     dfAudioSource.PlayOneShot(BashSound);
             }
 
-            if (IsOpen)
+            if (IsOpen || CurrentLockValue == 0) 
             {
-                // Bash-close the door
+                // Bash-close the door or Bash-Open the unlocked door
                 ToggleDoor(true);
             }
             // Cannot bash magically held doors
