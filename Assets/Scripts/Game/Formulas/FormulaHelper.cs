@@ -1398,6 +1398,18 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
         }
 
+        public static void RemovePoison(DaggerfallEntity attacker, DaggerfallUnityItem weapon)
+        {
+            Action<DaggerfallEntity, DaggerfallUnityItem> del;
+            if (TryGetOverride("RemovePoison", out del))
+            {
+                del(attacker, weapon);
+                return;
+            }
+            weapon.poisonType = Poisons.None;
+            return;
+        }
+
         /// <summary>
         /// Inflict a classic poison onto entity.
         /// </summary>
