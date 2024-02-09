@@ -18,6 +18,7 @@ namespace DaggerfallWorkshop.Game
         public MobileReactions EnemyReaction = MobileReactions.Hostile;
         public MobileGender EnemyGender = MobileGender.Unspecified;
         public bool AlliedToPlayer = false;
+        public bool Alerted = false;
         public byte ClassicSpawnDistanceType = 0;
 
         DaggerfallEntityBehaviour entityBehaviour;

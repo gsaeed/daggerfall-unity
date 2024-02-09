@@ -1243,6 +1243,75 @@ namespace DaggerfallWorkshop.Utility
         /// </summary>
         /// <param name="reaction">Foe is hostile by default but can optionally set to passive.</param>
         /// <returns>GameObject[] array of 1-N foes. Array can be null or empty if create fails.</returns>
+        public static GameObject[] CreateFoeGameObjectsWithAlerts(Vector3 position, MobileTypes foeType, int spawnCount = 1, MobileReactions reaction = MobileReactions.Hostile, Foe foeResource = null, bool alliedToPlayer = false, bool alerted = false)
+        {
+            List<GameObject> gameObjects = new List<GameObject>();
+
+            // Clamp total spawn count
+            int totalSpawns = Mathf.Clamp(spawnCount, 1, 8);
+
+            // Generate GameObjects
+            for (int i = 0; i < totalSpawns; i++)
+            {
+                // Generate enemy
+                string name = string.Format("DaggerfallEnemy [{0}]", foeType.ToString());
+                GameObject go = GameObjectHelper.InstantiatePrefab(DaggerfallUnity.Instance.Option_EnemyPrefab.gameObject, name, GetBestParent(), position);
+                SetupDemoEnemy setupEnemy = go.GetComponent<SetupDemoEnemy>();
+                if (setupEnemy != null)
+                {
+                    setupEnemy.Alerted = alerted;
+                    // Assign gender randomly
+                    MobileGender gender;
+                    if (UnityEngine.Random.Range(0f, 1f) < 0.55f)
+                        gender = MobileGender.Male;
+                    else
+                        gender = MobileGender.Female;
+
+                    // Configure enemy
+                    setupEnemy.ApplyEnemySettings(foeType, reaction, gender, alliedToPlayer: alliedToPlayer);
+
+                    // Align non-flying units with ground
+                    MobileUnit mobileUnit = setupEnemy.GetMobileBillboardChild();
+                    if (mobileUnit.Enemy.Behaviour != MobileBehaviour.Flying)
+                        GameObjectHelper.AlignControllerToGround(go.GetComponent<CharacterController>());
+
+                    // Add QuestResourceBehaviour to GameObject
+                    if (foeResource != null)
+                    {
+                        QuestResourceBehaviour questResourceBehaviour = go.AddComponent<QuestResourceBehaviour>();
+                        questResourceBehaviour.AssignResource(foeResource);
+                    }
+                }
+
+                // Assign load id
+                DaggerfallEnemy enemy = go.GetComponent<DaggerfallEnemy>();
+                if (enemy)
+                {
+                    enemy.LoadID = DaggerfallUnity.NextUID;
+                    if (foeResource != null)
+                        enemy.QuestSpawn = true;
+                }
+
+                // Disable GameObject, caller must set active when ready
+                go.SetActive(false);
+
+                GameManager.Instance?.RaiseOnEnemySpawnEvent(go);
+
+                // Add to list
+                gameObjects.Add(go);
+            }
+
+            return gameObjects.ToArray();
+        }
+
+        /// <summary>
+        /// Creates enemy GameObjects based on spawn count (minimum of 1, maximum of 8).
+        /// Only use this when live enemy is to be first added to scene. Do not use when linking to site or deserializing.
+        /// GameObjects created will be disabled, at position specified, parentless, and have a new UID for LoadID.
+        /// Caller must otherwise complete GameObject setup to suit their needs before enabling.
+        /// </summary>
+        /// <param name="reaction">Foe is hostile by default but can optionally set to passive.</param>
+        /// <returns>GameObject[] array of 1-N foes. Array can be null or empty if create fails.</returns>
         public static GameObject[] CreateFoeGameObjects(Vector3 position, MobileTypes foeType, int spawnCount = 1, MobileReactions reaction = MobileReactions.Hostile, Foe foeResource = null, bool alliedToPlayer = false)
         {
             List<GameObject> gameObjects = new List<GameObject>();
@@ -1302,6 +1371,7 @@ namespace DaggerfallWorkshop.Utility
 
             return gameObjects.ToArray();
         }
+
 
         /// <summary>
         /// Create a new foe spawner.
