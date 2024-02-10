@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
+using Mono.CSharp;
+using UnityEngine.Localization.SmartFormat.Utilities;
 
 namespace DaggerfallWorkshop.Game.Guilds
 {
@@ -114,6 +117,12 @@ namespace DaggerfallWorkshop.Game.Guilds
         {
             return (rank >= 6);
         }
+
+        public override int ReducedIdentifyCost(int price)
+        {
+            return FormulaHelper.MagesGuildReducedIdentifyCost(rank, price);
+        }
+
 
         public override bool FreeMagickaRecharge()
         {

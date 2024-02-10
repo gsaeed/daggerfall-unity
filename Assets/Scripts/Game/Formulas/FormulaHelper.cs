@@ -2081,6 +2081,15 @@ namespace DaggerfallWorkshop.Game.Formulas
             return cost;
         }
 
+        public static int FightersGuildReducedRepairCost(int price, int rank)
+        {
+            Func<int, int, int> del;
+            if (TryGetOverride("FightersGuildReducedRepairCost", out del))
+                return del(price, rank);
+
+            return (((10 - rank) << 8) / 10 * price) >> 8;
+        }
+
         public static int CalculateItemRepairTime(int condition, int max)
         {
             Func<int, int, int> del;
@@ -2413,6 +2422,32 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return new SpellCost { goldCost = 0, spellPointCost = 0 };
 
             return CalculateEffectCosts(effectTemplate, effectEntry.Settings, casterEntity);
+        }
+
+        /// <summary>
+        /// Calculate Mage's guild identify price.
+        /// </summary>
+        public static int MagesGuildReducedIdentifyCost(int rank, int price)
+        {
+            Func<int, int, int> del;
+            if (TryGetOverride("MagesGuildReducedIdentifyCost", out del))
+                return del(rank, price);
+
+            return price;
+        }
+
+        /// <summary>
+        /// Calculate Training Cost.
+        /// </summary>
+        public static int GetTrainingPrice(bool isMember, int memberTrainingCost, int nonMemberTrainingCost, int rank)
+        {
+            Func<bool, int, int, int, int> del;
+            if (TryGetOverride("GetTrainingPrice", out del))
+                return del(isMember, memberTrainingCost, nonMemberTrainingCost, rank);
+
+            int costPerLev = isMember ? memberTrainingCost : nonMemberTrainingCost;
+            return costPerLev * GameManager.Instance.PlayerEntity.Level;
+
         }
 
         /// <summary>
