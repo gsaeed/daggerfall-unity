@@ -127,6 +127,8 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
             return string.Format("DaggerfallBillboard [TEXTURE.{0:000}, Index={1}] [Replacement]", archive, record);
         }
 
+
+
         /// <summary>
         /// Seek and import a GameObject from mods to replace a Daggerfall billboard.
         /// </summary>
@@ -138,6 +140,16 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
         /// <returns>Returns the imported model or null if not found.</returns>
         public static GameObject ImportCustomFlatGameobject(int archive, int record, Vector3 position, Transform parent, bool inDungeon = false)
         {
+            void TraverseChildren(Transform thisParent)
+            {
+                var thisName = thisParent.gameObject.name;
+                foreach (Transform child in thisParent)
+                {
+                    child.gameObject.name = thisName;
+                    TraverseChildren(child);
+                }
+            }
+
             GameObject go;
             if (!TryImportGameObject(archive, record, true, out go))
                 return null;
@@ -155,13 +167,36 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                 Random.InitState((int)position.x);
                 go.transform.Rotate(0, Random.Range(0f, 360f), 0);
             }
+            var lightSource = go.GetComponent<Light>() != null;
+            if (!lightSource)
+            {
+                foreach (Transform child in go.transform)
+                {
+                    if (child.gameObject.GetComponent<Light>() != null)
+                    {
+                        lightSource = true;
+                        break;
+                    }
+                }
+            }
 
             // Add NPC trigger collider
-            if (RDBLayout.IsNPCFlat(archive))
+            if (RDBLayout.IsNPCFlat(archive) ||  (PlayerActivate.HasCustomActivation(archive, record) && !lightSource))
             {
                 Collider col = go.AddComponent<BoxCollider>();
                 col.isTrigger = true;
+                TraverseChildren(go.transform);
+
+                foreach (Transform child in go.transform)
+                {
+                    if (child.gameObject.GetComponent<Light>() == null)
+                    {
+                        Collider childCol = child.gameObject.AddComponent<BoxCollider>();
+                        childCol.isTrigger = true;
+                    }
+                }
             }
+
 
             // Finalise gameobject materials
             FinaliseMaterials(go);
