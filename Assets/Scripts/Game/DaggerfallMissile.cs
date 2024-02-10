@@ -322,11 +322,15 @@ namespace DaggerfallWorkshop.Game
 
         private void OnCollisionEnter(Collision collision)
         {
+            if (collision.collider.isTrigger)
+                return;
             DoCollision(collision, null);
         }
 
         private void OnTriggerEnter(Collider other)
         {
+            if (other.isTrigger)
+                return;
             DoCollision(null, other);
         }
 
