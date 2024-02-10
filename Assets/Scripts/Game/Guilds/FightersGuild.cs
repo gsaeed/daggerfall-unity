@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 
 namespace DaggerfallWorkshop.Game.Guilds
 {
@@ -100,7 +101,7 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         public override int ReducedRepairCost(int price)
         {
-            return (((10 - rank) << 8) / 10 * price) >> 8;
+            return FormulaHelper.FightersGuildReducedRepairCost(price, rank);
         }
 
         #endregion
