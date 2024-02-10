@@ -11,8 +11,10 @@ using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Serialization;
+using static FullSerializer.fsAotVersionInfo;
 
 namespace DaggerfallWorkshop.Game.Guilds
 {
@@ -298,8 +300,7 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         public virtual int GetTrainingPrice()
         {
-            int costPerLev = IsMember() ? memberTrainingCost : nonMemberTrainingCost;
-            return costPerLev * GameManager.Instance.PlayerEntity.Level;
+            return FormulaHelper.GetTrainingPrice(IsMember(), memberTrainingCost, nonMemberTrainingCost, rank);
         }
 
         #endregion
