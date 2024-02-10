@@ -9,14 +9,11 @@
 // Notes:
 //
 
-using System;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Diagnostics;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.Entity;
-using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -711,16 +708,7 @@ namespace DaggerfallWorkshop.Game
         protected virtual void RaiseOnCompleteEvent()
         {
             if (OnComplete != null)
-                try
-                {
-                    OnComplete();
-                }
-                catch (Exception e)
-                {
-                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
-                }
+                OnComplete();
         }
 
         #endregion
