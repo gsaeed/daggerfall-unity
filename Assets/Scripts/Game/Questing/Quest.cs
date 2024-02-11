@@ -38,7 +38,7 @@ namespace DaggerfallWorkshop.Game.Questing
 
         // Quest object collections
         Dictionary<int, Message> messages = new Dictionary<int, Message>();
-        Dictionary<string, Task> tasks = new Dictionary<string, Task>();
+        public Dictionary<string, Task> tasks = new Dictionary<string, Task>();
 
         // Clock, Place, Person, Foe, etc. all share a common resource dictionary
         Dictionary<string, QuestResource> resources = new Dictionary<string, QuestResource>();
