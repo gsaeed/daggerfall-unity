@@ -162,34 +162,19 @@ namespace DaggerfallWorkshop
                 return;
             }
 
-            if (!IsMagicallyHeld)
+            DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
+            var lockStatus = FormulaHelper.AttemptToPickLock(IsMagicallyHeld, CurrentLockValue, PlaySounds,
+                PickedLockSound, dfAudioSource);
+
+            if (lockStatus)
             {
-                int chance = 0;
-                player.TallySkill(DFCareer.Skills.Lockpicking, 1);
-                chance = FormulaHelper.CalculateInteriorLockpickingChance(player.Level, CurrentLockValue, player.Skills.GetLiveSkillValue(DFCareer.Skills.Lockpicking));
-
-                if (Dice100.FailedRoll(chance))
-                {
-                    Game.DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingFailure"));
-                    FailedSkillLevel = player.Skills.GetLiveSkillValue(DFCareer.Skills.Lockpicking);
-                }
-                else
-                {
-                    Game.DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingSuccess"));
-                    CurrentLockValue = 0;
-
-                    if (PlaySounds && PickedLockSound > 0 && audioSource)
-                    {
-                        DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
-                        if (dfAudioSource != null)
-                            dfAudioSource.PlayOneShot(PickedLockSound);
-                    }
-                    ToggleDoor(true);
-                }
+                CurrentLockValue = 0;
+                ToggleDoor(true);
             }
             else
             {
-                Game.DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingFailure"));
+                if (!IsMagicallyHeld)
+                    FailedSkillLevel = player.Skills.GetLiveSkillValue(DFCareer.Skills.Lockpicking);
             }
         }
 
