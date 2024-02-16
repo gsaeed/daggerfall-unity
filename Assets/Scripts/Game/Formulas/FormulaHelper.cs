@@ -25,6 +25,7 @@ using DaggerfallConnect.Save;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Banking;
+using DaggerfallWorkshop.Game.Questing.Actions;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
@@ -260,6 +261,77 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             int chance = lockpickingSkill - (5 * lockvalue);
             return Mathf.Clamp(chance, 5, 95);
+        }
+
+        public static bool AttemptToUnlockBuilding(StaticBuilding building, int buildingLockValue, int skillValue, DaggerfallAudioSource dfAudioSource)
+        {
+            Func<StaticBuilding, int, int, DaggerfallAudioSource, bool> del;
+            if (TryGetOverride("AttemptToUnlockBuilding", out del))
+                return del(building, buildingLockValue, skillValue, dfAudioSource);
+
+            // Attempt to unlock building
+            UnityEngine.Random.InitState(Time.frameCount);
+            GameManager.Instance.PlayerEntity.TallySkill(DFCareer.Skills.Lockpicking, 1);
+            int chance = FormulaHelper.CalculateExteriorLockpickingChance(buildingLockValue, skillValue);
+            int roll = UnityEngine.Random.Range(1, 101);
+            Debug.LogFormat("Attempting pick against lock strength {0}. Chance={1}, Roll={2}.", buildingLockValue, chance, roll);
+            if (chance > roll)
+            {
+                // Show success and play unlock sound
+                GameManager.Instance.PlayerEntity.TallyCrimeGuildRequirements(true, 1);
+                DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingSuccess"));
+                if (dfAudioSource != null)
+                    dfAudioSource.PlayOneShot(SoundClips.ActivateLockUnlock);
+            }
+            else
+            {
+                // Show failure and record attempt skill level in discovery data
+                // Have not been able to create a guard response in classic, even when early morning NPCs are nearby
+                // Assuming for now that exterior lockpicking is discrete enough that no response on failure is required
+                DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingFailure"));
+                GameManager.Instance.PlayerGPS.SetLastLockpickAttempt(building.buildingKey, skillValue); ;
+            }
+
+            return true;
+
+        }
+
+        public static bool AttemptToPickLock(bool IsMagicallyHeld, int CurrentLockValue, bool PlaySounds, SoundClips PickedLockSound , DaggerfallAudioSource dfAudioSource)
+        {
+            Func<bool, int, bool, SoundClips, DaggerfallAudioSource, bool> del;
+            if (TryGetOverride("AttemptToPickLock", out del))
+                return del(IsMagicallyHeld, CurrentLockValue, PlaySounds, PickedLockSound, dfAudioSource);
+
+            var player = GameManager.Instance.PlayerEntity;
+
+            if (!IsMagicallyHeld)
+            {
+                int chance = 0;
+                player.TallySkill(DFCareer.Skills.Lockpicking, 1);
+                chance = FormulaHelper.CalculateInteriorLockpickingChance(player.Level, CurrentLockValue, player.Skills.GetLiveSkillValue(DFCareer.Skills.Lockpicking));
+
+                if (Dice100.FailedRoll(chance))
+                {
+                    Game.DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingFailure"));
+                    return false;
+                }
+                else
+                {
+                    Game.DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingSuccess"));
+                    if (PlaySounds && PickedLockSound > 0 )
+                    {
+                        if (dfAudioSource != null)
+                            dfAudioSource.PlayOneShot(PickedLockSound);
+                    }
+
+                    return true;
+                }
+            }
+            else
+            {
+                Game.DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingFailure"));
+                return false;
+            }
         }
 
         // Calculate chance of successfully pickpocketing a target
