@@ -595,30 +595,8 @@ namespace DaggerfallWorkshop.Game
                             }
 
                             // Attempt to unlock building
-                            Random.InitState(Time.frameCount);
-                            player.TallySkill(DFCareer.Skills.Lockpicking, 1);
-                            int chance = FormulaHelper.CalculateExteriorLockpickingChance(buildingLockValue, skillValue);
-                            int roll = Random.Range(1, 101);
-                            Debug.LogFormat("Attempting pick against lock strength {0}. Chance={1}, Roll={2}.", buildingLockValue, chance, roll);
-                            if (chance > roll)
-                            {
-                                // Show success and play unlock sound
-                                player.TallyCrimeGuildRequirements(true, 1);
-                                DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingSuccess"));
-                                DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
-                                if (dfAudioSource != null)
-                                    dfAudioSource.PlayOneShot(SoundClips.ActivateLockUnlock);
-                                isBrokenIn = true;
-                            }
-                            else
-                            {
-                                // Show failure and record attempt skill level in discovery data
-                                // Have not been able to create a guard response in classic, even when early morning NPCs are nearby
-                                // Assuming for now that exterior lockpicking is discrete enough that no response on failure is required
-                                DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingFailure"));
-                                GameManager.Instance.PlayerGPS.SetLastLockpickAttempt(building.buildingKey, skillValue);
-                                return;
-                            }
+                            DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
+                            FormulaHelper.AttemptToUnlockBuilding(building, buildingLockValue, skillValue, dfAudioSource);
                         }
                     }
 
