@@ -34,6 +34,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         List<DFCareer> classList = new List<DFCareer>();
         DFCareer selectedClass;
         int selectedClassIndex = 0;
+        int coreClassCount = 0;
 
         private DFCareerArray myDFCareers = new DFCareerArray();
         public DFCareer SelectedClass => selectedClass;
@@ -61,13 +62,22 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     cd.career = classFile.Career;
                     if (CreateCharCustomClass.fullDFCareers == null)
                         CreateCharCustomClass.fullDFCareers = new DFCareerArray();
-                    CreateCharCustomClass.fullDFCareers.DfCareers.Add(cd.career.Name, cd);
+                    if (!CreateCharCustomClass.fullDFCareers.DfCareers.ContainsKey(cd.career.Name))
+                        CreateCharCustomClass.fullDFCareers.DfCareers.Add(cd.career.Name, cd);
+                    else
+                    {
+                        CreateCharCustomClass.fullDFCareers.DfCareers[cd.career.Name] = cd;
+                    }
                     classList.Add(classFile.Career);
                     careerName = TextManager.Instance.GetLocalizedText(classFile.Career.Name);
                     listBox.AddItem(GrammarManager.grammarProcessor.ProcessGrammar(careerName));
+
+ //                   listBox.AddItem(TextManager.Instance.GetLocalizedText(classFile.Career.Name));
+                    listBox.AddItem(classFile.Career.Name);
+
                 }
             }
-
+            coreClassCount = classList.Count;
             AddCustomClasses();
 
             // Last option is for creating custom classes
@@ -113,7 +123,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else
             {
-                if (index <= 17) // core classes
+                if (index <= coreClassCount) // core classes
                 {
                     selectedClass = classList[index];
                     selectedClass.Name = className; // Ensures any localized display names are assigned after selection from list
