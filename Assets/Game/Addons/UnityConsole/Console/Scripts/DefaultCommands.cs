@@ -58,6 +58,7 @@ namespace Wenzil.Console
             ConsoleCommandsDatabase.RegisterCommand(Levitate.name, Levitate.description, Levitate.usage, Levitate.Execute);
             ConsoleCommandsDatabase.RegisterCommand(OpenAllDoors.name, OpenAllDoors.description, OpenAllDoors.usage, OpenAllDoors.Execute);
             ConsoleCommandsDatabase.RegisterCommand(OpenDoor.name, OpenDoor.description, OpenDoor.usage, OpenDoor.Execute);
+            ConsoleCommandsDatabase.RegisterCommand(LockDoor.name, LockDoor.description, LockDoor.usage, LockDoor.Execute);
             ConsoleCommandsDatabase.RegisterCommand(ActivateAction.name, ActivateAction.description, ActivateAction.usage, ActivateAction.Execute);
             ConsoleCommandsDatabase.RegisterCommand(KillAllEnemies.name, KillAllEnemies.description, KillAllEnemies.usage, KillAllEnemies.Execute);
             ConsoleCommandsDatabase.RegisterCommand(TransitionToExterior.name, TransitionToExterior.description, TransitionToExterior.usage, TransitionToExterior.Execute);
@@ -1500,6 +1501,47 @@ namespace Wenzil.Console
                     }
                     return string.Format("Finished.  Opened {0} doors out of {1}", count, doors.Count());
 
+                }
+
+            }
+        }
+        private static class LockDoor
+        {
+            public static readonly string name = "lockdoor";
+            public static readonly string error = "No door type object found";
+            public static readonly string description = "Locks a single door the player is looking at, with a random locked state";
+            public static readonly string usage = "lockdoor lockLevel (optional)";
+
+            public static string Execute(params string[] args)
+            {
+                int lockLevel = UnityEngine.Random.Range(1, 20);
+
+                if (args.Length > 0)
+                {
+                    if (!int.TryParse(args[0], out lockLevel))
+                        return "Invalid locklevel.";
+                }
+
+
+                if (!GameManager.Instance.IsPlayerInside)
+                    return "You are not inside";
+                else
+                {
+                    DaggerfallActionDoor door;
+                    RaycastHit hitInfo;
+                    Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+                    if (!(Physics.Raycast(ray, out hitInfo)))
+                        return error;
+                    else
+                    {
+
+                        door = hitInfo.transform.GetComponent<DaggerfallActionDoor>();
+                        if (door == null)
+                            return error;
+                        else
+                            door.CurrentLockValue = lockLevel;
+                    }
+                    return string.Format("Finished");
                 }
 
             }
