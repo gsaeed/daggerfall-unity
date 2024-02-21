@@ -424,7 +424,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Pricing
 
-        private void UpdateCostAndGold()
+        protected virtual void UpdateCostAndGold()
         {
             bool modeActionEnabled = false;
             cost = 0;
