@@ -685,24 +685,38 @@ namespace DaggerfallWorkshop.Utility
 
                         // Add action
                         if (hasAction && standaloneObject != null)
-                        {
                             AddActionModelHelper(standaloneObject, actionLinkDict, obj, ref blockData, serialize);
-                            if (PlayerActivate.HasCustomActivation(standaloneObject.name))
-                            {
-                                Collider collider = standaloneObject.GetComponent<Collider>();
-                                if (collider == null)
-                                {
-                                    collider = standaloneObject.AddComponent<Collider>();
-                                }
 
-                                collider = standaloneObject.GetComponent<Collider>();
-                                if (collider != null && collider.enabled == false)
-                                    collider.enabled = true;
-                            }
+                        if (!hasAction && standaloneObject != null && PlayerActivate.HasCustomActivation(modelId))
+                        {
+                            RenameChildrenAndAddCollider(standaloneObject.transform);
                         }
                     }
                 }
             }
+
+            return;
+
+            void RenameChildrenAndAddCollider(Transform thisParent)
+            {
+                var thisName = thisParent.gameObject.name;
+                Collider collider = thisParent.GetComponent<Collider>();
+                if (thisParent.gameObject.GetComponent<Light>() == null && collider == null)
+                {
+                    collider = thisParent.gameObject.AddComponent<BoxCollider>();
+                }
+
+                collider = thisParent.GetComponent<Collider>();
+                if (collider != null && collider.enabled == false)
+                    collider.enabled = true;
+
+                foreach (Transform child in thisParent)
+                {
+                    child.gameObject.name = thisName;
+                    RenameChildrenAndAddCollider(child);
+                }
+            }
+
         }
 
         /// <summary>
