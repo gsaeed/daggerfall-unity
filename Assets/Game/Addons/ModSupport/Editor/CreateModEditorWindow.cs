@@ -431,8 +431,15 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 }
                 else if (GUILayout.Button("Build Mod"))
                 {
-                    SaveModFile(true);
-                    BuildMod();
+                    if (!EditorApplication.isPlaying)
+                    {
+                        SaveModFile(true);
+                        BuildMod();
+                    }
+                    else
+                    {
+                        Debug.LogError("Can't build mod while in play mode.");
+                    }
                 }
 
             });
