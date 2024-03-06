@@ -689,7 +689,7 @@ namespace DaggerfallWorkshop.Utility
 
                         if (!hasAction && standaloneObject != null && PlayerActivate.HasCustomActivation(modelId))
                         {
-                            RenameChildrenAndAddCollider(standaloneObject.transform);
+                            RenameChildrenAndAddCollider(standaloneObject.transform, standaloneObject.gameObject.name);
                         }
                     }
                 }
@@ -697,23 +697,43 @@ namespace DaggerfallWorkshop.Utility
 
             return;
 
-            void RenameChildrenAndAddCollider(Transform thisParent)
+            void RenameChildrenAndAddCollider(Transform thisParent, string nameReplacement)
             {
-                var thisName = thisParent.gameObject.name;
-                Collider collider = thisParent.GetComponent<Collider>();
-                if (thisParent.gameObject.GetComponent<Light>() == null && collider == null)
+                if (thisParent.gameObject.GetComponent<MeshRenderer>() != null || thisParent.gameObject.GetComponent<SkinnedMeshRenderer>() != null)
                 {
-                    collider = thisParent.gameObject.AddComponent<BoxCollider>();
+                    if (thisParent.gameObject.GetComponent<Light>() == null && thisParent.gameObject.GetComponent<Collider>() == null)
+                    {
+                        thisParent.gameObject.name = nameReplacement;
+                        Collider Col = thisParent.gameObject.AddComponent<BoxCollider>();
+                        Col.isTrigger = true;
+                    }
                 }
-
-                collider = thisParent.GetComponent<Collider>();
-                if (collider != null && collider.enabled == false)
-                    collider.enabled = true;
-
+                if (thisParent.gameObject.GetComponent<Light>() == null && thisParent.gameObject.GetComponent<Collider>() != null)
+                {
+                    var col = thisParent.gameObject.GetComponent<Collider>();
+                    col.enabled = true;
+                    thisParent.gameObject.name = nameReplacement;
+                }
+                
                 foreach (Transform child in thisParent)
                 {
-                    child.gameObject.name = thisName;
-                    RenameChildrenAndAddCollider(child);
+                    if (child.gameObject.GetComponent<MeshRenderer>() != null || child.gameObject.GetComponent<SkinnedMeshRenderer>() != null)
+                    {
+                        if (child.gameObject.GetComponent<Light>() == null && child.gameObject.GetComponent<Collider>() == null)
+                        {
+                            child.gameObject.name = nameReplacement;
+                            Collider childCol = child.gameObject.AddComponent<BoxCollider>();
+                            childCol.isTrigger = true;
+                        }
+                    }
+                    if (child.gameObject.GetComponent<Light>() == null && child.gameObject.GetComponent<Collider>() != null)
+                    {
+                        var col = child.gameObject.GetComponent<Collider>();
+                        col.enabled = true;
+                        child.gameObject.name = nameReplacement;
+                    }
+                    
+                    RenameChildrenAndAddCollider(child, nameReplacement);
                 }
             }
 
