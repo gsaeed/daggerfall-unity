@@ -60,7 +60,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         Panel actionButtonsPanel;
         Button selectButton;
-        Button stealButton;
+        protected Button stealButton;
         Button modeActionButton;
         Button clearButton;
 
@@ -933,13 +933,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        private void StealButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void StealButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             DoSteal();
         }
 
-        void StealButton_OnKeyboardEvent(BaseScreenComponent sender, Event keyboardEvent)
+        protected virtual void StealButton_OnKeyboardEvent(BaseScreenComponent sender, Event keyboardEvent)
         {
             if (keyboardEvent.type == EventType.KeyDown)
             {
