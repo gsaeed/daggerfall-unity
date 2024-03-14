@@ -1064,7 +1064,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <summary>
         /// Automatically assigns load priority from relationships defined by <see cref="ModInfo.Dependencies"/>.
         /// </summary>
-        int GetLoadPriority(string filename)
+        public int GetLoadPriority(string filename)
         {
             foreach(var mod in mods)
                 if (mod.FileName == filename)
