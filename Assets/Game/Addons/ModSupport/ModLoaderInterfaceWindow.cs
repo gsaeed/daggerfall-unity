@@ -665,7 +665,16 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             if (target != null && target.Enabled)
             {
                 var depTarget = GetModFromName(fields[2]);
-                if (target.Enabled &&  depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
+                if (depTarget == null)
+                {
+                    int a;
+                    if (fields.Length > 2 && int.TryParse(fields[2], out a))
+                    {
+                        ChangePriority(target, a);
+                    }
+
+                }
+                else if (target.Enabled &&  depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
                 {
                     if (disableConflicts)
                     {
@@ -750,6 +759,47 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             msgBox.Show();
         }
         return;
+    }
+
+    private void ChangePriority(Mod target, int dest)
+    {
+        var origin = ModManager.Instance.GetLoadPriority(target.FileName);
+        if (dest >= 0)
+        {
+            if (origin <= dest)
+                return;
+
+            if (dest > ModManager.Instance.mods.Count)
+                dest = ModManager.Instance.mods.Count;
+
+            for (int i = origin; i > dest; i--)
+            {
+                var m1 = ModManager.Instance.mods[i];
+                var m2 = ModManager.Instance.mods[i - 1];
+                m1.LoadPriority -= 1;
+                m2.LoadPriority += 1;
+                ModManager.Instance.mods[i] = m2;
+                ModManager.Instance.mods[i - 1] = m1;
+            }
+        }
+        else
+        {
+            dest = ModManager.Instance.mods.Count + dest;
+            if (dest < 0)
+                return;
+            if (origin >= dest)
+                return;
+            
+            for (int i = origin; i < dest; i++)
+            {
+                var m1 = ModManager.Instance.mods[i];
+                var m2 = ModManager.Instance.mods[i + 1];
+                m1.LoadPriority += 1;
+                m2.LoadPriority -= 1;
+                ModManager.Instance.mods[i] = m2;
+                ModManager.Instance.mods[i + 1] = m1;
+            }
+        }
     }
 
     private void CheckDependencies()
