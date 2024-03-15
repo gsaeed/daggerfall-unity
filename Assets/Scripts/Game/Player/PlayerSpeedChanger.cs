@@ -11,6 +11,7 @@
 
 using DaggerfallConnect;
 using System.Collections.Generic;
+using DaggerfallWorkshop.Game.Formulas;
 using UnityEngine;
 
 namespace DaggerfallWorkshop.Game
@@ -29,7 +30,7 @@ namespace DaggerfallWorkshop.Game
         // Daggerfall base speed constants. (courtesy Allofich)
         public const float classicToUnitySpeedUnitRatio = 39.5f; // was estimated from comparing a walk over the same distance in classic and DF Unity
         public const float dfWalkBase = 150f;
-        private const float dfCrouchBase = 50f;
+        private const float dfCrouchBase = dfWalkBase / 3f;
         private const float dfRideBase = dfWalkBase + 225f;
         private const float dfCartBase = dfWalkBase + 100f;
 
@@ -155,7 +156,7 @@ namespace DaggerfallWorkshop.Game
                 baseSpeed = (playerSpeed + dfCrouchBase) / classicToUnitySpeedUnitRatio;
             else if (playerMotor.IsRiding)
             {
-                float rideSpeed = (GameManager.Instance.TransportManager.TransportMode == TransportModes.Cart) ? dfCartBase : dfRideBase;
+                float rideSpeed = FormulaHelper.RideSpeed(dfCartBase , dfRideBase);
                 baseSpeed = (playerSpeed + rideSpeed) / classicToUnitySpeedUnitRatio;
             }
             else
