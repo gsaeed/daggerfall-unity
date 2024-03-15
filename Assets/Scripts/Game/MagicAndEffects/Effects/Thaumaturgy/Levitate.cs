@@ -24,6 +24,8 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
 
         LevitateMotor levitateMotor;
         EnemyMotor enemyMotor;
+        public static int LevitateCostA = 60, LevitateCostB = 100;
+
 
         public override void SetProperties()
         {
@@ -34,7 +36,7 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
             properties.AllowedElements = ElementTypes.Magic;
             properties.AllowedCraftingStations = MagicCraftingStations.SpellMaker | MagicCraftingStations.PotionMaker;
             properties.MagicSkill = DFCareer.MagicSkills.Thaumaturgy;
-            properties.DurationCosts = MakeEffectCosts(60, 100);
+            properties.DurationCosts = MakeEffectCosts(LevitateCostA, LevitateCostB);
         }
 
         public override string GroupName => TextManager.Instance.GetLocalizedText("levitate");
