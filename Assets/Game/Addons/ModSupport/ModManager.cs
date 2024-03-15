@@ -1327,28 +1327,33 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             var sorted = new List<T>();
             var visited = new HashSet<T>();
-
+            var beingVisited = new HashSet<T>(); // New set to track nodes currently being visited
+            
             foreach (var item in source)
-                Visit(item, visited, sorted, dependencies);
+                Visit(item, visited, beingVisited, sorted, dependencies);
 
             return sorted;
         }
 
-        private static void Visit<T>(T item, HashSet<T> visited, List<T> sorted, Func<T, IEnumerable<T>> dependencies)
+        private static void Visit<T>(T item, HashSet<T> visited, HashSet<T> beingVisited, List<T> sorted, Func<T, IEnumerable<T>> dependencies)
         {
             if (!visited.Contains(item))
             {
-                visited.Add(item);
+                beingVisited.Add(item); // Mark the node as being visited
 
                 foreach (var dependency in dependencies(item))
-                    Visit(dependency, visited, sorted, dependencies);
+                {
+                    if (beingVisited.Contains(dependency))
+                    {
+                        throw new Exception($"Cyclic dependency found between item {item} and dependency {dependency}");
+                    }
 
+                    Visit(dependency, visited, beingVisited, sorted, dependencies);
+                }
+
+                visited.Add(item); // Mark the node as visited
                 sorted.Add(item);
-            }
-            else
-            {
-                if (!sorted.Contains(item))
-                    throw new Exception("Cyclic dependency found");
+                beingVisited.Remove(item); // Remove the node from the beingVisited set
             }
         }
 
