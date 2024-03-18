@@ -41,7 +41,7 @@ namespace DaggerfallWorkshop.Game.Questing
         public Dictionary<string, Task> tasks = new Dictionary<string, Task>();
 
         // Clock, Place, Person, Foe, etc. all share a common resource dictionary
-        Dictionary<string, QuestResource> resources = new Dictionary<string, QuestResource>();
+        public Dictionary<string, QuestResource> resources = new Dictionary<string, QuestResource>();
 
         // Questors as added by quest script
         Dictionary<string, QuestorData> questors = new Dictionary<string, QuestorData>();
