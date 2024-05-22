@@ -238,6 +238,46 @@ namespace DaggerfallWorkshop.Game.Formulas
             return Mathf.Max((int)Mathf.Floor(player.MaxMagicka / 8), 1);
         }
 
+        public static bool AttemptBash(bool byPlayer, DaggerfallActionDoor daggerfallActionDoor)
+        {
+            Func<bool,DaggerfallActionDoor, bool> del;
+            if (TryGetOverride("AttemptBash", out del))
+                return del(byPlayer, daggerfallActionDoor);
+
+            // Play bash sound if flagged and ready
+            if (daggerfallActionDoor.PlaySounds && daggerfallActionDoor.BashSound > 0 && daggerfallActionDoor.audioSource)
+            {
+                DaggerfallAudioSource dfAudioSource = daggerfallActionDoor.GetComponent<DaggerfallAudioSource>();
+                if (dfAudioSource != null)
+                    dfAudioSource.PlayOneShot(daggerfallActionDoor.BashSound);
+            }
+
+            if (daggerfallActionDoor.IsOpen || daggerfallActionDoor.CurrentLockValue == 0)
+            {
+                // Bash-close the door or Bash-Open the unlocked door
+                daggerfallActionDoor.ToggleDoor(true);
+                return true;
+            }
+            // Cannot bash magically held doors
+            else if (!daggerfallActionDoor.IsMagicallyHeld)
+            {
+                // Roll for chance to open
+                if (DaggerfallUnity.Settings.DoorBashEaseMultiplier <= 0f)
+                    DaggerfallUnity.Settings.DoorBashEaseMultiplier = 1.0f;
+                int chance = (int)((20f - (float)daggerfallActionDoor.CurrentLockValue) * DaggerfallUnity.Settings.DoorBashEaseMultiplier + 0.5f);
+                if (Dice100.SuccessRoll(chance))
+                {
+                    daggerfallActionDoor.CurrentLockValue = 0;
+                    daggerfallActionDoor.ToggleDoor(true);
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else return false;
+
+        }
+
         // Calculate chance of successfully lockpicking a door in an interior (an animating door). If this is higher than a random number between 0 and 100 (inclusive), the lockpicking succeeds.
         public static int CalculateInteriorLockpickingChance(int level, int lockvalue, int lockpickingSkill)
         {
