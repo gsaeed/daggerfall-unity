@@ -49,7 +49,7 @@ namespace DaggerfallWorkshop
         ulong loadID = 0;
 
         Quaternion startingRotation;
-        AudioSource audioSource;
+        public AudioSource audioSource;
 
         [SerializeField]
         [Tooltip("Box Collider used to define a door's collision model. An enabled Box Collider is prioritised above a Mesh Collider")]
@@ -180,32 +180,7 @@ namespace DaggerfallWorkshop
 
         public void AttemptBash(bool byPlayer)
         {
-            // Play bash sound if flagged and ready
-            if (PlaySounds && BashSound > 0 && audioSource)
-            {
-                DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
-                if (dfAudioSource != null)
-                    dfAudioSource.PlayOneShot(BashSound);
-            }
-
-            if (IsOpen || CurrentLockValue == 0) 
-            {
-                // Bash-close the door or Bash-Open the unlocked door
-                ToggleDoor(true);
-            }
-            // Cannot bash magically held doors
-            else if (!IsMagicallyHeld)
-            {
-                // Roll for chance to open
-                if (DaggerfallUnity.Settings.DoorBashEaseMultiplier <= 0f)
-                    DaggerfallUnity.Settings.DoorBashEaseMultiplier = 1.0f;
-                int chance = (int)((20f - (float)CurrentLockValue) * DaggerfallUnity.Settings.DoorBashEaseMultiplier + 0.5f);
-                if (Dice100.SuccessRoll(chance))
-                {
-                    CurrentLockValue = 0;
-                    ToggleDoor(true);
-                }
-            }
+            FormulaHelper.AttemptBash(byPlayer, this);
  
             if (byPlayer && Game.GameManager.Instance.PlayerEnterExit.IsPlayerInsideDungeonCastle)
             {
