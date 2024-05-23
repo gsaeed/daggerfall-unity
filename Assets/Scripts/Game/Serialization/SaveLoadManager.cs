@@ -1555,6 +1555,11 @@ namespace DaggerfallWorkshop.Game.Serialization
             // Fade out from black
             DaggerfallUI.Instance.FadeBehaviour.FadeHUDFromBlack(1.0f);
 
+            // list revised list of Persistent Windows
+            foreach (var item in UIWindowFactory.uiWindowImplementations)
+                Debug.Log($"LoadManager: UI Window Factory: {item.Key}:{item.Value}");
+
+
             // Raise OnLoad event
             RaiseOnLoadEvent(saveData);
         }
