@@ -129,6 +129,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         /// <param name="windowClassType">The c# class Type of the implementation class to replace with</param>
         public static void RegisterCustomUIWindow(UIWindowType windowType, Type windowClassType)
         {
+            void loadWindow(UIWindowType wT, Type wCT)
+            {
+                Type oWCT = uiWindowImplementations[wT];
+                Debug.Log($"UI Window Factory: for {wT}, replaced {oWCT} with {wCT}");
+                uiWindowImplementations[wT] = wCT;
+                DaggerfallUI.Instance.ReinstantiatePersistentWindowInstances();
+
+            }
+
+
             Mod curMod = null;
             Mod prevMod = null;
             var stackTrace = new StackTrace();
@@ -157,8 +167,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             {
                 Debug.LogError(
                     $"RegisterCustomUIWindow: {fileName} could not find a GameObject [{thisFrame}]");
-                uiWindowImplementations[windowType] = windowClassType;
-                DaggerfallUI.Instance.ReinstantiatePersistentWindowInstances();
+                loadWindow(windowType, windowClassType);
                 return;
             }
 
@@ -172,16 +181,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                         Debug.LogWarning($"RegisterCustomUIWindow: {windowType} was unable to find mod for {scr.name} {thisFrame}");
 
                     uiWindowModded[windowType] = curMod;
-                    uiWindowImplementations[windowType] = windowClassType;
-                    DaggerfallUI.Instance.ReinstantiatePersistentWindowInstances();
+                    loadWindow(windowType, windowClassType);
                     return;
                 }
                 else
                 {
                     DaggerfallUnity.LogMessage($"RegisterCustomUIWindow: {windowType} from mod {curMod.Title}:[{curMod.LoadPriority}] overrides {prevMod.Title}:[{prevMod.LoadPriority}]" , true);
                     uiWindowModded[windowType] = curMod;
-                    uiWindowImplementations[windowType] = windowClassType;
-                    DaggerfallUI.Instance.ReinstantiatePersistentWindowInstances();
+                    loadWindow(windowType, windowClassType);
                     return;
                 }
             }
