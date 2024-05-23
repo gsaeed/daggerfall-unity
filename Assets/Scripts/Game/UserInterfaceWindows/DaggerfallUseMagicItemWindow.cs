@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using DaggerfallConnect.FallExe;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.UserInterface;
 using UnityEngine;
@@ -132,7 +133,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 GameManager.Instance.PlayerEntity.Items.RemoveOne(itemToUse);
             }
             else if (itemToUse.IsEnchanted)
+            {
                 GameManager.Instance.PlayerEffectManager.DoItemEnchantmentPayloads(MagicAndEffects.EnchantmentPayloadFlags.Used, itemToUse, GameManager.Instance.PlayerEntity.Items);
+                FormulaHelper.CheckIdentifyItem(itemToUse);
+            }        
         }
 
         #endregion
