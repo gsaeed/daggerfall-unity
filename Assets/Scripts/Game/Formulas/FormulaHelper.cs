@@ -2326,6 +2326,15 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return false;
         }
 
+        public static bool CheckIdentifyItem(DaggerfallUnityItem item)
+        {
+            Func<DaggerfallUnityItem, bool> del;
+            if (TryGetOverride("CheckIdentifyItem", out del))
+                return del(item);
+
+            return false;
+        }
+
         /// <summary>
         /// Gets a random material based on player level.
         /// Note, this is called by default RandomArmorMaterial function.
