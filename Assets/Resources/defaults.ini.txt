@@ -201,5 +201,5 @@ EnhancedCombatAI=True
 GuildQuestListBox=False
 BowLeftHandWithSwitching=False
 LoiterLimitInHours=3
-
+NumberOfNearestTownsForRegionalSearches=3
 
