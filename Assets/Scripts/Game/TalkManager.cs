@@ -1910,7 +1910,11 @@ namespace DaggerfallWorkshop.Game
                     }
                 }
 
-                int selectedLoc = UnityEngine.Random.Range(0, Math.Min(allLocs.Count, 3));
+                int shortListOfResponses = DaggerfallUnity.Settings.NumberOfNearestTownsForRegionalSearches;
+                if (shortListOfResponses < 1)
+                    shortListOfResponses = allLocs.Count;
+                
+                int selectedLoc = UnityEngine.Random.Range(0, Math.Min(allLocs.Count, shortListOfResponses));
 
                 var sortedLoc = from entry in allLocs orderby entry.Value ascending select entry;
 
