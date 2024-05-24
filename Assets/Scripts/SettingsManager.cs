@@ -372,6 +372,8 @@ namespace DaggerfallWorkshop
         public bool GuildQuestListBox { get; set; }
         public bool BowLeftHandWithSwitching { get; set; }
         public int LoiterLimitInHours { get; set; }
+        public int NumberOfNearestTownsForRegionalSearches { get; set; }
+
 
         #endregion
 
@@ -624,6 +626,7 @@ namespace DaggerfallWorkshop
             GuildQuestListBox = GetBool(sectionEnhancements, "GuildQuestListBox");
             BowLeftHandWithSwitching = GetBool(sectionEnhancements, "BowLeftHandWithSwitching");
             LoiterLimitInHours = GetInt(sectionEnhancements, "LoiterLimitInHours");
+            NumberOfNearestTownsForRegionalSearches = GetInt(sectionEnhancements, "NumberOfNearestTownsForRegionalSearches");
         }
 
         /// <summary>
@@ -829,9 +832,12 @@ namespace DaggerfallWorkshop
             SetBool(sectionEnhancements, "GuildQuestListBox", GuildQuestListBox);
             SetBool(sectionEnhancements, "BowLeftHandWithSwitching", BowLeftHandWithSwitching);
             SetInt(sectionEnhancements, "LoiterLimitInHours", LoiterLimitInHours);
+            SetInt(sectionEnhancements, "NumberOfNearestTownsForRegionalSearches", NumberOfNearestTownsForRegionalSearches);
+            
             // Write settings to persistent file
             WriteSettingsFile();
         }
+
 
         #endregion
 
