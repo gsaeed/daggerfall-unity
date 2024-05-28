@@ -121,7 +121,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         #region Event Handlers
 
-        public void MagicItemPicker_OnItemPicked(int index, string itemName)
+        public virtual void MagicItemPicker_OnItemPicked(int index, string itemName)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             DaggerfallUnityItem itemToUse = magicUseItems[index];
