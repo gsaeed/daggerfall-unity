@@ -165,10 +165,21 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else
             {
-                Debug.LogError(
-                    $"RegisterCustomUIWindow: {fileName} could not find a GameObject [{thisFrame}]");
-                loadWindow(windowType, windowClassType);
-                return;
+                scr = FindGameObjectWithScript(fileName);
+                if (scr != null)
+                {
+                    curMod = ModManager.Instance.GetMod(scr.name);
+                    if (curMod == null)
+                        Debug.Log($"RegisterCustomUIWindow: {scr.name} could not find a mod for {thisFrame}");
+
+                }
+                else
+                {
+                    Debug.LogError(
+                        $"RegisterCustomUIWindow: {fileName} could not find a GameObject [{thisFrame}]");
+                    loadWindow(windowType, windowClassType);
+                    return;
+                }
             }
 
             if (curMod == null || !uiWindowModded.TryGetValue(windowType, out prevMod) || (prevMod != null && prevMod.LoadPriority < curMod.LoadPriority))
@@ -226,6 +237,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
 
             return null;
+        }
+
+        public static GameObject FindGameObjectWithScript(string scriptName)
+        {
+            var scripts = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>();
+            var script = scripts.FirstOrDefault(s => s.GetType().Name == scriptName);
+            return script?.gameObject;
         }
 
         public static IUserInterfaceWindow GetInstance(UIWindowType windowType, IUserInterfaceManager uiManager)
