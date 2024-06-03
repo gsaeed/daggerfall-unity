@@ -26,6 +26,7 @@ using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.Questing.Actions;
+using DaggerfallWorkshop.Game.UserInterface;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
@@ -2024,6 +2025,17 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Not a holiday
             return 0;
         }
+
+        public static DaggerfallTalkWindow.TalkTone GetDefaultTalkTone(FactionFile.SocialGroups socialGroup)
+        {
+            Func<FactionFile.SocialGroups, DaggerfallTalkWindow.TalkTone> del;
+            if (TryGetOverride("GetDefaultTalkTone", out del))
+                return del(socialGroup);
+
+
+            return DaggerfallTalkWindow.TalkTone.Normal;
+        }
+
 
         #endregion
 
