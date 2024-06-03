@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using DaggerfallConnect.FallExe;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 
 namespace DaggerfallWorkshop.Game.Items
@@ -147,7 +148,8 @@ namespace DaggerfallWorkshop.Game.Items
 
             // Allow entity effect manager to start any enchantments on this item
             StartEquippedItem(item);
-
+            FormulaHelper.CheckIdentifyItem(item);
+            
             //Debug.Log(string.Format("Equipped {0} to {1}", item.LongName, slot.ToString()));
 
             return unequippedList;
