@@ -739,7 +739,7 @@ namespace DaggerfallWorkshop.Utility
             return DaggerfallUI.Instance.DfCourtWindow.DaysInPrison.ToString();
         }
 
-        private static string LegalReputation(IMacroContextProvider mcp)
+        public static string LegalReputation(IMacroContextProvider mcp)
         {   // %ltn
             PlayerGPS gps = GameManager.Instance.PlayerGPS;
             int rep = GameManager.Instance.PlayerEntity.RegionData[gps.CurrentRegionIndex].LegalRep;
