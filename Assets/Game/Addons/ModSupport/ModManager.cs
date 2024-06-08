@@ -18,7 +18,10 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using DaggerfallWorkshop.Game.UserInterface;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using FullSerializer;
+using Unity.Mathematics;
 
 namespace DaggerfallWorkshop.Game.Utility.ModSupport
 {
@@ -58,6 +61,21 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             ".yaml",
             ".fnt",
         };
+
+        public struct ActiveModListComponents
+        {
+            public string Filename;
+            public string EnableIndicator;
+
+            public ActiveModListComponents(string modName, string enabledIndicator)
+            {
+                Filename = modName;
+                EnableIndicator = enabledIndicator;
+            }
+        };
+
+        public static List<ActiveModListComponents> fileActiveModList = new List<ActiveModListComponents>();
+        public static List<string> fileBisectRange = new List<string>();
 
 #if UNITY_EDITOR
         [Tooltip("Loads mods from Assets/Game/Mods in debug mode, without creating an AssetBundle.")]
@@ -1358,7 +1376,273 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         }
 
         #endregion
+        #region Bisect
+        public static void RunBisect(IUserInterfaceManager uiManager, bool startOfFirstBisect = false)
+        {
+            if (startOfFirstBisect)
+            {
+                //create bisect.txt file
+                //in mod order list modname, tab, X for active and O for inactive
+                var activeModList = ModManager.Instance.mods.Where(x => x.Enabled).ToList();
+                if (activeModList.Count < 2)
+                {
+                    DaggerfallUnity.Settings.BinarySearch = 0;
+                    DaggerfallUnity.Settings.SaveSettings();
+                    DaggerfallUI.MessageBox("There are not enough active mods to run binary search.  Cancelled.");
+                    return;
+                }
 
+                DaggerfallUnity.Settings.BinarySearch = 1;
+                DaggerfallUnity.Settings.SaveSettings();
+                
+                var str = string.Empty;
+                var halfWay = 0;
+                for (int i = 0; i < activeModList.Count; i++)
+                {
+                    halfWay = UnityEngine.Mathf.RoundToInt(activeModList.Count / 2f);
+                    if (i < halfWay)
+                    {
+                        str += $"{activeModList[i].FileName}\tX\n";
+                        var mod = ModLoaderInterfaceWindow.GetModFromName(activeModList[i].FileName);
+                        if (mod != null)
+                            mod.Enabled = true;
+                    }
+                    else
+                    {
+                        str += $"{activeModList[i].FileName}\tO\n";
+                        var mod = ModLoaderInterfaceWindow.GetModFromName(activeModList[i].FileName);
+                        if (mod != null)
+                            mod.Enabled = false;
+                    }
+                }
+                File.WriteAllText(Application.persistentDataPath + @"/bisect.txt", str);
+                File.WriteAllText(Application.persistentDataPath + @"/bisectOriginal.txt", str);
+                str = $"{activeModList.First().FileName}\n";
+                str += $"{activeModList.Last().FileName}\n";
+                File.WriteAllText(Application.persistentDataPath + @"/bisectRange.txt", str);
+                var estSteps = Mathf.Clamp(
+                    UnityEngine.Mathf.RoundToInt(UnityEngine.Mathf.Log(activeModList.Count) / UnityEngine.Mathf.Log(2)),
+                    1, activeModList.Count);
+                DaggerfallUI.MessageBox(
+                    $"Mods have been set for first Binary search test, There will be about \r{estSteps} tests.  Press Play to begin.");
+            }
+            else
+            {
+                ReadActiveModList();
+                if (fileActiveModList.Count <= 1)
+                {
+                    ProcessLastEntry(uiManager);
+                    ResetBisect();
+                    return;
+                }
+                var messageBox = new DaggerfallMessageBox(uiManager);
+                messageBox.EnableVerticalScrolling(80);
+                messageBox.SetText("Was the last test successful?");
+                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
+                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Cancel);
+                messageBox.OnButtonClick += (box, button) =>
+                {
+
+                    bool allSameIndicator = fileActiveModList.All(x => x.EnableIndicator == fileActiveModList[0].EnableIndicator);
+
+                    if (button == DaggerfallMessageBox.MessageBoxButtons.Cancel)
+                    {
+                        messageBox.CloseWindow();
+                        ResetBisect();
+                        return;
+                    }
+                    if (button == DaggerfallMessageBox.MessageBoxButtons.Yes)
+                    {
+                        messageBox.CloseWindow();
+                        if (!allSameIndicator)
+                            BisectSuccessXO();
+                        else
+                            BisectSuccessX();
+                    }
+                    else
+                    {
+                        messageBox.CloseWindow();
+                        if (!allSameIndicator)
+                            BisectFailXO();
+                        else
+                            BisectFailX();
+                    }
+                };
+                messageBox.Show();
+
+            }
+        }
+
+        private static void ProcessLastEntry(IUserInterfaceManager uiManager)
+        {
+            var lastFileName = fileActiveModList[0].Filename;
+            var messageBox = new DaggerfallMessageBox(uiManager);
+            messageBox.EnableVerticalScrolling(80);
+            messageBox.SetText("Was the last test successful?");
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
+            messageBox.OnButtonClick += (box, button) =>
+            {
+                if (button == DaggerfallMessageBox.MessageBoxButtons.Yes)
+                {
+                    messageBox.CloseWindow();
+                    DaggerfallUI.MessageBox(
+                        "Bisect didn't find the culprit.\rThe error must be caused by a combination of mods.");
+                }
+                else
+                {
+                    messageBox.CloseWindow();
+                    DaggerfallUI.MessageBox($"The culprit is {lastFileName}");
+                }
+            };
+            messageBox.Show();
+        }
+
+        private static void BisectSuccessXO()
+        {
+            int firstIndex = fileActiveModList.FindIndex(x => x.EnableIndicator == "O");
+            int lastIndex = fileActiveModList.FindLastIndex(x => x.EnableIndicator == "O");
+            int halfway = (lastIndex + firstIndex) / 2;
+            for (int i = 0; i < fileActiveModList.Count; i++)
+            {
+                var activeModListComponents = fileActiveModList[i];
+
+                activeModListComponents.EnableIndicator = i >= firstIndex && i <= halfway ? "X" : "O";
+                fileActiveModList[i] = activeModListComponents;
+                var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
+                if (mod != null)
+                    mod.Enabled = (i >= firstIndex && i <= halfway);
+            }
+            CreateBisectFile(firstIndex, lastIndex);
+
+        }
+
+        private static void CreateBisectFile(int firstIndex, int lastIndex)
+        {
+            string sep = "\t";
+
+            string str = string.Empty;
+            
+            for(int i = firstIndex; i <= lastIndex; i++)
+            {
+                str += $"{fileActiveModList[i].Filename}\t{fileActiveModList[i].EnableIndicator}\n";
+            }
+
+            File.WriteAllText(Application.persistentDataPath + @"/bisect.txt", str);
+
+            str = string.Empty;
+            
+            str = $"{fileActiveModList[firstIndex].Filename}\n";
+            str += $"{fileActiveModList[lastIndex].Filename}\n";
+            File.WriteAllText(Application.persistentDataPath + @"/bisectRange.txt", str);
+
+
+            var estSteps = Mathf.Clamp(
+                UnityEngine.Mathf.RoundToInt(UnityEngine.Mathf.Log(lastIndex - firstIndex + 1) / UnityEngine.Mathf.Log(2)),
+                1, lastIndex - firstIndex + 1);
+
+            DaggerfallUI.MessageBox(
+                $"Mods have been set for the next Binary search test, There will be about \r{estSteps} tests.  Press Play to begin.");
+        }
+
+        private static void BisectSuccessX()
+        {
+            DaggerfallUI.MessageBox(
+                "Bisect didn't find the culprit.\rThe error must be caused by a combination of mods.");
+            ResetBisect();
+        }
+
+        private static void ResetBisect()
+        {
+            ReadActiveModList(true);
+            foreach (var mod in ModManager.Instance.mods)
+            {
+                var result = fileActiveModList.FirstOrDefault(x => x.Filename == mod.FileName);
+                if (result.Filename != null && result.Filename == mod.FileName)
+                    mod.Enabled = true;
+                else
+                    mod.Enabled = false;
+            }
+
+            DaggerfallUnity.Settings.BinarySearch = 0;
+            DaggerfallUnity.Settings.SaveSettings();
+            DaggerfallUnitySetupGameWizard.bisectLabel.Enabled = false;
+        }
+
+        private static void BisectFailXO()
+        {
+            int firstIndex = fileActiveModList.FindIndex(x => x.EnableIndicator == "X");
+            int lastIndex = fileActiveModList.FindLastIndex(x => x.EnableIndicator == "X");
+            int halfway = (lastIndex + firstIndex) / 2;
+
+            for (int i = 0; i < fileActiveModList.Count; i++)
+            {
+                var activeModListComponents = fileActiveModList[i];
+                activeModListComponents.EnableIndicator = i >= firstIndex && i <= halfway ? "X" : "O";
+                fileActiveModList[i] = activeModListComponents;
+                var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
+                if (mod != null)
+                    mod.Enabled = (i >= firstIndex && i <= halfway);
+
+            }
+            CreateBisectFile(firstIndex, lastIndex);
+        }
+        
+        private static void BisectFailX()
+        {
+            int firstIndex = 0;
+            int lastIndex = fileActiveModList.Count - 1;
+            int halfWay = lastIndex / 2;
+
+            for (int i = 0; i < fileActiveModList.Count; i++)
+            {
+                var activeModListComponents = fileActiveModList[i];
+                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfWay ? "X" : "O");
+                fileActiveModList[i] = activeModListComponents;
+                var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
+                if (mod != null)
+                    mod.Enabled = (i >= firstIndex && i <= halfWay);
+
+            }
+            CreateBisectFile(firstIndex, lastIndex);
+        }
+
+        private static void ReadActiveModList(bool reset = false)
+        {
+            fileActiveModList.Clear();
+            fileBisectRange.Clear();
+            string sep = "\t";
+
+            string filename;
+
+            if (reset)
+                filename = Application.persistentDataPath + @"/bisectOriginal.txt";
+            else
+                filename = Application.persistentDataPath + @"/bisect.txt";
+            
+            foreach (string line in System.IO.File.ReadLines(filename))
+            {
+                var fields = line.Split(sep.ToCharArray());
+                var modName = fields[0];
+                var enabledIndicator = fields[1];
+                fileActiveModList.Add(new ActiveModListComponents(modName, enabledIndicator));
+            }
+
+            filename = Application.persistentDataPath + @"/bisectRange.txt";
+            foreach (string line in System.IO.File.ReadLines(filename))
+            {
+                var fields = line.Split(sep.ToCharArray());
+                var modName = fields[0];
+                
+                fileBisectRange.Add(modName);
+            }
+
+            return;
+        }
+
+
+        #endregion
         #region Events
 
         //public delegate void NewObjectCreatedHandler(object obj, SetupOptions options);
