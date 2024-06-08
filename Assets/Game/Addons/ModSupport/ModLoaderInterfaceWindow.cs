@@ -579,7 +579,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         }
     }
 
-    private Mod GetModFromName(string name)
+    public static Mod GetModFromName(string name)
     {
         return ModManager.Instance.Mods.FirstOrDefault(x => x.FileName.Equals(name.ToLower(), StringComparison.Ordinal));
     }
