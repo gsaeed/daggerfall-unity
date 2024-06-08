@@ -338,6 +338,7 @@ namespace DaggerfallWorkshop
         public int StartCellX { get; set; }
         public int StartCellY { get; set; }
         public bool StartInDungeon { get; set; }
+        public int BinarySearch { get; set; }
 
         // [Experimental]
         public int TerrainDistance { get; set; }
@@ -590,6 +591,7 @@ namespace DaggerfallWorkshop
             StartCellX = GetInt(sectionStartup, "StartCellX", 2, 997);
             StartCellY = GetInt(sectionStartup, "StartCellY", 2, 497);
             StartInDungeon = GetBool(sectionStartup, "StartInDungeon");
+            BinarySearch = GetInt(sectionStartup, "Binary Search");
 
             TerrainDistance = GetInt(sectionExperimental, "TerrainDistance", 1, 4);
             TerrainHeightmapPixelError = GetFloat(sectionExperimental, "TerrainHeightmapPixelError", 1, 10);
@@ -793,7 +795,7 @@ namespace DaggerfallWorkshop
             SetInt(sectionStartup, "StartCellX", StartCellX);
             SetInt(sectionStartup, "StartCellY", StartCellY);
             SetBool(sectionStartup, "StartInDungeon", StartInDungeon);
-
+            SetInt(sectionStartup, "Binary Search", BinarySearch);
             SetInt(sectionExperimental, "TerrainDistance", TerrainDistance);
             SetFloat(sectionExperimental, "TerrainHeightmapPixelError", TerrainHeightmapPixelError);
             SetBool(sectionExperimental, "SmallerDungeons", SmallerDungeons);
@@ -827,8 +829,7 @@ namespace DaggerfallWorkshop
             WriteSettingsFile();
         }
 
-
-        #endregion
+         #endregion
 
         #region Private Methods
 
