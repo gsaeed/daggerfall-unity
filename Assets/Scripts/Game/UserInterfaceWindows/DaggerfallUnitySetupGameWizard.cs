@@ -30,6 +30,7 @@ using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using Mono.CSharp;
 
+
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
     /// <summary>
@@ -105,7 +106,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         SetupStages currentStage = SetupStages.None;
         string arena2Path = string.Empty;
         bool moveNextStage = false;
-
+        public static TextLabel bisectLabel = new TextLabel();
         #endregion
 
         #region Enums
@@ -138,6 +139,30 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             AllowCancel = false;
             allowFreeScaling = false;
             LoadResources();
+            
+            // Add Bisect button
+            Button bisectButton = new Button();
+            bisectButton.Size = new Vector2(20, 9);
+            bisectButton.HorizontalAlignment = HorizontalAlignment.Right;
+            bisectButton.VerticalAlignment = VerticalAlignment.Bottom;
+            bisectButton.BackgroundColor = new Color(0.2f, 0.2f, 0.2f, 0.6f);
+            bisectButton.Outline.Enabled = true;
+            bisectButton.Label.Text = "bisect";
+            bisectButton.OnMouseClick += BisectButton_OnMouseClick;
+            NativePanel.Components.Add(bisectButton);
+
+            // Add Bisect label
+            
+            bisectLabel.Size = new Vector2(40, 9);
+            bisectLabel.HorizontalAlignment = HorizontalAlignment.Left;
+            bisectLabel.VerticalAlignment = VerticalAlignment.Bottom;
+            bisectLabel.BackgroundColor = new Color(0.2f, 0.2f, 0.2f, 0.6f);
+            bisectLabel.Text = "Bisect in process";
+            NativePanel.Components.Add(bisectLabel);
+            bisectLabel.Enabled = false;
+
+            if (DaggerfallUnity.Settings.BinarySearch > 0)
+                bisectLabel.Enabled = true;
 
             // Add exit button
             Button exitButton = new Button();
@@ -167,6 +192,42 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             SetCursor();
         }
 
+        private void BisectButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        {
+            if (DaggerfallUnity.Settings.BinarySearch > 0)  // binary Search in process
+            {
+                bisectLabel.Enabled = true;
+                ModManager.RunBisect(uiManager);
+                return;
+            }
+            
+            var messageBox = new DaggerfallMessageBox(uiManager, this);
+            messageBox.EnableVerticalScrolling(80);
+            messageBox.SetText("You are about to perform a binary search across your active mods, Are you sure?");
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
+            messageBox.OnButtonClick += (box, button) =>
+            {
+               
+                if (button == DaggerfallMessageBox.MessageBoxButtons.Yes)
+                {
+                    messageBox.CloseWindow();
+                    DaggerfallUnity.Settings.BinarySearch = 1;
+                    DaggerfallUnity.Settings.SaveSettings();
+                    bisectLabel.Enabled = true;
+                    ModManager.RunBisect(uiManager,true); // in mod order, modname tab activeStatus as X for active and O for inactive.
+                    
+                    
+                }
+                else
+                    messageBox.CloseWindow();
+            };
+            messageBox.Show();
+
+
+        }
+
+        
         public override void Update()
         {
             base.Update();
