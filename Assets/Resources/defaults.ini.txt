@@ -170,6 +170,7 @@ DunMicMapBorderColor=FAB403FF
 StartCellX=109
 StartCellY=158
 StartInDungeon=True
+Binary Search=0
 
 [Experimental]
 TerrainDistance=3
