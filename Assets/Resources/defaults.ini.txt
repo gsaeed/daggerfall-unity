@@ -79,6 +79,7 @@ SoundFont=
 PlayerNudity=False
 
 [GUI]
+LogReputationChanges=False
 ShowOptionsAtStart=True
 GUIFilterMode=0
 VideoFilterMode=1
