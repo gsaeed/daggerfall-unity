@@ -231,7 +231,7 @@ namespace DaggerfallWorkshop
         public bool PlayerNudity { get; set; }
 
         // [GUI]
-
+        public bool LogReputationChanges { get; set; }
         public float DisplayHUDScaleAdjust { get; set; }
 
         public bool DisplayMobileEnemyHealthStatus { get; set; }
@@ -521,6 +521,7 @@ namespace DaggerfallWorkshop
             AccelerateUICopyTexture = GetBool(sectionGUI, "AccelerateUICopyTexture");
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
+            LogReputationChanges = GetBool(sectionGUI, "LogReputationChanges");
             LogHudMessages = GetBool(sectionGUI, "LogHudMessages");
             DoorBashEaseMultiplier = GetFloat(sectionGUI, "DoorBashEaseMultiplier");
 
@@ -755,6 +756,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "HideLoginName", HideLoginName);
             SetBool(sectionGUI, "HideSkillImprovedMessage", HideSkillImprovedMessage);
             SetFloat(sectionGUI, "DisplayHUDScaleAdjust", DisplayHUDScaleAdjust);
+            SetBool(sectionGUI, "LogReputationChanges", LogReputationChanges);
             SetBool(sectionGUI, "LogHudMessages", LogHudMessages);
             SetFloat(sectionGUI, "DoorBashEaseMultiplier", DoorBashEaseMultiplier);
             SetBool(sectionGUI, "DisplayMobileEnemyHealthStatus", DisplayMobileEnemyHealthStatus);
