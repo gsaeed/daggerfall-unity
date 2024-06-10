@@ -11,6 +11,7 @@
 
 using System.Text.RegularExpressions;
 using FullSerializer;
+using UnityEngine;
 
 namespace DaggerfallWorkshop.Game.Questing
 {
@@ -48,6 +49,15 @@ namespace DaggerfallWorkshop.Game.Questing
         public override void Update(Task caller)
         {
             // Perform action changes
+            if (DaggerfallUnity.Settings.LogReputationChanges && amount != 0)
+            {
+                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+                DaggerfallUI.MessageBox(
+                    $"in {ParentQuest.DisplayName}:{ParentQuest.QuestName},]rLegalRep adjusted by {amount} for region {GameManager.Instance.PlayerGPS.CurrentRegion}:{GameManager.Instance.PlayerGPS.CurrentRegionIndex}");
+                Debug.LogError($"in {ParentQuest.QuestName}, Update Task LegalRep adjusted legalrep by {amount} for region {GameManager.Instance.PlayerGPS.CurrentRegion}:{GameManager.Instance.PlayerGPS.CurrentRegionIndex}\nStackTrace: {t}");
+
+            }
+
             int region = GameManager.Instance.PlayerGPS.CurrentRegionIndex;
             GameManager.Instance.PlayerEntity.RegionData[region].LegalRep += (short)amount;
             GameManager.Instance.PlayerEntity.ClampLegalReputations();
