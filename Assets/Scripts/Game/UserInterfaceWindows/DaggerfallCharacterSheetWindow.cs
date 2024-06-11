@@ -775,13 +775,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             mb.Show();
         }
 
-        private void LevelButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        protected virtual void LevelButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             float currentLevel = (playerEntity.CurrentLevelUpSkillSum - playerEntity.StartingLevelUpSkillSum + 28f) / 15f;
             int progress = (int)((currentLevel % 1) * 100);
-            //DaggerfallUI.MessageBox(string.Format(TextManager.Instance.GetLocalizedText("levelProgress"), progress));
-            DaggerfallUI.MessageBox(string.Format("currentLevel = %1, progress = %2", currentLevel, progress));
+            DaggerfallUI.MessageBox(string.Format(TextManager.Instance.GetLocalizedText("levelProgress"), progress));
         }
 
         private void GoldButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
