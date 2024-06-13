@@ -767,6 +767,10 @@ namespace DaggerfallWorkshop.Game.Entity
         {
             spellbook.Add(spell);
         }
+        public bool HasSpell(EffectBundleSettings spell)
+        {
+            return spellbook.Contains(spell);
+        }
 
         public void DeleteSpell(int index)
         {
