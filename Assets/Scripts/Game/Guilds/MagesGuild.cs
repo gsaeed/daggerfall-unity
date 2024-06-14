@@ -32,7 +32,7 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int PromotionTeleportId = 5234;
 
         private const int factionId = (int)FactionFile.FactionIDs.The_Mages_Guild;
-
+        public new static int NumDaysToCheckForPromotion { get; set; } = -1;
         #endregion
 
         #region Properties & Data
