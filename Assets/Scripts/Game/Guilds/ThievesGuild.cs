@@ -30,6 +30,7 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int PromotionMap1Id = 5228;
         protected const int PromotionMap2Id = 5229;
         protected const int BribesJudgeId = 550;
+        public new static int NumDaysToCheckForPromotion { get; set; } = -1;
 
         private const int factionId = (int)FactionFile.FactionIDs.The_Thieves_Guild;
 

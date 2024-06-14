@@ -30,6 +30,7 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int PromotionSoulGemsId = 6613;
         protected const int PromotionSpymasterId = 6614;
         protected const int BribesJudgeId = 551;
+        public new static int NumDaysToCheckForPromotion { get; set; } = -1;
 
         private const int factionId = (int)FactionFile.FactionIDs.The_Dark_Brotherhood;
 
