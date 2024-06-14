@@ -122,6 +122,7 @@ DisplayMobileEnemyHealthStatus=False
 IgnoreCombiner=True
 LogHudMessages=False
 DoorBashEaseMultiplier=1.0
+HideSkillImprovedMessage=False;
 
 [Spells]
 EnableSpellLighting=True
