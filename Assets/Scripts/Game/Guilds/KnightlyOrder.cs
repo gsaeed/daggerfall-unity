@@ -37,6 +37,7 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int HouseId = 462;
         protected const int NoArmorId = 461;
         protected const int NoHouseId = 460;
+        public new static int NumDaysToCheckForPromotion { get; set; } = -1;
 
         private const int ArmorFlagMask = 1;
         private const int HouseFlagMask = 2;
