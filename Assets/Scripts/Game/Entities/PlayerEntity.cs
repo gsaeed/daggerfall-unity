@@ -1358,13 +1358,17 @@ namespace DaggerfallWorkshop.Game.Entity
         /// </summary>
         public void RaiseSkills()
         {
+
             const int youAreNowAMasterOfTextID = 4020;
 
+            if (skillUses == null)
+                return;
+            
             if (GameManager.Instance.PlayerDeath.DeathInProgress)
                 return;
 
             DaggerfallDateTime now = DaggerfallUnity.Instance.WorldTime.Now;
-            if ((now.ToClassicDaggerfallTime() - timeOfLastSkillIncreaseCheck) <= 360)
+            if (now.ToClassicDaggerfallTime() - timeOfLastSkillIncreaseCheck <= FormulaHelper.GetMinutesBetweenSkillCheck())
                 return;
 
             timeOfLastSkillIncreaseCheck = now.ToClassicDaggerfallTime();
@@ -1386,7 +1390,8 @@ namespace DaggerfallWorkshop.Game.Entity
                         skills.SetPermanentSkillValue(i, (short)(skills.GetPermanentSkillValue(i) + 1));
                         SetSkillRecentlyIncreased(i);
                         SetCurrentLevelUpSkillSum();
-                        DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("skillImprove").Replace("%s", DaggerfallUnity.Instance.TextProvider.GetSkillName((DFCareer.Skills)i)));
+                        if (!DaggerfallUnity.Settings.HideSkillImprovedMessage)
+                            DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("skillImprove").Replace("%s", DaggerfallUnity.Instance.TextProvider.GetSkillName((DFCareer.Skills)i)));
                         if (skills.GetPermanentSkillValue(i) == 100)
                         {
                             List<DFCareer.Skills> primarySkills = GetPrimarySkills();
