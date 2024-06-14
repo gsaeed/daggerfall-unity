@@ -15,6 +15,7 @@ using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Serialization;
 using static FullSerializer.fsAotVersionInfo;
+using DaggerfallWorkshop.Utility.AssetInjection;
 
 namespace DaggerfallWorkshop.Game.Guilds
 {
@@ -39,6 +40,8 @@ namespace DaggerfallWorkshop.Game.Guilds
         public static int[] rankReqReputation = {  0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
         public static int[] rankReqSkillHigh =  { 22, 23, 31, 39, 47, 55, 63, 71, 79, 87 };
         public static int[] rankReqSkillLow =   {  4,  5,  9, 13, 17, 21, 25, 29, 33, 37 };
+        public static int DefaultNumDaysToCheckForPromotion { get; set; } = 28;
+        public static int NumDaysToCheckForPromotion { get; set; } = -1;
 
         #endregion
 
@@ -65,6 +68,12 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         public int Rank { get { return rank; } set { rank = value; } }
 
+        public virtual int GetNumDaysToCheckForPromotion()
+        {
+            var guildgroup = GameManager.Instance.GuildManager.GetGuildGroup(GetFactionId());
+            return FormulaHelper.GetIndividualCheckForPromotion(guildgroup);
+        }
+
         public virtual void ImportLastRankChange(uint timeOfLastRankChange)
         {
             // In classic, time of last rank change is measured by minute, not day
@@ -73,12 +82,15 @@ namespace DaggerfallWorkshop.Game.Guilds
             lastRankChange = CalculateDaySinceZero(classicTime);
         }
 
+
+        
         public virtual TextFile.Token[] UpdateRank(PlayerEntity playerEntity)
         {
             TextFile.Token[] tokens = null;
 
-            // Have 28 days passed?
-            if (CalculateDaySinceZero(DaggerfallUnity.Instance.WorldTime.Now) >= lastRankChange + 28)
+            // Have NumDaysToCheckForPromotion days passed?
+            var days = GetNumDaysToCheckForPromotion();
+            if (CalculateDaySinceZero(DaggerfallUnity.Instance.WorldTime.Now) >= lastRankChange + days)
             {
                 // Does player qualify for promotion / demotion?
                 int newRank = CalculateNewRank(playerEntity);
@@ -119,16 +131,10 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         protected void CalculateNumHighLowSkills(PlayerEntity playerEntity, int rank, out int high, out int low)
         {
-            high = 0;
-            low = 0;
-            foreach (DFCareer.Skills skill in GuildSkills)
-            {
-                int skillVal = playerEntity.Skills.GetPermanentSkillValue(skill);
-                if (skillVal >= rankReqSkillHigh[rank])
-                    high++;
-                else if (skillVal >= rankReqSkillLow[rank])
-                    low++;
-            }
+            int rep = GetReputation(playerEntity);
+
+            high = FormulaHelper.CalculateNumHighSkills(playerEntity, rep, GuildSkills, rankReqReputation, rankReqSkillHigh, rank);
+            low = FormulaHelper.CalculateNumLowSkills(playerEntity, rep, GuildSkills, rankReqReputation, rankReqSkillHigh, rankReqSkillLow, rank);
         }
 
         public static int CalculateDaySinceZero(DaggerfallDateTime date)
