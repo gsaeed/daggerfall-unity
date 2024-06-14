@@ -163,6 +163,23 @@ namespace DaggerfallWorkshop.Game.Formulas
             UnityEngine.Random.InitState(Time.frameCount);
             return UnityEngine.Random.Range(minBonusPool, maxBonusPool + 1);
         }
+        public static int GetMinutesBetweenTraining()
+        {
+            Func<int> del;
+            if (TryGetOverride("GetMinutesBetweenTraining", out del))
+                return del();
+
+            return 720;
+        }
+
+        public static int GetMinutesBetweenSkillCheck()
+        {
+            Func<int> del;
+            if (TryGetOverride("GetMinutesBetweenSkillCheck", out del))
+                return del();
+
+            return 360;
+        }
 
         #endregion
 
@@ -184,7 +201,55 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return maxHealth;
         }
+        //Count Number of High Skills
+        public static int CalculateNumHighSkills(PlayerEntity playerEntity, int reputation, List<DFCareer.Skills>guildSkills, int[] rankReqReputation, int[] rankReqSkillHigh, int rank)
+        {
+            Func< PlayerEntity, int,List<DFCareer.Skills>, int[], int[], int, int> del;
+            if (TryGetOverride("CalculateNumHighSkills", out del))
+                return del(playerEntity, reputation, guildSkills, rankReqReputation, rankReqSkillHigh, rank);
 
+            int high = 0;
+            foreach (DFCareer.Skills skill in guildSkills)
+            {
+                int skillVal = playerEntity.Skills.GetPermanentSkillValue(skill);
+                if (skillVal >= rankReqSkillHigh[rank])
+                    high++; 
+            }
+
+            return high;
+        }
+
+        //Count Number of Low Skills
+        public static int CalculateNumLowSkills(PlayerEntity playerEntity, int reputation, List<DFCareer.Skills> guildSkills, int[] rankReqReputation, int[] rankReqSkillHigh, int[] rankReqSkillLow, int rank)
+        {
+            Func<PlayerEntity, int, List<DFCareer.Skills>, int[], int[], int[], int, int> del;
+            if (TryGetOverride("CalculateNumLowSkills", out del))
+                return del(playerEntity, reputation, guildSkills, rankReqReputation, rankReqSkillHigh, rankReqSkillLow, rank);
+
+            int low = 0;
+            foreach (DFCareer.Skills skill in guildSkills)
+            {
+                int skillVal = playerEntity.Skills.GetPermanentSkillValue(skill);
+                if (skillVal >= rankReqSkillHigh[rank])
+                    continue;
+                else if (skillVal >= rankReqSkillLow[rank])
+                    low++;
+            }
+
+            return low;
+        }
+
+        //Count Number of Low Skills
+        public static int GetIndividualCheckForPromotion(FactionFile.GuildGroups group)
+        {
+            Func<FactionFile.GuildGroups, int> del;
+            if (TryGetOverride("GetIndividualCheckForPromotion", out del))
+                return del(group);
+
+            return Guild.DefaultNumDaysToCheckForPromotion;
+        }
+
+        
         // Calculate how much health the player should recover per hour of rest
         public static int CalculateHealthRecoveryRate(PlayerEntity player)
         {

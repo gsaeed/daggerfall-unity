@@ -1417,6 +1417,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 }
                 File.WriteAllText(Application.persistentDataPath + @"/bisect.txt", str);
                 File.WriteAllText(Application.persistentDataPath + @"/bisectOriginal.txt", str);
+                File.WriteAllText(Application.persistentDataPath + @"/bisectLastFail.txt", str);
                 str = $"{activeModList.First().FileName}\n";
                 str += $"{activeModList.Last().FileName}\n";
                 File.WriteAllText(Application.persistentDataPath + @"/bisectRange.txt", str);
@@ -1463,6 +1464,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     else
                     {
                         messageBox.CloseWindow();
+                        File.Copy(Application.persistentDataPath + @"/bisect.txt",
+                            Application.persistentDataPath + @"/bisectLastFail.txt", overwrite:true);
                         if (!allSameIndicator)
                             BisectFailXO();
                         else
@@ -1488,7 +1491,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 {
                     messageBox.CloseWindow();
                     DaggerfallUI.MessageBox(
-                        "Bisect didn't find the culprit.\rThe error must be caused by a combination of mods.");
+                        "Bisect didn't find the culprit.\rThe error must be caused by a combination of mods."
+                        + "\rCheck bisectLastFail.txt for a short list of mods that combined for the error.");
                 }
                 else
                 {

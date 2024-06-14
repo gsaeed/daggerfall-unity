@@ -51,7 +51,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             // Check enough time has passed since last trained
             DaggerfallDateTime now = DaggerfallUnity.Instance.WorldTime.Now;
-            if ((now.ToClassicDaggerfallTime() - playerEntity.TimeOfLastSkillTraining) < 720)
+            if ((now.ToClassicDaggerfallTime() - playerEntity.TimeOfLastSkillTraining) < Formulas.FormulaHelper.GetMinutesBetweenTraining())
             {
                 TextFile.Token[] tokens = DaggerfallUnity.Instance.TextProvider.GetRandomTokens(TrainingToSoonId);
                 DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, uiManager.TopWindow);
