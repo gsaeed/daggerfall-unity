@@ -38,6 +38,7 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         void ImportLastRankChange(uint timeOfLastRankChange);
 
+        int GetNumDaysToCheckForPromotion();
         TextFile.Token[] UpdateRank(PlayerEntity playerEntity);
 
         TextFile.Token[] TokensPromotion(int newRank);
