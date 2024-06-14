@@ -278,6 +278,7 @@ namespace DaggerfallWorkshop
         public int QuestRumorWeight { get; set; }
         public bool DisableEnemyDeathAlert { get; set; }
         public bool HideLoginName { get; set; }
+        public bool HideSkillImprovedMessage { get; set; }
         public bool IgnoreCombiner { get; set; }
 
         // [Spells]
@@ -551,7 +552,7 @@ namespace DaggerfallWorkshop
 
             MeleeAttackDetection = GetInt(sectionMeleeAttacks, "MeleeAttackDetection", 0, 1);
             MeleeAttackFriendlyProtection = GetBool(sectionMeleeAttacks, "MeleeAttackFriendlyProtection");
-
+            HideSkillImprovedMessage = GetBool(sectionGUI, "HideSkillImprovedMessage");
             EnableSpellLighting = GetBool(sectionSpells, "EnableSpellLighting");
             EnableSpellShadows = GetBool(sectionSpells, "EnableSpellShadows");
 
@@ -760,6 +761,7 @@ namespace DaggerfallWorkshop
             SetInt(sectionGUI, "QuestRumorWeight", QuestRumorWeight);
             SetBool(sectionGUI, "DisableEnemyDeathAlert", DisableEnemyDeathAlert);
             SetBool(sectionGUI, "HideLoginName", HideLoginName);
+            SetBool(sectionGUI, "HideSkillImprovedMessage", HideSkillImprovedMessage);
             SetFloat(sectionGUI, "DisplayHUDScaleAdjust", DisplayHUDScaleAdjust);
             SetBool(sectionGUI, "LogHudMessages", LogHudMessages);
             SetFloat(sectionGUI, "DoorBashEaseMultiplier", DoorBashEaseMultiplier);

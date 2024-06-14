@@ -27,6 +27,7 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int IneligibleBadRepId = 745;
         protected const int IneligibleLowSkillId = 744;
         protected const int EligibleMsgId = 740;
+        public new static int NumDaysToCheckForPromotion { get; set; } = -1;
 
         protected const int PromotionBuyPotionsId = 6600;
         protected const int PromotionLibraryId = 6601;

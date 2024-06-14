@@ -23,6 +23,7 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int EligibleMsgId = 681;
         protected const int WelcomeMsgId = 684;
         protected const int PromotionMsgId = 686;
+        public new static int NumDaysToCheckForPromotion { get; set; } = -1;
 
         private const int factionId = (int)FactionFile.FactionIDs.The_Fighters_Guild;
 
