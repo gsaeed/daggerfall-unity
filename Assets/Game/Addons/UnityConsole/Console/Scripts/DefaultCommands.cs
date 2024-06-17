@@ -1741,7 +1741,11 @@ namespace Wenzil.Console
         {
             public static readonly string name = "add";
             public static readonly string description = "Adds n inventory items to the character, based on the given keyword. n = 1 by default";
-            public static readonly string usage = "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|drug|map|torch|potion|recipe|painting) [n] [level]";
+
+            public static readonly string usage =
+                "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|drug|map|torch|potion|recipe|painting) [n] [level] [material] [condition]" +
+                "\nMaterials = None, Iron, Steel, Silver, Elven, Dwarven, Mithril, Adamantium, Ebony, Orcish, Daedric" +
+                "\n condition = 1 or 0; 1 means random wear, 0 means keep new";
 
             public static string Execute(params string[] args)
             {
@@ -1752,6 +1756,8 @@ namespace Wenzil.Console
                 PlayerEntity playerEntity = player.GetComponent<DaggerfallEntityBehaviour>().Entity as PlayerEntity;
                 ItemCollection items = playerEntity.Items;
                 DaggerfallUnityItem newItem = null;
+                WeaponMaterialTypes weaponType = WeaponMaterialTypes.None;
+                int condition = 1;
                 int level = playerEntity.Level;
                 int n = 1;
                 if (args.Length >= 2)
@@ -1761,6 +1767,50 @@ namespace Wenzil.Console
                 if (args.Length >= 3)
                 {
                     Int32.TryParse(args[2], out level);
+                }
+                if (args.Length >= 4)
+                {
+                    switch (args[3].ToLower())
+                    {
+                        case "iron":
+                            weaponType = WeaponMaterialTypes.Iron;
+                            break;
+                        case "steel":
+                            weaponType = WeaponMaterialTypes.Steel;
+                            break;
+                        case "silver":
+                            weaponType = WeaponMaterialTypes.Silver;
+                            break;
+                        case "elven":
+                            weaponType = WeaponMaterialTypes.Elven;
+                            break;
+                        case "dwarven":
+                            weaponType = WeaponMaterialTypes.Dwarven;
+                            break;
+                        case "mithril":
+                            weaponType = WeaponMaterialTypes.Mithril;
+                            break;
+                        case "adamantium":
+                            weaponType = WeaponMaterialTypes.Adamantium;
+                            break;
+                        case "ebony":
+                            weaponType = WeaponMaterialTypes.Ebony;
+                            break;
+                        case "orcish":
+                            weaponType = WeaponMaterialTypes.Orcish;
+                            break;
+                        case "deadric":
+                            weaponType = WeaponMaterialTypes.Daedric;
+                            break;
+                        default:
+                            weaponType = WeaponMaterialTypes.None;
+                            break;
+                    }
+                    
+                }
+                if (args.Length >= 5)
+                {
+                    Int32.TryParse(args[4], out condition);
                 }
 
 
@@ -1784,11 +1834,17 @@ namespace Wenzil.Console
                             break;
                         case "weapon":
                             newItem = ItemBuilder.CreateRandomWeapon(level);
-                            newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
+                            if (weaponType != WeaponMaterialTypes.None)
+                                ItemBuilder.ApplyWeaponMaterial(newItem, weaponType);
+                            if (condition > 0)
+                                newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
                             break;
                         case "armor":
                             newItem = ItemBuilder.CreateRandomArmor(level, playerEntity.Gender, playerEntity.Race);
-                            newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
+                            if (weaponType != WeaponMaterialTypes.None)
+                                ItemBuilder.ApplyWeaponMaterial(newItem, weaponType);
+                            if (condition > 0)
+                                newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
                             break;
                         case "cloth":
                             newItem = ItemBuilder.CreateRandomClothing(playerEntity.Gender, playerEntity.Race);
