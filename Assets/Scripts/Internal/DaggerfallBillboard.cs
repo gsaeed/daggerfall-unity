@@ -15,6 +15,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using System.Collections;
+using System.Diagnostics.Eventing.Reader;
 using DaggerfallConnect;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallWorkshop.Game;
@@ -273,16 +274,23 @@ namespace DaggerfallWorkshop
                     0,
                     false,
                     true);
-                mesh = dfUnity.MeshReader.GetBillboardMesh(
-                    summary.AtlasRects[summary.AtlasIndices[record].startIndex],
-                    archive,
-                    record,
-                    out size);
-                summary.AtlasedMaterial = true;
-                if (summary.AtlasIndices[record].frameCount > 1)
-                    summary.AnimatedMaterial = true;
+                if (record >= 0 && record < summary.AtlasRects.Length &&
+                    summary.AtlasIndices[record].startIndex >= 0 &&
+                    summary.AtlasIndices[record].startIndex < summary.AtlasRects.Length)
+                {
+                    mesh = dfUnity.MeshReader.GetBillboardMesh(
+                        summary.AtlasRects[summary.AtlasIndices[record].startIndex],
+                        archive,
+                        record,
+                        out size);
+                    summary.AtlasedMaterial = true;
+                    if (summary.AtlasIndices[record].frameCount > 1)
+                        summary.AnimatedMaterial = true;
+                    else
+                        summary.AnimatedMaterial = false;
+                }
                 else
-                    summary.AnimatedMaterial = false;
+                    size = new Vector2(0, 0);
             }
             else
             {
