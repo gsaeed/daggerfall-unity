@@ -159,6 +159,8 @@ namespace DaggerfallWorkshop.Game.Serialization
 
                 if (entity == null)
                     entity = entityBehaviour.Entity as EnemyEntity;
+                if (entity == null)
+                    return;
             }
 
             // Quiesce entity during state restore
