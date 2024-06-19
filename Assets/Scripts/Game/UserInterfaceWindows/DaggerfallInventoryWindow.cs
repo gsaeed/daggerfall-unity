@@ -932,6 +932,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected virtual void UpdateRemoteTargetIcon()
         {
             ImageData containerImage;
+            if (remoteTargetIconLabel == null || remoteTargetIconPanel == null)
+                return;
+            
             remoteTargetIconLabel.Text = String.Empty;
             if (remoteTargetType == RemoteTargetTypes.Wagon)
             {
@@ -1879,8 +1882,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 // Close the inventory window first. Some artifacts (Azura's Star, the Oghma Infinium) create windows on use and we don't want to close those.
                 CloseWindow();
                 GameManager.Instance.PlayerEffectManager.DoItemEnchantmentPayloads(MagicAndEffects.EnchantmentPayloadFlags.Used, item, collection);
-                FormulaHelper.CheckIdentifyItem(item);
-
                 return;
             }
         }
