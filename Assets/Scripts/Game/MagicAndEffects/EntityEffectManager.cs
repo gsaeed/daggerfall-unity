@@ -945,7 +945,10 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
 
             // Play cast sound on drink for player only.
             if (IsPlayerEntity)
+            {
                 PlayCastSound(entityBehaviour, GetCastSoundID(ElementTypes.Magic));
+                FormulaHelper.CheckAddSpellFromPotion(item);
+            }
         }
 
         #endregion
@@ -1095,8 +1098,15 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
                 if (results.Value.removeItem)
                     sourceCollection.RemoveItem(item);
                 else if (results.Value.durabilityLoss > 0)
-                    item.LowerCondition(results.Value.durabilityLoss, GameManager.Instance.PlayerEntity, sourceCollection);
+                {
+                    item.LowerCondition(results.Value.durabilityLoss, GameManager.Instance.PlayerEntity,
+                        sourceCollection);
+                    FormulaHelper.CheckIdentifyItem(item);
+                    FormulaHelper.CheckAddSpellFromItem(item);
+
+                }
             }
+
         }
 
         int StrikeWithItem(IEntityEffect effectTemplate, DaggerfallUnityItem item, EnchantmentSettings settings, DaggerfallEntityBehaviour targetEntity, int damageIn)
