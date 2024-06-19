@@ -2411,6 +2411,23 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return false;
         }
+        public static bool CheckAddSpellFromItem(DaggerfallUnityItem item)
+        {
+            Func<DaggerfallUnityItem, bool> del;
+            if (TryGetOverride("CheckAddSpellFromItem", out del))
+                return del(item);
+
+            return false;
+        }
+
+        public static bool CheckAddSpellFromPotion(DaggerfallUnityItem item)
+        {
+            Func<DaggerfallUnityItem, bool> del;
+            if (TryGetOverride("CheckAddSpellFromPotion", out del))
+                return del(item);
+
+            return false;
+        }
 
         /// <summary>
         /// Gets a random material based on player level.
