@@ -135,7 +135,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             else if (itemToUse.IsEnchanted)
             {
                 GameManager.Instance.PlayerEffectManager.DoItemEnchantmentPayloads(MagicAndEffects.EnchantmentPayloadFlags.Used, itemToUse, GameManager.Instance.PlayerEntity.Items);
-                FormulaHelper.CheckIdentifyItem(itemToUse);
             }        
         }
 
