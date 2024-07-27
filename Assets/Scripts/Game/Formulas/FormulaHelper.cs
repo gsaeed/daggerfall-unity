@@ -249,6 +249,15 @@ namespace DaggerfallWorkshop.Game.Formulas
             return Guild.DefaultNumDaysToCheckForPromotion;
         }
 
+        public static int AdjustTimeScaleForTravel(int minutesTakenTotal)
+        {
+            Func<int, int> del;
+            if (TryGetOverride("AdjustTimeScaleForTravel", out del))
+                return del(minutesTakenTotal);
+
+            return minutesTakenTotal;
+        }
+        
         
         // Calculate how much health the player should recover per hour of rest
         public static int CalculateHealthRecoveryRate(PlayerEntity player)
