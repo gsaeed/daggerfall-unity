@@ -12,6 +12,7 @@
 using UnityEngine;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Formulas;
 
 namespace DaggerfallWorkshop.Game.Utility
 {
@@ -152,7 +153,7 @@ namespace DaggerfallWorkshop.Game.Utility
 
             if (!speedCautious)
                 minutesTakenTotal = minutesTakenTotal >> 1;
-
+            minutesTakenTotal = FormulaHelper.AdjustTimeScaleForTravel(minutesTakenTotal);
             return minutesTakenTotal;
         }
 
