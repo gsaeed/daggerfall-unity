@@ -1937,6 +1937,8 @@ namespace DaggerfallWorkshop.Game
                     if (locationToChoose == 0)
                     {
                         location = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetLocation(gps.CurrentRegionIndex, i);
+                        GameManager.Instance.PlayerGPS.DiscoverLocation(gps.CurrentRegionName,
+                            gps.CurrentLocalizedLocationName);
                         return true;
                     }
                 }
