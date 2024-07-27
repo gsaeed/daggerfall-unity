@@ -923,6 +923,9 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
         protected virtual void UpdateCheckboxes()
         {
+            if (panelTone == null)
+                return;
+
             //update tone selection
             switch (selectedTalkTone)
             {
