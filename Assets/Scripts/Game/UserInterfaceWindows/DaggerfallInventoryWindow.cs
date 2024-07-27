@@ -936,6 +936,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 return;
             
             remoteTargetIconLabel.Text = String.Empty;
+
             if (remoteTargetType == RemoteTargetTypes.Wagon)
             {
                 containerImage = DaggerfallUnity.ItemHelper.GetContainerImage(InventoryContainerImages.Wagon);
@@ -954,8 +955,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else
             {
-                containerImage = DaggerfallUnity.ItemHelper.GetContainerImage(
+                if (lootTarget != null)
+                    containerImage = DaggerfallUnity.ItemHelper.GetContainerImage(
                         (remoteTargetType == RemoteTargetTypes.Loot) ? lootTarget.ContainerImage : InventoryContainerImages.Ground);
+                else
+                {
+                    containerImage = DaggerfallUnity.ItemHelper.GetContainerImage(InventoryContainerImages.Backpack);
+                }
             }
             remoteTargetIconPanel.BackgroundTexture = containerImage.texture;
         }
