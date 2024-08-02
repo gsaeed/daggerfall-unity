@@ -169,6 +169,19 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
         }
 
         /// <summary>
+        /// Seek animated texture from modding locations with all frames. Gives CPU-accessible textures - use other overload if only GPU textures are needed
+        /// </summary>
+        /// <param name="archive">Texture archive.</param>
+        /// <param name="record">Record index.</param>
+        /// <param name="dye">Dye colour for armour, weapons, and clothing.</param>
+        /// <param name="texFrames">Imported texture frames.</param>
+        /// <returns>True if texture imported.</returns>
+        public static bool TryImportTexture(int archive, int record, DyeColors dye, out Texture2D[] texFrames)
+        {
+            return TryImportTexture(texturesPath, frame => GetName(archive, record, frame, TextureMap.Albedo, dye), false, out texFrames);
+        }
+
+        /// <summary>
         /// Seek animated texture from modding locations with all frames
         /// </summary>
         /// <param name="archive">Texture archive.</param>
