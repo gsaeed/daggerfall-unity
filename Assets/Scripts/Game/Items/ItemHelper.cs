@@ -420,6 +420,7 @@ namespace DaggerfallWorkshop.Game.Items
                     record += 1;
             }
 
+            bool isWeaponArmor = (item.ItemGroup == ItemGroups.Armor || item.ItemGroup == ItemGroups.Weapons);
             // Use world texture archive if inventory texture not set
             // Examples are gold pieces and wayrest painting
             if (archive == 0 && record == 0)
@@ -437,7 +438,7 @@ namespace DaggerfallWorkshop.Game.Items
 
             // Load image data
             string filename = TextureFile.IndexToFileName(archive);
-            ImageData data = ImageReader.GetImageData(filename, record, 0, true, false, allowAnimation);
+            ImageData data = ImageReader.GetImageData(filename, item.dyeColor, record, 0, true, false, allowAnimation, 0, isWeaponArmor);
             if (data.type == ImageTypes.None)
                 throw new Exception("GetItemImage() could not load image data.");
 
