@@ -11,6 +11,7 @@
 
 using UnityEngine;
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using DaggerfallConnect;
 using DaggerfallConnect.Utility;
@@ -234,12 +235,32 @@ namespace DaggerfallWorkshop.Utility
         /// <param name="filename">Name of standalone file as it appears in arena2 folder.</param>
         /// <param name="record">Which image record to read for multi-image files.</param>
         /// <param name="frame">Which frame to read for multi-frame images.</param>
+        /// <param name="dye">Dye colour for dyeable images.</param>
         /// <param name="hasAlpha">Enable this for image cutouts.</param>
         /// <param name="createTexture">Create a Texture2D.</param>
         /// <param name="createAllFrameTextures">Creates a Texture2D for every frame in a TEXTURE file (if greater than 1 frames).</param>
         /// <param name="alphaIndex">Set palette index for alpha checks (default is 0).</param>
         /// <returns>ImageData. If result.type == ImageTypes.None then read failed.</returns>
-        public static ImageData GetImageData(string filename, int record = 0, int frame = 0, bool hasAlpha = false, bool createTexture = true, bool createAllFrameTextures = false, int alphaIndex = 0)
+        public static ImageData GetImageData(string filename, int record = 0, int frame = 0,
+            bool hasAlpha = false, bool createTexture = true, bool createAllFrameTextures = false, int alphaIndex = 0)
+        {
+            return GetImageData(filename, DyeColors.Unchanged, record, frame, hasAlpha, createTexture, createAllFrameTextures, alphaIndex);
+        }
+
+        /// <summary>
+            /// Reads any Daggerfall image file to ImageData package.
+            /// </summary>
+            /// <param name="filename">Name of standalone file as it appears in arena2 folder.</param>
+            /// <param name="record">Which image record to read for multi-image files.</param>
+            /// <param name="frame">Which frame to read for multi-frame images.</param>
+            /// <param name="dye">Dye colour for dyeable images.</param>
+            /// <param name="hasAlpha">Enable this for image cutouts.</param>
+            /// <param name="createTexture">Create a Texture2D.</param>
+            /// <param name="createAllFrameTextures">Creates a Texture2D for every frame in a TEXTURE file (if greater than 1 frames).</param>
+            /// <param name="alphaIndex">Set palette index for alpha checks (default is 0).</param>
+            /// <param name="isWeaponArmor">True if this is a weapon or armor texture.</param>
+            /// <returns>ImageData. If result.type == ImageTypes.None then read failed.</returns>
+            public static ImageData GetImageData(string filename, DyeColors dye, int record = 0, int frame = 0, bool hasAlpha = false, bool createTexture = true, bool createAllFrameTextures = false, int alphaIndex = 0, bool isWeaponArmor = false)
         {
             // Check API ready
             DaggerfallUnity dfUnity = DaggerfallUnity.Instance;
@@ -289,11 +310,26 @@ namespace DaggerfallWorkshop.Utility
                     imageData.size = textureFile.GetSize(record);
 
                     // Texture pack support
-                    int archive = AssetInjection.TextureReplacement.FileNameToArchive(filename);
-                    if (createTexture && AssetInjection.TextureReplacement.TryImportTexture(archive, record, frame, out imageData.texture))
-                        createTexture = false;
-                    if (createAllFrameTextures && frameCount > 1 && AssetInjection.TextureReplacement.TryImportTexture(archive, record, out imageData.animatedTextures))
-                        createAllFrameTextures = false;
+                    if (isWeaponArmor)
+                    {
+                        int archive = AssetInjection.TextureReplacement.FileNameToArchive(filename);
+                        if (createTexture &&
+                            AssetInjection.TextureReplacement.TryImportTexture(archive, record, frame, out imageData.texture))
+                            createTexture = false;
+                        if (createAllFrameTextures &&
+                            AssetInjection.TextureReplacement.TryImportTexture(archive, record, dye, out imageData.animatedTextures))
+                            createAllFrameTextures = false;
+                    }
+                    else
+                    {
+                        int archive = AssetInjection.TextureReplacement.FileNameToArchive(filename);
+                        if (createTexture &&
+                            AssetInjection.TextureReplacement.TryImportTexture(archive, record, frame, out imageData.texture))
+                            createTexture = false;
+                        if (createAllFrameTextures &&
+                            AssetInjection.TextureReplacement.TryImportTexture(archive, record, dye == DyeColors.Unchanged,out imageData.animatedTextures))
+                            createAllFrameTextures = false;
+                    }
 
                     break;
 
