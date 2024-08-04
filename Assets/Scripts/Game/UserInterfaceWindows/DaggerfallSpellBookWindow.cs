@@ -983,7 +983,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             const int notEnoughGoldId = 454;
             int tradePrice = GetTradePrice();
             int msgOffset = 0;
-
             if (!GameManager.Instance.PlayerEntity.Items.Contains(Items.ItemGroups.MiscItems, (int)Items.MiscItems.Spellbook))
             {
                 DaggerfallUI.MessageBox(noSpellBook);
@@ -998,7 +997,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             else if (GameManager.Instance.PlayerEntity.HasSpell(offeredSpells[GetSpellIndex(spellsListBox.SelectedIndex)]))
             {
                 DaggerfallUI.MessageBox(
-                    $"I see that you already have {offeredSpells[GetSpellIndex(spellsListBox.SelectedIndex)].Name} in your Spell Book, you do not need to repurchase it.");
+                    $"I see that you already have {offeredSpells[GetSpellIndex(spellsListBox.SelectedIndex)].Name} in your Spell Book,\r you do not need to repurchase it.");
+            }
+            else if (GameManager.Instance.PlayerEntity.HasSpellWithSameName(offeredSpells[GetSpellIndex(spellsListBox.SelectedIndex)]))
+            {
+                DaggerfallUI.MessageBox(
+                    $"I see that you already have a spell named {offeredSpells[GetSpellIndex(spellsListBox.SelectedIndex)].Name} in your Spell Book.\rIf you would like to buy my version, please rename your spell.");
             }
             else
             {
