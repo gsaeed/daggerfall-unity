@@ -4,8 +4,8 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Interkarma/daggerfall-unity
 // Original Author: Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    
-// 
+// Contributors:
+//
 // Notes:
 //
 
@@ -24,6 +24,7 @@ using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
+using JetBrains.Annotations;
 using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.Entity
@@ -765,11 +766,18 @@ namespace DaggerfallWorkshop.Game.Entity
         {
             spellbook.Add(spell);
         }
+
         public bool HasSpell(EffectBundleSettings spell)
         {
             return spellbook.Contains(spell);
         }
+        public bool HasSpellWithSameName(EffectBundleSettings spell)
+        {
+            return spellbook.Any(x => x.Name == spell.Name);
 
+        }
+
+        
         public void DeleteSpell(int index)
         {
             if (index < 0 || index > spellbook.Count - 1)
@@ -983,7 +991,7 @@ namespace DaggerfallWorkshop.Game.Entity
         }
 
         /// <summary>
-        /// Sets the career template for a custom (ie: mod-provided) enemy type. 
+        /// Sets the career template for a custom (ie: mod-provided) enemy type.
         /// </summary>
         /// <param name="enemyId">ID, as defined in EnemyBasics.Enemies</param>
         /// <param name="career">The custom DFCareer template to register</param>
