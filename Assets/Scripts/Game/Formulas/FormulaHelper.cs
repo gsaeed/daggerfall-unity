@@ -2585,6 +2585,18 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         /// <summary>
+        /// Calculate effect costs from an EffectEntry.
+        /// </summary>
+        public static int CalculateItemCostMultiplier()
+        {
+            Func<int> del;
+            if (TryGetOverride("CalculateItemCostMultiplier", out del))
+                return del();
+
+            return 10;
+        }
+
+        /// <summary>
         /// Calculate Mage's guild identify price.
         /// </summary>
         public static int MagesGuildReducedIdentifyCost(int rank, int price)
