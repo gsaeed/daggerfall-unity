@@ -233,7 +233,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         int GetTotalGoldCost()
         {
-            return powersList.GetTotalEnchantmentCost(true) * 10;
+            return powersList.GetTotalEnchantmentCost(true) * FormulaHelper.CalculateItemCostMultiplier();
         }
 
         void EnumerateEnchantments()
