@@ -39,6 +39,20 @@ namespace DaggerfallWorkshop.Game
         #region Singleton
         private static ExteriorAutomap _instance;
 
+        public struct BuildingIdentifier
+        {
+            public string Name;
+            public int UniqueIndex;
+
+            public BuildingIdentifier(string n, int i)
+            {
+                Name = n;
+                UniqueIndex = i;
+            }
+            
+            
+        };
+        public Dictionary<BuildingIdentifier, int> BuildingMapDictionary = new Dictionary<BuildingIdentifier, int>();
         public static ExteriorAutomap instance
         {
             get
@@ -639,6 +653,7 @@ namespace DaggerfallWorkshop.Game
         private void CreateBuildingNameplates()
         {
             DeleteBuildingNameplates();
+            BuildingMapDictionary.Clear();
 
             List<BuildingNameplate> buildingNameplatesList = new List<BuildingNameplate>();
 
@@ -796,6 +811,11 @@ namespace DaggerfallWorkshop.Game
                             newBuildingNameplate.textLabel.Tag = buildingSummary;
                             newBuildingNameplate.textLabel.OnMouseDoubleClick += TextLabel_OnMouseDoubleClick;
                             newBuildingNameplate.scale = 1.0f;
+                            BuildingMapDictionary[
+                                    new BuildingIdentifier(newBuildingNameplate.name,
+                                        newBuildingNameplate.uniqueIndex)] =
+                                buildingSummary.buildingKey;
+
 
                             SetLayerRecursively(newBuildingNameplate.gameObject, layerAutomap);
                             newBuildingNameplate.gameObject.transform.SetParent(gameObjectBuildingNameplates.transform);
