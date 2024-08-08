@@ -8,8 +8,8 @@
 // 
 // Notes:
 //
-
 using System;
+using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 using UnityEngine;
 
 namespace DaggerfallWorkshop.Game
@@ -20,7 +20,7 @@ namespace DaggerfallWorkshop.Game
     public class LevitateMotor : MonoBehaviour
     {
         const float standardLevitateMoveSpeed = 4.0f;
-
+        public Levitate levitateEffect;
         bool playerLevitating = false;
         bool playerSwimming = false;
         PlayerMotor playerMotor;
@@ -64,6 +64,9 @@ namespace DaggerfallWorkshop.Game
             if (!playerMotor || !playerCamera || (!playerLevitating && !playerSwimming))
                 return;
 
+            if (Input.GetKeyDown(KeyCode.End))
+                levitateEffect.End();
+           
             // Cancel levitate movement if player is paralyzed
             if (GameManager.Instance.PlayerEntity.IsParalyzed)
                 return;
