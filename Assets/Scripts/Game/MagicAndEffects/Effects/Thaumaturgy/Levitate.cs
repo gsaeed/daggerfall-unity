@@ -65,7 +65,9 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
         public override void Start(EntityEffectManager manager, DaggerfallEntityBehaviour caster = null)
         {
             base.Start(manager, caster);
+            DaggerfallUI.AddHUDText("Press [END] to cancel Levitation.", 5);
             StartLevitating();
+            levitateMotor.levitateEffect = this;
         }
 
         public override void Resume(EntityEffectManager.EffectSaveData_v1 effectData, EntityEffectManager manager, DaggerfallEntityBehaviour caster = null)
