@@ -1743,8 +1743,8 @@ namespace Wenzil.Console
             public static readonly string description = "Adds n inventory items to the character, based on the given keyword. n = 1 by default";
 
             public static readonly string usage =
-                "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|drug|map|torch|potion|recipe|painting) [n] [level] [material] [condition]" +
-                "\nMaterials = None, Iron, Steel, Silver, Elven, Dwarven, Mithril, Adamantium, Ebony, Orcish, Daedric" +
+                "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|magicArmor|magicWeapon|drug|map|torch|potion|recipe|painting) [n] [level] [material] [condition]" +
+                "\nMaterials = None, Leather, Chain, Chain2, Iron, Steel, Silver, Elven, Dwarven, Mithril, Adamantium, Ebony, Orcish, Daedric" +
                 "\n condition = 1 or 0; 1 means random wear, 0 means keep new";
 
             public static string Execute(params string[] args)
@@ -1757,6 +1757,7 @@ namespace Wenzil.Console
                 ItemCollection items = playerEntity.Items;
                 DaggerfallUnityItem newItem = null;
                 WeaponMaterialTypes weaponType = WeaponMaterialTypes.None;
+                ArmorMaterialTypes armorType = ArmorMaterialTypes.None;
                 int condition = 1;
                 int level = playerEntity.Level;
                 int n = 1;
@@ -1772,38 +1773,61 @@ namespace Wenzil.Console
                 {
                     switch (args[3].ToLower())
                     {
+                        case "leather":
+                            weaponType = WeaponMaterialTypes.None;
+                            armorType = ArmorMaterialTypes.Leather;
+                            break;
+                        case "chain":
+                            weaponType = WeaponMaterialTypes.None;
+                            armorType = ArmorMaterialTypes.Chain;
+                            break;
+                        case "chain2":
+                            weaponType = WeaponMaterialTypes.None;
+                            armorType = ArmorMaterialTypes.Chain2;
+                            break;
                         case "iron":
                             weaponType = WeaponMaterialTypes.Iron;
+                            armorType = ArmorMaterialTypes.Iron;
                             break;
                         case "steel":
                             weaponType = WeaponMaterialTypes.Steel;
+                            armorType = ArmorMaterialTypes.Steel;
                             break;
                         case "silver":
                             weaponType = WeaponMaterialTypes.Silver;
+                            armorType = ArmorMaterialTypes.Silver;
                             break;
                         case "elven":
                             weaponType = WeaponMaterialTypes.Elven;
+                            armorType = ArmorMaterialTypes.Elven;
                             break;
                         case "dwarven":
                             weaponType = WeaponMaterialTypes.Dwarven;
+                            armorType = ArmorMaterialTypes.Dwarven;
                             break;
                         case "mithril":
                             weaponType = WeaponMaterialTypes.Mithril;
+                            armorType = ArmorMaterialTypes.Mithril;
                             break;
                         case "adamantium":
                             weaponType = WeaponMaterialTypes.Adamantium;
+                            armorType = ArmorMaterialTypes.Adamantium;
                             break;
                         case "ebony":
                             weaponType = WeaponMaterialTypes.Ebony;
+                            armorType = ArmorMaterialTypes.Ebony;
                             break;
                         case "orcish":
                             weaponType = WeaponMaterialTypes.Orcish;
+                            armorType = ArmorMaterialTypes.Orcish;
                             break;
-                        case "deadric":
+                        case "daedric":
                             weaponType = WeaponMaterialTypes.Daedric;
+                            armorType = ArmorMaterialTypes.Daedric;
                             break;
                         default:
                             weaponType = WeaponMaterialTypes.None;
+                            armorType = ArmorMaterialTypes.None;
                             break;
                     }
                     
@@ -1841,8 +1865,11 @@ namespace Wenzil.Console
                             break;
                         case "armor":
                             newItem = ItemBuilder.CreateRandomArmor(level, playerEntity.Gender, playerEntity.Race);
-                            if (weaponType != WeaponMaterialTypes.None)
-                                ItemBuilder.ApplyWeaponMaterial(newItem, weaponType);
+                            while (newItem.ItemGroup != ItemGroups.Armor)
+                                newItem = ItemBuilder.CreateRandomArmor(level, playerEntity.Gender, playerEntity.Race);
+
+                            if (armorType != ArmorMaterialTypes.None)
+                                ItemBuilder.ApplyArmorMaterial(newItem, armorType);
                             if (condition > 0)
                                 newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
                             break;
@@ -1860,6 +1887,39 @@ namespace Wenzil.Console
                             break;
                         case "magic":
                             newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender, playerEntity.Race);
+                            if (newItem.ItemGroup == ItemGroups.Weapons || newItem.ItemGroup == ItemGroups.Armor)
+                            {
+                                if (newItem.ItemGroup == ItemGroups.Weapons && weaponType != WeaponMaterialTypes.None)
+                                    ItemBuilder.ApplyWeaponMaterial(newItem, weaponType);
+                                else if (newItem.ItemGroup == ItemGroups.Armor &&
+                                         armorType != ArmorMaterialTypes.None)
+                                {
+                                    ItemBuilder.ApplyArmorMaterial(newItem, armorType);
+                                }
+                                if (condition > 0)
+                                    newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
+                            }
+                            break;
+                        case "magicArmor":
+                            newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender,
+                                playerEntity.Race, ItemGroups.Armor);
+                            while (newItem.ItemGroup != ItemGroups.Armor)
+                            {
+                                newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender,
+                                    playerEntity.Race, ItemGroups.Armor);
+
+                            }
+                            if (armorType != ArmorMaterialTypes.None)
+                                ItemBuilder.ApplyArmorMaterial(newItem, armorType);
+                            if (condition > 0)
+                                newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
+                            break;
+                        case "magicWeapon":
+                            newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender, playerEntity.Race, ItemGroups.Weapons);
+                            if (weaponType != WeaponMaterialTypes.None)
+                                ItemBuilder.ApplyWeaponMaterial(newItem, weaponType);
+                            if (condition > 0)
+                                newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
                             break;
                         case "drug":
                             newItem = ItemBuilder.CreateRandomDrug();
@@ -1887,7 +1947,12 @@ namespace Wenzil.Console
                     }
                     items.AddItem(newItem);
                 }
-                return "success";
+
+                Int32.TryParse(args[1], out n);
+                if (newItem != null && n == 1)
+                    return $"Success.  Created {newItem.LongName}";
+                
+                return $"Success.  Created {n} items.";
 
             }
             private static T RandomEnumValue<T>()
