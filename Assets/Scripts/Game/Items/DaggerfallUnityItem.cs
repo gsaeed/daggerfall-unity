@@ -1258,6 +1258,14 @@ namespace DaggerfallWorkshop.Game.Items
         }
 
         /// <summary>
+        /// Unidentifies the item.
+        /// </summary>
+        public void UnidentifyItem()
+        {
+            flags = (ushort)(flags & ~identifiedMask);
+        }
+
+        /// <summary>
         /// Gets the enchantment points of this item.
         /// </summary>
         public virtual int GetEnchantmentPower()
