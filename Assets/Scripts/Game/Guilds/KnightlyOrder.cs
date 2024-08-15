@@ -37,6 +37,7 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int HouseId = 462;
         protected const int NoArmorId = 461;
         protected const int NoHouseId = 460;
+        public static bool AssignHorse = false;
         public new static int NumDaysToCheckForPromotion { get; set; } = -1;
 
         private const int ArmorFlagMask = 1;
@@ -196,6 +197,15 @@ namespace DaggerfallWorkshop.Game.Guilds
         public void ReceiveArmor(PlayerEntity playerEntity)
         {
             int armorMask = ArmorFlagStart << rank;
+            bool hasHorse =
+                GameManager.Instance.PlayerEntity.Items.Contains(ItemGroups.Transportation, (int)Transportation.Horse);
+
+            if (AssignHorse && !hasHorse)
+            {
+                GameManager.Instance.PlayerEntity.Items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Horse));
+            }
+
+
             if ((flags & armorMask) > 0)
             {
                 DaggerfallUI.MessageBox(NoArmorId);
@@ -209,7 +219,10 @@ namespace DaggerfallWorkshop.Game.Guilds
                     Armor armor = (Armor)UnityEngine.Random.Range(102, 108 + 1);
                     rewardArmor.AddItem(ItemBuilder.CreateArmor(playerEntity.Gender, playerEntity.Race, armor, material));
                 }
-                DaggerfallMessageBox mb = DaggerfallUI.MessageBox(ArmorId);
+
+                var mb = AssignHorse && !hasHorse
+                    ? DaggerfallUI.MessageBox("In addition to assigning you a horse, I have a fine piece of armor for you.")
+                    : DaggerfallUI.MessageBox(ArmorId);
                 DaggerfallUI.Instance.InventoryWindow.SetChooseOne(rewardArmor, item => flags = flags | armorMask);
                 mb.OnClose += ReceiveArmorPopup_OnClose;
             }
