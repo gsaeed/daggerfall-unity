@@ -419,11 +419,11 @@ namespace DaggerfallWorkshop.Game.Formulas
 
         }
 
-        public static bool AttemptToPickLock(bool IsMagicallyHeld, int CurrentLockValue, bool PlaySounds, SoundClips PickedLockSound , DaggerfallAudioSource dfAudioSource)
+        public static bool AttemptToPickLock(DaggerfallActionDoor door, bool IsMagicallyHeld, int CurrentLockValue, bool PlaySounds, SoundClips PickedLockSound , DaggerfallAudioSource dfAudioSource)
         {
-            Func<bool, int, bool, SoundClips, DaggerfallAudioSource, bool> del;
+            Func<DaggerfallActionDoor, bool, int, bool, SoundClips, DaggerfallAudioSource, bool> del;
             if (TryGetOverride("AttemptToPickLock", out del))
-                return del(IsMagicallyHeld, CurrentLockValue, PlaySounds, PickedLockSound, dfAudioSource);
+                return del(door,IsMagicallyHeld, CurrentLockValue, PlaySounds, PickedLockSound, dfAudioSource);
 
             var player = GameManager.Instance.PlayerEntity;
 
