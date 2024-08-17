@@ -251,7 +251,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 // Get enchantments for this effect
                 EnchantmentSettings[] enchantments = effect.GetEnchantmentSettings();
                 if (enchantments == null || enchantments.Length == 0)
-                    Debug.LogWarningFormat("Effect template '{0}' returned no settings from GetEnchantmentSettings()", effect.Key);
+                {
+                    Debug.LogWarningFormat("Effect template '{0}' returned no settings from GetEnchantmentSettings()",
+                        effect.Key);
+                    return;
+                }
 
                 // Sort enchantments into powers and side-effects
                 foreach(EnchantmentSettings enchantment in enchantments)
