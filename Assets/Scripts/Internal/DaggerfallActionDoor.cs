@@ -163,7 +163,7 @@ namespace DaggerfallWorkshop
             }
 
             DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
-            var lockStatus = FormulaHelper.AttemptToPickLock(IsMagicallyHeld, CurrentLockValue, PlaySounds,
+            var lockStatus = FormulaHelper.AttemptToPickLock(this,IsMagicallyHeld, CurrentLockValue, PlaySounds,
                 PickedLockSound, dfAudioSource);
 
             if (lockStatus)
