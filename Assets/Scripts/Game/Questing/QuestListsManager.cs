@@ -14,6 +14,7 @@ using System.IO;
 using UnityEngine;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Entity;
+using UnityEditor;
 
 namespace DaggerfallWorkshop.Game.Questing
 {
@@ -120,7 +121,7 @@ namespace DaggerfallWorkshop.Game.Questing
             {
                 foreach (var questList in mod.ModInfo.Contributes.QuestLists)
                 {
-                    if (!RegisterQuestList(questList))
+                    if (!RegisterQuestList(questList, mod.FileName))
                     {
                         Debug.LogErrorFormat("QuestList {0} is already registered.", questList);
                     }
@@ -139,11 +140,42 @@ namespace DaggerfallWorkshop.Game.Questing
         {
             DaggerfallUnity.LogMessage("RegisterQuestList: " + name, true);
             if (questLists.Contains(name))
+            {
+                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+                Debug.Log($"RegisterQuestList: Unable to register {name},  {name} was already used.");
+                Debug.Log($"Stacktrace: {t}");
                 return false;
+            }
             else
                 questLists.Add(name);
+
+            {
+                Debug.Log($"RegisterQuestList: Registering {name}");
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Register a quest list contained in a mod. Only pass the name of the list, not the full filename.
+        /// name = name of the list
+        /// modName = name of the mod
+        /// </summary>
+        public static bool RegisterQuestList(string name, string modName)
+        {
+            DaggerfallUnity.LogMessage("RegisterQuestList: " + name, true);
+            if (questLists.Contains(name))
+            {
+                Debug.Log($"RegisterQuestList: Unable to register {name} from {modName}, {name} was already used.");
+                return false;
+            }
+            else
+            {
+                Debug.Log($"RegisterQuestList: Registering {name} from {modName}");
+                questLists.Add(name);
+            }
             return true;
         }
+
 
         /// <summary>
         /// Loads all the quest lists: default, discovered and registered.
