@@ -230,7 +230,7 @@ namespace Wenzil.Console
         {
             public static readonly string name = "dumplocblocks";
             public static readonly string error = "Failed to dump locations";
-            public static readonly string usage = "dumplocblocks [locindex|(blockName.RMB )*]\nExamples:\ndumplocblocks\ndumplocblocks locindex\ndumplocblocks RESIAM10.RMB GEMSAM02.RMB";
+            public static readonly string usage = "dumplocblocks [locindex|(blockName.RMB )*]\nExamples:\ndumplocblocks\ndumplocblocks locindex\ndumplocblocks RESIAM10.RMB GEMSAM02.RMB\n\nto use for guild data use dumplocblocks indexonly followed by all of the RMB files";
             public static readonly string description = "Dump the names of blocks for each location, location index or locations for list of given block(s), to json file";
 
             public static string Execute(params string[] args)
@@ -248,7 +248,7 @@ namespace Wenzil.Console
                             locBlocks[dfLoc.Name] = dfLoc.Exterior.ExteriorData.BlockNames;
                         }
                     }
-                    string locJson = SaveLoadManager.Serialize(locBlocks.GetType(), locBlocks);
+                    string locJson = SaveLoadManager.Serialize( locBlocks.GetType(), locBlocks);
                     string fileName = Path.Combine(DaggerfallUnity.Settings.PersistentDataPath, "LocationBlockNames.json");
                     File.WriteAllText(fileName, locJson);
                     return "Location block names json written to " + fileName;
@@ -265,6 +265,58 @@ namespace Wenzil.Console
                             locIndex += string.Format("{0}, {1}: {2}\n", region, dfLoc.LocationIndex, dfLoc.Name);
                         }
                     }
+                    string fileName = Path.Combine(DaggerfallUnity.Settings.PersistentDataPath, "LocationIndex.txt");
+                    File.WriteAllText(fileName, locIndex);
+                    return "Location index written to " + fileName;
+                }
+                else if (args.Length > 1 && args[0] == "locindex")
+                {
+                    string locIndex = "";
+                    for (int region = 0; region < mapFileReader.RegionCount; region++)
+                    {
+                        DFRegion dfRegion = mapFileReader.GetRegion(region);
+                        for (int location = 0; location < dfRegion.LocationCount; location++)
+                        {
+                            DFLocation dfLoc = mapFileReader.GetLocation(region, location);
+
+                            foreach (string blockName in dfLoc.Exterior.ExteriorData.BlockNames)
+                                for (int i = 0; i < args.Length; i++)
+                                    if (blockName == args[i])
+                                        locIndex += string.Format("{0}: {1}: {2}\n", region, dfLoc.LocationIndex, dfLoc.Name);
+                        }
+                    }
+                    string fileName = Path.Combine(DaggerfallUnity.Settings.PersistentDataPath, "LocationIndex.txt");
+                    File.WriteAllText(fileName, locIndex);
+                    return "Location index written to " + fileName;
+                }
+                else if (args.Length > 1 && args[0] == "indexonly")
+                {
+                    string locIndex = "";
+                    Dictionary<int, List<int>> locations = new Dictionary<int, List<int>>();
+                    for (int region = 0; region < mapFileReader.RegionCount; region++)
+                    {
+                        DFRegion dfRegion = mapFileReader.GetRegion(region);
+                        for (int location = 0; location < dfRegion.LocationCount; location++)
+                        {
+                            DFLocation dfLoc = mapFileReader.GetLocation(region, location);
+
+                            foreach (string blockName in dfLoc.Exterior.ExteriorData.BlockNames)
+                                for (int i = 0; i < args.Length; i++)
+                                    if (blockName == args[i])
+                                    {
+                                        if (!locations.ContainsKey(region))
+                                            locations[region] = new List<int>();
+                                        if (!locations[region].Contains(dfLoc.LocationIndex))
+                                            locations[region].Add(dfLoc.LocationIndex);
+                                    }
+                        }
+                    }
+                    foreach (var kvp in locations)
+                    {
+                        locIndex += $"    {{ {kvp.Key}, new List<int> {{ {string.Join(", ", kvp.Value)} }} }},\n";
+                    }
+
+                    locIndex += "};";
                     string fileName = Path.Combine(DaggerfallUnity.Settings.PersistentDataPath, "LocationIndex.txt");
                     File.WriteAllText(fileName, locIndex);
                     return "Location index written to " + fileName;
