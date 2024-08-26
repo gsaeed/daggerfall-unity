@@ -699,7 +699,7 @@ namespace DaggerfallConnect.Arena2
         #region Custom faction registration
 
         // Registry for custom factions.
-        private static Dictionary<int, FactionData> customFactions = new Dictionary<int, FactionData>();
+        public static Dictionary<int, FactionData> customFactions = new Dictionary<int, FactionData>();
 
         /// <summary>
         /// Register a custom faction not in the DF FACTION.TXT file
