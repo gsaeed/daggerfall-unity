@@ -28,6 +28,8 @@ using Wenzil.Console;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using DaggerfallWorkshop.Game.Addons.RmbBlockEditor;
+using static DaggerfallConnect.Arena2.FactionFile;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -281,6 +283,12 @@ namespace DaggerfallWorkshop.Game
 
         // the list of buildings in the current location used for location topic list
         List<BuildingInfo> listBuildings = null;
+
+        // key = factionID, value = Dictionary<region, List<locationId>>
+        // factionId found in FactionFile.customFactions
+        public static Dictionary<short, Dictionary<int, List<int>>> customFactionsAndBuildings =
+            new Dictionary<short, Dictionary<int, List<int>>>();
+        public static List<string> customBuildingNames = new List<string>();
 
         short[] FactionsAndBuildings = { 0x1A, 0x15, 0x1D, 0x1B, 0x23, 0x18, 0x21, 0x16, 0x19E, 0x170, 0x19D, 0x198, 0x19A, 0x19B, 0x199, 0x19F, 0x1A0,
                                           0x1A1, 0x28, 0x29, 0x0F, 0x0A, 0x0D, 0x2, 0x0, 0x3, 0x5, 0x6, 0x8, 0xC };
@@ -550,6 +558,38 @@ namespace DaggerfallWorkshop.Game
         #endregion
 
         #region Public Methods
+
+        public static bool RegisterCustomFactionsAndBuildings(short index, Dictionary<int, List<int>> locations)
+        {
+
+            if (customFactionsAndBuildings.ContainsKey(index))
+            {
+                Debug.LogError($"index {index} cannot be registered; index {index} is owned by {FactionFile.customFactions[index].name}");
+                return false;
+            }
+
+            if (!FactionFile.CustomFactions.ContainsKey(index))
+            {
+                Debug.LogError($"index {index} was not registered as a guild in FactionFile.CustomFactions");
+                return false;
+            }
+
+            if (TalkManager.instance.FactionsAndBuildings.Any(t => t == index))
+            {
+                Debug.LogError($"index {index} cannot be added to FactionsAndBuildings, it already exists");
+                return false;
+            }
+
+            customFactionsAndBuildings.Add(index, locations);
+            var updatedFactionsAndBuildings = new short[TalkManager.instance.FactionsAndBuildings.Length + 1];
+            Array.Copy(TalkManager.instance.FactionsAndBuildings, updatedFactionsAndBuildings, TalkManager.instance.FactionsAndBuildings.Length);
+            updatedFactionsAndBuildings[updatedFactionsAndBuildings.Length - 1] = index;
+            customBuildingNames.Add(FactionFile.CustomFactions[index].name);
+            TalkManager.instance.FactionsAndBuildings = updatedFactionsAndBuildings;
+
+            return true;
+        }
+
 
         public void ResetNPCKnowledge()
         {
@@ -1868,8 +1908,13 @@ namespace DaggerfallWorkshop.Game
 
         public bool GetRegionalLocationCityName(ListItem listItem)
         {
-            byte[] lookUpIndexes = { 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x19, 0x1A, 0x1B, 0x1D, 0x1E, 0x1F, 0x20,
+            List<byte> lookUpbaseIndexes = new List<byte> { 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x19, 0x1A, 0x1B, 0x1D, 0x1E, 0x1F, 0x20,
                                      0x21, 0x22, 0x23, 0x24, 0x27, 0x00, 0x0B, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0A, 0x0C };
+            if (FactionsAndBuildings.Length > lookUpbaseIndexes.Count)
+                for (int i = lookUpbaseIndexes.Count; i < FactionsAndBuildings.Length; i++)
+                    lookUpbaseIndexes.Add(0x0D);
+
+            byte[] lookUpIndexes = lookUpbaseIndexes.ToArray();
 
             DFLocation location = new DFLocation();
             if (GetLocationWithRegionalBuilding(lookUpIndexes[listItem.index], FactionsAndBuildings[listItem.index], ref location))
@@ -1885,16 +1930,29 @@ namespace DaggerfallWorkshop.Game
         {
             PlayerGPS gps = GameManager.Instance.PlayerGPS;
             int locationsWithRegionalBuildingCount = 0;
-
+            bool useCustomLocations = false;
+            List<int> customLocations = new List<int>();
             // Get how many locations in the region exist with the building being asked about
-
+            if (customFactionsAndBuildings != null && customFactionsAndBuildings.Count > 0 &&
+                customFactionsAndBuildings.ContainsKey(faction))
+            {
+                var worldLocations = customFactionsAndBuildings[faction];
+                if (worldLocations.ContainsKey(gps.CurrentRegionIndex))
+                {
+                    customLocations = worldLocations[gps.CurrentRegionIndex];
+                    useCustomLocations = true;
+                }
+            }
 
             int[] foundLoc = new int[gps.CurrentRegion.LocationCount];
             for (int i = 0; i < gps.CurrentRegion.LocationCount; i++)
             {
                 if (CheckLocationKeyForRegionalBuilding(gps.CurrentRegion.MapTable[i].Key, index, faction) > 0)
                     foundLoc[locationsWithRegionalBuildingCount++] = i;
+                if (useCustomLocations && customLocations.Contains(i) )
+                    foundLoc[locationsWithRegionalBuildingCount++] = i;
             }
+
             if (locationsWithRegionalBuildingCount > 0)
             {
                 Dictionary<DFLocation, float> allLocs = new Dictionary<DFLocation, float>();
@@ -3394,7 +3452,7 @@ namespace DaggerfallWorkshop.Game
                     if (playerRegion == KnightlyOrderRegions[i - 8] && !DoesBuildingExistLocally(FactionsAndBuildings[i], false))
                         AddRegionalBuildingTalkItem(i, ref itemBuildingTypeGroup);
                 }
-                else if (i >= 20) // Is a store
+                else if (i >= 20 && i <= 29) // Is a store
                 {
                     if (!DoesBuildingExistLocally(FactionsAndBuildings[i], true))
                         AddRegionalBuildingTalkItem(i, ref itemBuildingTypeGroup);
@@ -3409,9 +3467,18 @@ namespace DaggerfallWorkshop.Game
         private bool DoesBuildingExistLocally(short SearchedFor, bool SearchByBuildingType)
         {
             DFLocation location = GameManager.Instance.PlayerGPS.CurrentLocation;
+            Dictionary<string, DFLocation.BuildingData> archName = new Dictionary<string, DFLocation.BuildingData>();
+            var largestNonCustomValue = FactionsAndBuildings.Take(30).Max();
 
             if (location.Loaded)
             {
+                if (SearchedFor > largestNonCustomValue)
+                {
+                    var buildingDirectory = GameManager.Instance.StreamingWorld.GetCurrentBuildingDirectory();
+                    return buildingDirectory.GetBuildingsOfFaction(SearchedFor).Any();
+                    
+                }
+
                 foreach (var building in location.Exterior.Buildings)
                 {
                     if (SearchByBuildingType)
@@ -3431,9 +3498,11 @@ namespace DaggerfallWorkshop.Game
         {
             ListItem item;
 
-            string[] buildingNames = TextManager.Instance.GetLocalizedTextList("buildingNames");
+            List<string> buildingBaseNames = TextManager.Instance.GetLocalizedTextList("buildingNames").ToList();
+            string[] buildingNames = buildingBaseNames.Concat(customBuildingNames).ToArray();
             if (buildingNames == null || index < 0 || index > buildingNames.Length - 1)
-                throw new Exception("buildingNames array text not found or idex out of range.");
+                throw new Exception("buildingNames array text not found or index out of range.");
+
 
             item = new ListItem();
             item.type = ListItemType.Item;
