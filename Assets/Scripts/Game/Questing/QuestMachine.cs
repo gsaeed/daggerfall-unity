@@ -476,14 +476,15 @@ namespace DaggerfallWorkshop.Game.Questing
                 {
                     if (IsProtectedQuest(quest))
                     {
-                        LogFormat(quest, "Exception in protected quest. Logging only.");
+                        LogFormat(quest, $"Exception in protected quest {quest.DisplayName}:{quest.QuestName}. Logging only.");
                         StoreQuestException(quest, ex);
                         LogFormat(ex.Message);
                     }
                     else
                     {
-                        LogFormat(quest, "Error in quest follows. Terminating quest runtime.");
+                        LogFormat(quest, $"Error in quest {quest.DisplayName}:{quest.QuestName}:LastPlace={quest.LastPlaceReferenced}:lastResource={quest.LastResourceReferenced} follows. Terminating quest runtime.");
                         LogFormat(ex.Message);
+                        LogFormat(ex.Source);
                         StoreQuestException(quest, ex);
                         RaiseOnQuestErrorTerminationEvent(quest);
                         questsToRemove.Add(quest);
