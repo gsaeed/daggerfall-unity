@@ -41,7 +41,8 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     #region Fields
 
     DaggerfallMessageBox ModDescriptionMessageBox;
-
+    public static bool DisableConflicts = false;
+    public static bool DisableModWhenDependenciesNotAvailable = false;
     readonly Panel ModPanel = new Panel();
     readonly Panel ModListPanel = new Panel();
 
@@ -611,7 +612,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         string sep = "\t";
         string conflictStr = "";
         bool conflictFound = false;
-        bool disableConflicts = false;
         string lineNoQuotes;
 
 
@@ -656,7 +656,9 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             {
                 var flds = lineNoQuotes.Split(('='));
                 if (flds[0].Trim().ToLower() == "$disable conflicts")
-                    disableConflicts = flds[1].Trim().ToLower() == "true" ? true : false;
+                    DisableConflicts = flds[1].Trim().ToLower() == "true" ? true : false;
+                if (flds[0].Trim().ToLower() == "$disablemodwhendependenciesnotavailable")
+                    DisableModWhenDependenciesNotAvailable = flds[1].Trim().ToLower() == "true" ? true : false;
                 continue;
             }
 
@@ -676,7 +678,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                 }
                 else if (target.Enabled &&  depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
                 {
-                    if (disableConflicts)
+                    if (DisableConflicts && DaggerfallWorkshop.DaggerfallUnity.Settings.BinarySearch == 0)
                     {
                         conflictStr +=
                             $"\r{fields[0]} conflicts with {fields[2]}, {fields[2]} was disabled.";
