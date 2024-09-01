@@ -1165,19 +1165,35 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                         if (dependency.IsOptional)
                             continue;
 
-
-                        errorMessages.Add(string.Format(GetText("dependencyIsMissing"), dependency.Name));
                         errorMessages.Add($"{mod.FileName} needs {dependency.Name} because optional = {dependency.IsOptional.ToString()}");
+
+                        if (DaggerfallUnity.Settings.BinarySearch > 0)
+                            continue;
+
+                        if (ModLoaderInterfaceWindow.DisableModWhenDependenciesNotAvailable)
+                        {
+                            mod.Enabled = false;
+                            errorMessages.Add($"{mod.FileName} was disabled.");
+
+                        }
                         continue;
                     }
 
                     if (!target.Enabled && !dependency.IsOptional)
                     {
-                        if (dependency.IsOptional)
-                            continue;
                         var newError = string.Format(GetText("dependencyNotEnabled"), dependency.Name);
                         if (!errorMessages.Contains(newError))
                             errorMessages.Add(newError);
+
+                        if (DaggerfallUnity.Settings.BinarySearch > 0)
+                            continue;
+
+                        if (ModLoaderInterfaceWindow.DisableModWhenDependenciesNotAvailable)
+                        {
+                            mod.Enabled = false;
+                            errorMessages.Add($"{mod.FileName} was disabled.");
+
+                        }
                         continue;
                     }
 
