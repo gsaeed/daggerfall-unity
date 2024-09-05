@@ -483,6 +483,7 @@ namespace DaggerfallWorkshop.Game.Questing
                     else
                     {
                         LogFormat(quest, $"Error in quest {quest.DisplayName}:{quest.QuestName}:LastPlace={quest.LastPlaceReferenced}:lastResource={quest.LastResourceReferenced} follows. Terminating quest runtime.");
+                        UnityEngine.Debug.LogError(ex);
                         LogFormat(ex.Message);
                         LogFormat(ex.Source);
                         StoreQuestException(quest, ex);
