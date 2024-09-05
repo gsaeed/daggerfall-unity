@@ -14,7 +14,10 @@ using System;
 using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Generic;
+using DaggerfallWorkshop.Utility;
 using FullSerializer;
+using Mono.CSharp;
+using DaggerfallConnect.Arena2;
 
 namespace DaggerfallWorkshop.Game.Questing
 {
@@ -204,6 +207,9 @@ namespace DaggerfallWorkshop.Game.Questing
             // Iterate conditions and actions for this task
             foreach (IQuestAction action in actions)
             {
+                if (action == null)
+                    continue;
+
                 // Completed actions are never executed again
                 // The action itself should decide if/when to be complete
                 // At a higher level, turning off the task will also disable actions
@@ -248,7 +254,57 @@ namespace DaggerfallWorkshop.Game.Questing
                     }
 
                     // Update action and handle quest break
-                    action.Update(this);
+                    try
+                    {
+                        action.Update(this);
+                    }
+                    catch (Exception e)
+                    {
+                        TextFile.Token[] tokens = new TextFile.Token[1];
+                        tokens[0] = new TextFile.Token() { text = action.DebugSource };
+                        MacroHelper.ExpandMacros(ref tokens, parentQuest.ExternalMCP);
+
+                        Debug.LogError($"error {ParentQuest.QuestName} in {action.DebugSource} ");
+                        Debug.Log($"Quest\t\tResource Type\t\tKey\t\tValue");
+                        foreach (var kvp in ParentQuest.resources)
+                        {
+                            string type = string.Empty;
+                            string name = string.Empty;
+                            string value = string.Empty;
+                            if (kvp.Value is Person person)
+                            {
+                                type = "Person";
+                                name = kvp.Key;
+                                value = person.DisplayName;
+                            }
+
+                            if (kvp.Value is Foe foe)
+                            {
+                                type = "Foe";
+                                name = kvp.Key;
+                                value = foe.FoeType.ToString();
+                            }
+
+                            if (kvp.Value is Place place)
+                            {
+                                type = "Place";
+                                name = kvp.Key;
+                                value = place.Name;
+                            }
+
+                            if (kvp.Value is Item item)
+                            {
+                                type = "Item";
+                                name = kvp.Key;
+                                value = item.DaggerfallUnityItem.ItemName;
+                            }
+                            if (type != string.Empty)
+                                Debug.Log($"error {parentQuest.DisplayName}\t\t{type}\t\t{name}\t\t{value}");
+
+                        }
+                        Debug.LogError(e);
+                    }
+
                     if (ParentQuest.QuestBreak)
                         return;
                 }
