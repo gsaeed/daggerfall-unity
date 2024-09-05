@@ -3452,11 +3452,12 @@ namespace DaggerfallWorkshop.Game
                     if (playerRegion == KnightlyOrderRegions[i - 8] && !DoesBuildingExistLocally(FactionsAndBuildings[i], false))
                         AddRegionalBuildingTalkItem(i, ref itemBuildingTypeGroup);
                 }
-                else if (i >= 20 && i <= 29) // Is a store
+                else if (i >= 20) // Is a store or custom guild
                 {
                     if (!DoesBuildingExistLocally(FactionsAndBuildings[i], true))
                         AddRegionalBuildingTalkItem(i, ref itemBuildingTypeGroup);
                 }
+                // else i < 8 or i = 18 or i = 19
                 else if (!DoesBuildingExistLocally(FactionsAndBuildings[i], false)) // Is a temple
                 {
                     AddRegionalBuildingTalkItem(i, ref itemBuildingTypeGroup);
@@ -3467,6 +3468,10 @@ namespace DaggerfallWorkshop.Game
         private bool DoesBuildingExistLocally(short SearchedFor, bool SearchByBuildingType)
         {
             DFLocation location = GameManager.Instance.PlayerGPS.CurrentLocation;
+
+           if (location.Exterior.Buildings == null || location.Exterior.Buildings.Length == 0)
+                return false;
+
             Dictionary<string, DFLocation.BuildingData> archName = new Dictionary<string, DFLocation.BuildingData>();
             var largestNonCustomValue = FactionsAndBuildings.Take(30).Max();
 
