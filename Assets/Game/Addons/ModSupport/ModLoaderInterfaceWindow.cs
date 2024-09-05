@@ -1119,15 +1119,30 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     {
         ModManager.Instance.SortMods();
         string path = Path.Combine(Application.persistentDataPath, "Mods");
+        Dictionary<string, int> assetCount = new Dictionary<string, int>();
+        foreach (Mod m in ModManager.Instance.Mods)
+        {
+           if (m.AssetNames != null && m.AssetNames.Length > 0)
+                foreach (string a in m.AssetNames)
+                {
+                    if (!assetCount.ContainsKey(a))
+                        assetCount.Add(a, 1);
+                    else
+                        assetCount[a]++;
+                }
+        }
 
         File.WriteAllText(path + @"\mods.csv", "Mod Title,Mod Filename,Enabled,Load Priority, Asset List, Count" + Environment.NewLine);
         foreach (Mod m in ModManager.Instance.Mods)
         {
-            File.AppendAllText(path + @"\mods.csv", $"{RemoveComma(m.Title)}, {RemoveComma(m.FileName)}, {m.Enabled}, {m.LoadPriority}" + Environment.NewLine);
-            if (m.AssetNames != null)
+            File.AppendAllText(path + @"\mods.csv", $"{m.Title.Trim().Replace(',','-')},{m.FileName.Trim().Replace(',','-')},{m.Enabled},{m.LoadPriority}" + Environment.NewLine);
+            if (m.AssetNames != null && m.AssetNames.Length > 0)
                 foreach (string a in m.AssetNames)
                 {
-                    File.AppendAllText(path + @"\mods.csv", $"{RemoveComma(m.Title)}, {RemoveComma(m.FileName)}, {m.Enabled},{m.LoadPriority}, {a}, 1" + Environment.NewLine);
+                    int cnt;
+                    if (!assetCount.TryGetValue(a, out cnt))
+                        cnt = 1;
+                    File.AppendAllText(path + @"\mods.csv", $"{m.Title.Trim().Replace(',','-')},{m.FileName.Trim().Replace(',','-')},{m.Enabled},{m.LoadPriority},{a.Trim().Replace(',','-')},{cnt}" + Environment.NewLine);
                 }
         }
 
@@ -1245,11 +1260,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             }
         };
         uiManager.PushWindow(messageBox);
-    }
-    string RemoveComma(string str)
-    {
-        string[] strArray = str.Split(',');
-        return String.Join(" ", strArray);
     }
 
     void ShowModDescriptionPopUp_OnMouseClick(BaseScreenComponent sender, Vector2 position)
