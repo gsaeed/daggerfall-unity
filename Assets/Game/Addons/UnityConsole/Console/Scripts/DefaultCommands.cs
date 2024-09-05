@@ -1795,7 +1795,7 @@ namespace Wenzil.Console
             public static readonly string description = "Adds n inventory items to the character, based on the given keyword. n = 1 by default";
 
             public static readonly string usage =
-                "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|magicArmor|magicWeapon|drug|map|torch|potion|recipe|painting) [n] [level] [material] [condition]" +
+                "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|magicArmor|magicWeapon|drug|map|torch|transport|potion|recipe|painting) [n] [level] [material] [condition]" +
                 "\nMaterials = None, Leather, Chain, Chain2, Iron, Steel, Silver, Elven, Dwarven, Mithril, Adamantium, Ebony, Orcish, Daedric" +
                 "\n condition = 1 or 0; 1 means random wear, 0 means keep new";
 
@@ -1903,7 +1903,7 @@ namespace Wenzil.Console
                 while (n >= 1)
                 {
                     n--;
-                    switch (args[0])
+                    switch (args[0].ToLower())
                     {
                         case "book":
                             newItem = ItemBuilder.CreateRandomBook();
@@ -1982,6 +1982,14 @@ namespace Wenzil.Console
                         case "torch":
                             newItem = ItemBuilder.CreateItem(ItemGroups.UselessItems2, (int)UselessItems2.Torch);
                             break;
+                        case "transport":
+                            bool hasHorse = GameManager.Instance.PlayerEntity.Items.Contains(ItemGroups.Transportation, (int)Transportation.Horse);
+                            bool hasCart = GameManager.Instance.PlayerEntity.Items.Contains(ItemGroups.Transportation, (int)Transportation.Small_cart);
+                            if (!hasHorse)
+                                GameManager.Instance.PlayerEntity.Items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Horse));
+                            if (!hasCart)
+                                GameManager.Instance.PlayerEntity.Items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Small_cart));
+                            break;
                         case "soultrap":
                             newItem = ItemBuilder.CreateItem(ItemGroups.MiscItems, (int)MiscItems.Soul_trap);
                             break;
@@ -2000,7 +2008,9 @@ namespace Wenzil.Console
                     items.AddItem(newItem);
                 }
 
-                Int32.TryParse(args[1], out n);
+                n = 1;
+                if (args.Length >= 2 )
+                    Int32.TryParse(args[1], out n);
                 if (newItem != null && n == 1)
                     return $"Success.  Created {newItem.LongName}";
                 
