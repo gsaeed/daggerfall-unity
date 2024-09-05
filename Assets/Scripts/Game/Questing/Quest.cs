@@ -313,6 +313,9 @@ namespace DaggerfallWorkshop.Game.Questing
             // Update tasks
             foreach(Task task in tasks.Values)
             {
+                if (task == null)
+                    continue;
+
                 // Hard ignore dropped tasks
                 if (task.IsDropped)
                     continue;
