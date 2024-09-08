@@ -2404,6 +2404,14 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return false;
         }
 
+        public static bool IsWeaponArmor(DaggerfallUnityItem item)
+        {
+            Func<DaggerfallUnityItem, bool> del;
+            if (TryGetOverride("IsWeaponArmor", out del))
+                return del(item);
+
+            return (item.ItemGroup == ItemGroups.Armor || item.ItemGroup == ItemGroups.Weapons);
+        }
         public static bool CheckIdentifyItem(DaggerfallUnityItem item)
         {
             Func<DaggerfallUnityItem, bool> del;
