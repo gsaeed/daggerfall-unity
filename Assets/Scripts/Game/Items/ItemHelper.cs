@@ -433,7 +433,7 @@ namespace DaggerfallWorkshop.Game.Items
                     record += 1;
             }
 
-            bool isWeaponArmor = (item.ItemGroup == ItemGroups.Armor || item.ItemGroup == ItemGroups.Weapons);
+            bool isWeaponArmor = FormulaHelper.IsWeaponArmor(item);
             // Use world texture archive if inventory texture not set
             // Examples are gold pieces and wayrest painting
             if (archive == 0 && record == 0)
