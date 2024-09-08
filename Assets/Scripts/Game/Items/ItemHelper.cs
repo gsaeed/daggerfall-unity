@@ -489,7 +489,7 @@ namespace DaggerfallWorkshop.Game.Items
                 else if (item.ItemGroup == ItemGroups.MensClothing || item.ItemGroup == ItemGroups.WomensClothing)
                     data = ChangeDye(data, dye, DyeTargets.Clothing);
                 else
-                    ImageReader.UpdateTexture(ref data);
+                    ImageReader.UpdateTexture(ref data, item);
             }
 
             // Add to cache
