@@ -480,6 +480,8 @@ namespace DaggerfallWorkshop.Game.Entity
         int GetMaxMagicka()
         {
             int effectiveMagicka = GetRawMaxMagicka() + MaxMagickaModifier;
+            if (this == GameManager.Instance.PlayerEntity)
+                effectiveMagicka = FormulaHelper.SpellsPointsAdjustment(effectiveMagicka);
             if (effectiveMagicka < 0)
                 effectiveMagicka = 0;
 
@@ -491,7 +493,7 @@ namespace DaggerfallWorkshop.Game.Entity
         {
             // Player's maximum magicka determined by career and intelligence, enemies are set by level elsewhere
             if (career != null && this == GameManager.Instance.PlayerEntity)
-                return FormulaHelper.SpellPoints(stats.LiveIntelligence, career.SpellPointMultiplierValue);
+               return FormulaHelper.SpellPoints(stats.LiveIntelligence, career.SpellPointMultiplierValue);
             else
                 return maxMagicka;
         }

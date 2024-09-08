@@ -92,6 +92,14 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return (int)Mathf.Floor((float)intelligence * multiplier);
         }
+        public static int SpellsPointsAdjustment(int magicka)
+        {
+            Func<int, int> del;
+            if (TryGetOverride("SpellsPointsAdjustment", out del))
+                return del(magicka);
+
+            return magicka;
+        }
 
         public static int MagicResist(int willpower)
         {
