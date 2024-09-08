@@ -17,6 +17,7 @@ using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop.Game.Items;
 
 namespace DaggerfallWorkshop.Utility
 {
@@ -55,7 +56,7 @@ namespace DaggerfallWorkshop.Utility
         /// <param name="srcWidth">Source width.</param>
         /// <param name="srcHeight">Source height.</param>
         /// <returns>Texture2D.</returns>
-        public static Texture2D GetTexture(Color32[] colors, int srcWidth, int srcHeight)
+        public static Texture2D GetTexture(Color32[] colors, int srcWidth, int srcHeight, DaggerfallUnityItem item = null)
         {
             Texture2D texture = new Texture2D(srcWidth, srcHeight, TextureFormat.ARGB32, false);
             if (colors != null && colors.Length > 0 && colors.Length == srcHeight * srcWidth)
@@ -66,7 +67,7 @@ namespace DaggerfallWorkshop.Utility
             }
             else
             {
-                Debug.LogError($"Error in ImageReader:GetTexture - colors length = {colors?.Length ?? 0}, srcWidth = {srcWidth}, srcHeight = {srcHeight}");
+                Debug.LogError($"Error in ImageReader:GetTexture for {item?.LongName}- colors length = {colors?.Length ?? 0}, srcWidth = {srcWidth}, srcHeight = {srcHeight}");
             }
 
             return texture;
@@ -452,7 +453,7 @@ namespace DaggerfallWorkshop.Utility
         /// Updates Texture2D from DFBitmap data.
         /// </summary>
         /// <param name="imageData">Source ImageData.</param>
-        public static void UpdateTexture(ref ImageData imageData)
+        public static void UpdateTexture(ref ImageData imageData, DaggerfallUnityItem item = null)
         {
             // Get colors array
             Color32[] colors = imageData.dfBitmap.GetColor32((imageData.hasAlpha) ? imageData.alphaIndex : -1);
@@ -460,7 +461,7 @@ namespace DaggerfallWorkshop.Utility
                 return;
 
             // Create new Texture2D
-            imageData.texture = GetTexture(colors, imageData.width, imageData.height);
+            imageData.texture = GetTexture(colors, imageData.width, imageData.height, item);
         }
 
         /// <summary>
