@@ -117,14 +117,25 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else
             {
-                if (index <= coreClassCount) // core classes
+                if (index < coreClassCount) // core classes
                 {
                     selectedClass = classList[index];
                     selectedClass.Name = className; // Ensures any localized display names are assigned after selection from list
                     selectedClassIndex = index;
                     TextFile.Token[] textTokens =
                         DaggerfallUnity.Instance.TextProvider.GetRSCTokens(startClassDescriptionID + index);
-                    DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+                    if (textTokens == null)
+                    {
+                        string article = "a";
+                        if (!string.IsNullOrEmpty(className) && "AEIOUaeiou".IndexOf(className[0]) >= 0)
+                        {
+                            article = "an";
+                        }
+
+                        textTokens = DaggerfallUnity.Instance.TextProvider.CreateTokens(
+                        TextFile.Formatting.JustifyCenter,
+                            $"Do you wish your character to be {article} {className} "); ;
+                    }                   DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
                     messageBox.SetTextTokens(textTokens);
                     messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
                     Button noButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
