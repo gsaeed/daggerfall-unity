@@ -27,6 +27,7 @@ using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.Questing.Actions;
 using DaggerfallWorkshop.Game.UserInterface;
+using System.Linq;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
@@ -2418,6 +2419,15 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return true;
             else
                 return false;
+        }
+
+        public static List<DaggerfallUnityItem> SortEquippedList(List<DaggerfallUnityItem> equippedItems)
+        {
+            Func<List<DaggerfallUnityItem>, List<DaggerfallUnityItem>> del;
+            if (TryGetOverride("SortEquippedList", out del))
+                return del(equippedItems);
+
+            return equippedItems.OrderBy(o => o.drawOrder).ToList();
         }
 
         public static bool IsWeaponArmor(DaggerfallUnityItem item)
