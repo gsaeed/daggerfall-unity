@@ -17,9 +17,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 using Enum = System.Enum;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
@@ -121,8 +120,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         Rect hitPointsUpButtonRect = new Rect(252, 46, 8, 10);
         Rect hitPointsDownButtonRect = new Rect(252, 57, 8, 10);
         Rect helpButtonRect = new Rect(249, 74, 66, 22);
-        Rect templateButtonRect = new Rect(249, 0, 66, 16);
-        Rect specialAdvantageButtonRect = new Rect(249, 98, 66, 22);
+        Rect templateButtonRect = new Rect(259, 0, 50, 16);
+        Rect delTemplateButtonRect = new Rect(209, 0, 60, 16);
+        Rect specialAdvantageButtonRect = new Rect(269, 98, 66, 22);
         Rect specialDisadvantageButtonRect = new Rect(249, 122, 66, 22);
         Rect reputationButtonRect = new Rect(249, 146, 66, 22);
         Rect resetButtonRect = new Rect(0, 0, 0,0);
@@ -141,6 +141,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         Button reputationButton;
         Button resetButton;
         private Button templateButton;
+        private Button delTemplateButton;
         Button exitButton;
 
         #endregion
@@ -295,6 +296,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             templateButton.OnMouseClick += templateButton_OnMouseClick;
             templateButton.ClickSound = DaggerfallUI.Instance.GetAudioClip(SoundClips.ButtonClick);
 
+            //Delete Template Button
+            delTemplateButton = DaggerfallUI.AddButton(delTemplateButtonRect, NativePanel);
+            delTemplateButton.Label.Text = "Delete Template";
+            delTemplateButton.OnMouseClick += delTemplateButton_OnMouseClick;
+            delTemplateButton.ClickSound = DaggerfallUI.Instance.GetAudioClip(SoundClips.ButtonClick);
+
             // Exit button
             exitButton = DaggerfallUI.AddButton(exitButtonRect, NativePanel);
             exitButton.OnMouseClick += ExitButton_OnMouseClick;
@@ -379,6 +386,58 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             skillsList.Sort();
             skillLabels[lastSkillButtonId].Text = skillName;
         }
+
+        private void delTemplateButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
+        {
+            if (myDfCareers.DfCareers == null || myDfCareers.DfCareers.Count == 0)
+            {
+                DaggerfallUI.MessageBox("You have no stored custom templates.");
+                return;
+            }
+
+            DaggerfallListPickerWindow delTemplatePicker = new DaggerfallListPickerWindow(uiManager, uiManager.TopWindow);
+            delTemplatePicker.OnItemPicked += delTempatePicker_OnItemPicked;
+            List<string> customCareers = new List<string>();
+            foreach (var career in myDfCareers.DfCareers)
+            {
+                customCareers.Add(career.Key);
+            }
+
+            var sortedCareers = customCareers.OrderBy(o => o).ToList();
+            foreach(var c in sortedCareers)
+            {
+                delTemplatePicker.ListBox.AddItem(c);
+            }
+            if (delTemplatePicker.ListBox.Count > 0)
+                uiManager.PushWindow(delTemplatePicker);
+        }
+
+        private void delTempatePicker_OnItemPicked(int index, string itemstring)
+        {
+            var uiManager = DaggerfallUI.UIManager;
+            DaggerfallUI.UIManager.PopWindow();
+            DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, uiManager.TopWindow);
+            messageBox.SetText($"You are about to delete template {itemstring}, are you sure?.");
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No);
+            messageBox.OnButtonClick += (sender, button) => ConfirmDelTemplate_OnButtonClick(sender, button, itemstring);
+            messageBox.Show();
+
+
+        }
+
+        private void ConfirmDelTemplate_OnButtonClick(DaggerfallMessageBox sender, DaggerfallMessageBox.MessageBoxButtons messageboxbutton, string itemstring)
+        {
+            DaggerfallUI.UIManager.PopWindow();
+            if (messageboxbutton == DaggerfallMessageBox.MessageBoxButtons.Yes)
+            {
+                myDfCareers.DfCareers.Remove(itemstring);
+                SaveCreatedClass();
+                DaggerfallUI.MessageBox($"Custom template {itemstring} has been deleted.");
+            }
+
+        }
+
 
         public void HitPointsUpButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
         {
@@ -1117,15 +1176,22 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         void SaveCreatedClass()
         {
+            var filename = Application.persistentDataPath + @"/customClass.json";
+
             if (myDfCareers.DfCareers.Count == 0)
+            {
+                if (File.Exists(filename))
+                {
+                    File.Delete(filename);
+                }
                 return;
+            }
             fsData sData = null;
 
             var result = _serializer.TrySerialize<DFCareerArray>(myDfCareers, out sData);
             if (result.Failed)
                 return;
 
-            var filename = Application.persistentDataPath + @"/customClass.json";
             File.WriteAllText(filename, fsJsonPrinter.PrettyJson(sData));
             return;
         }
