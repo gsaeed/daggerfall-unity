@@ -17,6 +17,7 @@ using DaggerfallConnect.Utility;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 using DaggerfallWorkshop.Utility.AssetInjection;
 
@@ -412,7 +413,7 @@ namespace DaggerfallWorkshop.Game.Utility
             }
 
             // Sort equipped items by draw order
-            List<DaggerfallUnityItem> orderedItems = equippedItems.OrderBy(o => o.drawOrder).ToList();
+            List<DaggerfallUnityItem> orderedItems = FormulaHelper.SortEquippedList(equippedItems);
 
             // Blit item images
             foreach (var item in orderedItems)
