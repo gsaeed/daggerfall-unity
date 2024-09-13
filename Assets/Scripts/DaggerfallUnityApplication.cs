@@ -11,9 +11,12 @@
 
 //#define SEPARATE_DEV_PERSISTENT_PATH
 
+using DaggerfallWorkshop.Game.Entity;
 using System;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 public static class DaggerfallUnityApplication
 {
@@ -79,6 +82,23 @@ public static class DaggerfallUnityApplication
     {
         private StreamWriter streamWriter;
 
+        public delegate void LogMessageReceivedHandler(string message, LogType logType);
+        public static event LogMessageReceivedHandler LogMessageReceived;
+        protected void RaiseLogMessageReceived(string message, LogType logType)
+        {
+            if (LogMessageReceived != null)
+                try
+                {
+                    LogMessageReceived(message, logType);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    UnityEngine.Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    UnityEngine.Debug.LogError($"{e.ToString()}");
+                }
+        }
+
         public LogHandler()
         {
             string filePath = Path.Combine(persistentDataPath, "Player.log");
@@ -134,7 +154,12 @@ public static class DaggerfallUnityApplication
                     break;
             }
 
-            streamWriter.WriteLine(prefix + string.Format(format, args));
+            var str = prefix + string.Format(format, args);
+            if (logType == LogType.Error)
+                str += $"\n {Environment.StackTrace}";
+            streamWriter.WriteLine(str);
+            RaiseLogMessageReceived(string.Format(format, args), logType);
+
         }
 
         public void Dispose()
@@ -147,7 +172,9 @@ public static class DaggerfallUnityApplication
     {
         if (Application.isPlaying && Application.installMode != ApplicationInstallMode.Editor)
         {
-            Debug.unityLogger.logHandler = new LogHandler();
+            UnityEngine.Debug.unityLogger.logHandler = new LogHandler();
+            UnityEngine.Debug.unityLogger.logEnabled = true;
+            UnityEngine.Debug.unityLogger.filterLogType = LogType.Log;
         }
     }
 }
