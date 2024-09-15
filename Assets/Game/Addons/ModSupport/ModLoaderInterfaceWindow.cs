@@ -857,7 +857,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                     if (button == DaggerfallMessageBox.MessageBoxButtons.Yes)
                     {
                         ModManager.Instance.AutoSortMods();
-                        Debug.Log("Mods have been sorted automatically");
+                        Debug.Log($"Mods have been sorted automatically: Errors Encountered {ModManager.ErrorsEncountered}");
                     }
 
                     sender.CancelWindow();
