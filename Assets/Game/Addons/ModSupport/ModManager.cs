@@ -21,6 +21,7 @@ using System.Reflection;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using FullSerializer;
+using Mono.CSharp;
 using Unity.Mathematics;
 
 namespace DaggerfallWorkshop.Game.Utility.ModSupport
@@ -36,7 +37,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public const string MODEXTENSION        = ".dfmod";
         public const string MODINFOEXTENSION    = ".dfmod.json";
         public const string MODCONFIGFILENAME   = "Mod_Settings.json";
-
+        public static bool SuccessfulSort = false;
+        public static int ErrorsEncountered = 0;
+        private static bool cyclicError = false;
+        private static int VisitCnt = 0;
 #if UNITY_EDITOR
         const string dataFolder = "EditorData";
 #else
@@ -47,6 +51,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         static bool alreadyStartedInit          = false;
         [SerializeField]
         public List<Mod> mods;
+        List<Mod> preSortedMods;
         public static readonly fsSerializer _serializer = new fsSerializer();
 
         public static string[] textExtensions = new string[]
@@ -1091,59 +1096,76 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         }
         internal void AutoSortMods()
         {
-            for (int n = modMoveOrder.Count - 1; n >= 0; n--)
+            SuccessfulSort = false;
+            ErrorsEncountered = 0;
+            while(!SuccessfulSort && ErrorsEncountered < 25)
             {
-                var key = GetLoadPriority(modMoveOrder[n]);
-
-                var value = modMove[modMoveOrder[n]];
+                SuccessfulSort = true;
+                for (int n = modMoveOrder.Count - 1; n >= 0; n--)
                 {
-                    int newPos = key;
-                    foreach (var v in value)
-                    {
+                    var key = GetLoadPriority(modMoveOrder[n]);
 
-                        var a = newPos;
-                        var b = GetLoadPriority(v);
-                        if (a < b)
+                    var value = modMove[modMoveOrder[n]];
+                    {
+                        int newPos = key;
+                        foreach (var v in value)
                         {
-                            Debug.Log(
-                                $"Sending {Instance.mods[a].FileName}:{Instance.mods[a].LoadPriority} below {Instance.mods[b].FileName}:{Instance.mods[b].LoadPriority}");
-                            for (int i = a; i < b; i++)
+
+                            var a = newPos;
+                            var b = GetLoadPriority(v);
+                            if (a < b)
                             {
-                                var m1 = Instance.mods[i];
-                                var m2 = Instance.mods[i + 1];
-                                m1.LoadPriority += 1;
-                                newPos = m1.LoadPriority;
-                                m2.LoadPriority -= 1;
-                                Instance.mods[i] = m2;
-                                Instance.mods[i + 1] = m1;
+                                Debug.Log(
+                                    $"Sending {Instance.mods[a].FileName}:{Instance.mods[a].LoadPriority} below {Instance.mods[b].FileName}:{Instance.mods[b].LoadPriority}");
+                                for (int i = a; i < b; i++)
+                                {
+                                    var m1 = Instance.mods[i];
+                                    var m2 = Instance.mods[i + 1];
+                                    m1.LoadPriority += 1;
+                                    newPos = m1.LoadPriority;
+                                    m2.LoadPriority -= 1;
+                                    Instance.mods[i] = m2;
+                                    Instance.mods[i + 1] = m1;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            try
-            {
-                mods = TopologicalSort(mods, mod =>
+                try
                 {
-                    if (mod.ModInfo.Dependencies == null)
-                        return Enumerable.Empty<Mod>();
+                   preSortedMods = mods;
+                    mods = TopologicalSort(mods, mod =>
+                    {
+                        if (mod.ModInfo.Dependencies == null)
+                            return Enumerable.Empty<Mod>();
 
-                    var query = from dependency in mod.ModInfo.Dependencies
-                                where !dependency.IsPeer
-                                select GetModFromName(dependency.Name);
+                        var query = from dependency in mod.ModInfo.Dependencies
+                            where !dependency.IsPeer
+                            select GetModFromName(dependency.Name);
 
-                    return query.Where(x => x != null);
-                });
+                        return query.Where(x => x != null);
+                    });
+                    if (cyclicError)
+                    {
+                        mods = preSortedMods;
+                        ErrorsEncountered++;
+                        continue;
+                    }
 
-                for (int i = 0; i < mods.Count; i++)
-                    mods[i].LoadPriority = i;
+                    for (int i = 0; i < mods.Count; i++)
+                        mods[i].LoadPriority = i;
 
 
-            }
-            catch (Exception e)
-            {
-                Debug.LogErrorFormat("Failed to auto sort mods: {0}", e.ToString());
+                }
+                catch (Exception e)
+                {
+                    SuccessfulSort = false;
+                    mods = preSortedMods;
+                    if (!e.ToString().ToLower().Contains("cyclic"))
+                        Debug.LogErrorFormat("Failed to auto sort mods: Error Cnt: {0} {1}", ErrorsEncountered, e.ToString());
+                }
+                ErrorsEncountered++;
             }
         }
 
@@ -1362,15 +1384,21 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             var sorted = new List<T>();
             var visited = new HashSet<T>();
             var beingVisited = new HashSet<T>(); // New set to track nodes currently being visited
-            
+            cyclicError = false;
             foreach (var item in source)
+            {
+                VisitCnt = 0;
                 Visit(item, visited, beingVisited, sorted, dependencies);
+            }
 
             return sorted;
         }
 
         private static void Visit<T>(T item, HashSet<T> visited, HashSet<T> beingVisited, List<T> sorted, Func<T, IEnumerable<T>> dependencies)
         {
+            if (cyclicError || VisitCnt > 100)
+                return;
+
             if (!visited.Contains(item))
             {
                 beingVisited.Add(item); // Mark the node as being visited
@@ -1379,9 +1407,17 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 {
                     if (beingVisited.Contains(dependency))
                     {
-                        throw new Exception($"Cyclic dependency found between item {item} and dependency {dependency}");
+                        SuccessfulSort = false;
+                        if (VisitCnt > 10)
+                        {
+                            throw new Exception(
+                                $"Error Cnt {ErrorsEncountered} Cyclic dependency found between item {(item as Mod)?.ModInfo.ModTitle} and dependency {(dependency as Mod)?.ModInfo.ModTitle}");
+                        }
+                        cyclicError = true;
+                        return;
                     }
 
+                    VisitCnt++;
                     Visit(dependency, visited, beingVisited, sorted, dependencies);
                 }
 
