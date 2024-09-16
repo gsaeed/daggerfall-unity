@@ -290,8 +290,8 @@ namespace DaggerfallWorkshop.Game
             new Dictionary<short, Dictionary<int, List<int>>>();
         public static List<string> customBuildingNames = new List<string>();
 
-        short[] FactionsAndBuildings = { 0x1A, 0x15, 0x1D, 0x1B, 0x23, 0x18, 0x21, 0x16, 0x19E, 0x170, 0x19D, 0x198, 0x19A, 0x19B, 0x199, 0x19F, 0x1A0,
-                                          0x1A1, 0x28, 0x29, 0x0F, 0x0A, 0x0D, 0x2, 0x0, 0x3, 0x5, 0x6, 0x8, 0xC };
+        List<short> FactionsAndBuildings = new List<short> { 0x1A, 0x15, 0x1D, 0x1B, 0x23, 0x18, 0x21, 0x16, 0x19E, 0x170, 0x19D, 0x198, 0x19A, 0x19B, 0x199, 0x19F, 0x1A0,
+            0x1A1, 0x28, 0x29, 0x0F, 0x0A, 0x0D, 0x2, 0x0, 0x3, 0x5, 0x6, 0x8, 0xC };
 
         public string LocationOfRegionalBuilding;
 
@@ -581,11 +581,8 @@ namespace DaggerfallWorkshop.Game
             }
 
             customFactionsAndBuildings.Add(index, locations);
-            var updatedFactionsAndBuildings = new short[TalkManager.instance.FactionsAndBuildings.Length + 1];
-            Array.Copy(TalkManager.instance.FactionsAndBuildings, updatedFactionsAndBuildings, TalkManager.instance.FactionsAndBuildings.Length);
-            updatedFactionsAndBuildings[updatedFactionsAndBuildings.Length - 1] = index;
             customBuildingNames.Add(FactionFile.CustomFactions[index].name);
-            TalkManager.instance.FactionsAndBuildings = updatedFactionsAndBuildings;
+            TalkManager.instance.FactionsAndBuildings.Add(index);
 
             return true;
         }
@@ -1910,8 +1907,8 @@ namespace DaggerfallWorkshop.Game
         {
             List<byte> lookUpbaseIndexes = new List<byte> { 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x0D, 0x19, 0x1A, 0x1B, 0x1D, 0x1E, 0x1F, 0x20,
                                      0x21, 0x22, 0x23, 0x24, 0x27, 0x00, 0x0B, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0A, 0x0C };
-            if (FactionsAndBuildings.Length > lookUpbaseIndexes.Count)
-                for (int i = lookUpbaseIndexes.Count; i < FactionsAndBuildings.Length; i++)
+            if (FactionsAndBuildings.Count > lookUpbaseIndexes.Count)
+                for (int i = lookUpbaseIndexes.Count; i < FactionsAndBuildings.Count; i++)
                     lookUpbaseIndexes.Add(0x0D);
 
             byte[] lookUpIndexes = lookUpbaseIndexes.ToArray();
@@ -3445,7 +3442,7 @@ namespace DaggerfallWorkshop.Game
             int playerRegion = GameManager.Instance.PlayerGPS.CurrentRegionIndex;
             byte[] KnightlyOrderRegions = { 0x05, 0x11, 0x12, 0x14, 0x15, 0x16, 0x17, 0x2B, 0x33, 0x37 };
 
-            for (int i = 0; i < FactionsAndBuildings.Length; ++i)
+            for (int i = 0; i < FactionsAndBuildings.Count; ++i)
             {
                 if (i >= 8 && i <= 17) // Is a knightly order
                 {
@@ -3467,21 +3464,20 @@ namespace DaggerfallWorkshop.Game
 
         private bool DoesBuildingExistLocally(short SearchedFor, bool SearchByBuildingType)
         {
-            DFLocation location = GameManager.Instance.PlayerGPS.CurrentLocation;
+           DFLocation location = GameManager.Instance.PlayerGPS.CurrentLocation;
 
            if (location.Exterior.Buildings == null || location.Exterior.Buildings.Length == 0)
                 return false;
 
-            Dictionary<string, DFLocation.BuildingData> archName = new Dictionary<string, DFLocation.BuildingData>();
-            var largestNonCustomValue = FactionsAndBuildings.Take(30).Max();
+           var length = UnityEngine.Mathf.Min(30, FactionsAndBuildings.Count);
+            var largestNonCustomValue = FactionsAndBuildings.Take(length).Max();
 
             if (location.Loaded)
             {
-                if (SearchedFor > largestNonCustomValue)
+                if (length > 30 && SearchedFor > largestNonCustomValue)
                 {
                     var buildingDirectory = GameManager.Instance.StreamingWorld.GetCurrentBuildingDirectory();
-                    return buildingDirectory.GetBuildingsOfFaction(SearchedFor).Any();
-                    
+                    return buildingDirectory != null && buildingDirectory.GetBuildingsOfFaction(SearchedFor).Any();
                 }
 
                 foreach (var building in location.Exterior.Buildings)
