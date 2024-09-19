@@ -15,6 +15,7 @@ using DaggerfallWorkshop.Game.Entity;
 using System;
 using System.Diagnostics;
 using System.IO;
+using DaggerfallWorkshop.Game.Formulas;
 using UnityEngine;
 using Debug = System.Diagnostics.Debug;
 
@@ -135,7 +136,12 @@ public static class DaggerfallUnityApplication
         public void LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
         {
             string prefix = "";
-            switch(logType)
+            string message = string.Format(format, args);
+
+            if (FormulaHelper.ShouldFilterMessage(message, logType))
+                return;
+
+            switch (logType)
             {
                 case LogType.Error:
                     prefix = "[Error] ";
@@ -154,15 +160,14 @@ public static class DaggerfallUnityApplication
                     break;
             }
 
-            var str = prefix + string.Format(format, args);
+            var str = prefix + message;
             if (logType == LogType.Error)
             {
                 System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
                 str += $"\n {t.ToString()}";
             }
             streamWriter.WriteLine(str);
-            RaiseLogMessageReceived(string.Format(format, args), logType);
-
+            RaiseLogMessageReceived(message, logType);
         }
 
         public void Dispose()
