@@ -28,6 +28,8 @@ using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.Questing.Actions;
 using DaggerfallWorkshop.Game.UserInterface;
 using System.Linq;
+using Mono.CSharp;
+using Delegate = System.Delegate;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
@@ -66,7 +68,15 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         #region Basic Formulas
+        // used in loghandler in DaggerfallUnityApplication - if true, will not write to message to the log
+        public static bool ShouldFilterMessage(string message, LogType logType)
+        {
+            Func<string, LogType, bool> del;
+            if (TryGetOverride("ShouldFilterMessage", out del))
+                return del(message, logType);
 
+            return false;
+        }
         public static int DamageModifier(int strength)
         {
             Func<int, int> del;
