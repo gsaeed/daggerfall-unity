@@ -156,7 +156,10 @@ public static class DaggerfallUnityApplication
 
             var str = prefix + string.Format(format, args);
             if (logType == LogType.Error)
-                str += $"\n {Environment.StackTrace}";
+            {
+                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
+                str += $"\n {t.ToString()}";
+            }
             streamWriter.WriteLine(str);
             RaiseLogMessageReceived(string.Format(format, args), logType);
 
