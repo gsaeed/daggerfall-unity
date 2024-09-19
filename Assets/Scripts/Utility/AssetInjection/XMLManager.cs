@@ -9,6 +9,7 @@
 // Notes:
 //
 
+using System;
 using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
@@ -203,16 +204,23 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                 return true;
             }
 
-            // Seek from mods
-            if (ModManager.Instance != null)
+            try
             {
-                TextAsset textAsset;
-                if (ModManager.Instance.TryGetAsset(name, false, out textAsset))
+                // Seek from mods
+                if (ModManager.Instance != null)
                 {
-                    using (var stringReader = new StringReader(textAsset.text))
-                        xml = new XMLManager(stringReader);
-                    return true;
+                    TextAsset textAsset;
+                    if (ModManager.Instance.TryGetAsset(name, false, out textAsset))
+                    {
+                        using (var stringReader = new StringReader(textAsset.text))
+                            xml = new XMLManager(stringReader);
+                        return true;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"XML Injection Error on file {name} in dir {path} - check if the file's .xml is not empty and is correctly formatted.");
             }
 
             xml = null;
