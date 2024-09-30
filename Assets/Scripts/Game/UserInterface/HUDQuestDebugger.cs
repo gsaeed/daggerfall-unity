@@ -49,7 +49,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
         ulong[] allQuests;
         int currentQuestIndex;
         Quest currentQuest;
-
+        public static Quest ShowThisQuest = null;
        
         int currentMarkerIndex = -1;
         bool activeQuestToggle = false;
@@ -163,8 +163,14 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 displayState = DisplayState.Nothing;
 
             // Change quest selection
+
             HotkeySequence.KeyModifiers keyModifiers = HotkeySequence.GetKeyboardKeyModifiers();
-            if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerPrevQuest).IsDownWith(keyModifiers))
+            if (ShowThisQuest != null)
+            {
+                JumpToThisQuest();
+                ShowThisQuest = null;
+            }
+            else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerPrevQuest).IsDownWith(keyModifiers))
                 MovePreviousQuest();
             else if (DaggerfallShortcut.GetBinding(DaggerfallShortcut.Buttons.DebuggerNextQuest).IsDownWith(keyModifiers))
                 MoveNextQuest();
@@ -496,6 +502,19 @@ namespace DaggerfallWorkshop.Game.UserInterface
             SetCurrentQuest(QuestMachine.Instance.GetQuest(allQuests[currentQuestIndex]));
             if (activeQuestToggle && !ActiveQuest(currentQuest))
                 MoveNextQuest();
+        }
+
+        void JumpToThisQuest()
+        {
+            if (allQuests == null || allQuests.Length == 0)
+                return;
+
+            if (++currentQuestIndex >= allQuests.Length)
+                currentQuestIndex = 0;
+
+            SetCurrentQuest(QuestMachine.Instance.GetQuest(allQuests[currentQuestIndex]));
+            if (currentQuest.QuestName != ShowThisQuest.QuestName)
+                JumpToThisQuest();
         }
 
         void MovePreviousQuest()
