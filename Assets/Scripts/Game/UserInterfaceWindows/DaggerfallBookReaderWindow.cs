@@ -288,6 +288,64 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
+        public void CreateBook(string content)
+        {
+            DaggerfallFont currentFont = DaggerfallUI.DefaultFont;
+            HorizontalAlignment currentAlignment = HorizontalAlignment.Left;
+            Color currentColor = DaggerfallUI.DaggerfallDefaultTextColor;
+            float currentScale = 1.0f;
+            startTime = DateTime.UtcNow;
+            bookLabels.Clear();
+
+            IsBookOpen = true;
+            // Convert all book lines to labels
+            bookLabels.Clear();
+            string[] lines = content.Split(newline);
+            foreach (string line in lines)
+            {
+                TextFile.Token[] lineTokens = DaggerfallStringTableImporter.ConvertStringToRSCTokens(line);
+                if (lineTokens == null || lineTokens.Length == 0)
+                {
+                    // Empty or newline label - also resets alignment, color, scale
+                    bookLabels.Add(CreateLabel(DaggerfallUI.DefaultFont, HorizontalAlignment.Left, DaggerfallUI.DaggerfallDefaultTextColor, string.Empty));
+                    currentAlignment = HorizontalAlignment.Left;
+                    currentColor = DaggerfallUI.DaggerfallDefaultTextColor;
+                    currentScale = 1.0f;
+                }
+                else
+                {
+                    foreach (TextFile.Token token in lineTokens)
+                    {
+                        switch (token.formatting)
+                        {
+                            case TextFile.Formatting.FontPrefix:
+                                currentFont = DaggerfallUI.Instance.GetFont((DaggerfallFont.FontName)token.x - 1);
+                                break;
+                            case TextFile.Formatting.Color:
+                                currentColor = TryParseColor(token.text);
+                                break;
+                            case TextFile.Formatting.JustifyLeft:
+                                currentAlignment = HorizontalAlignment.Left;
+                                break;
+                            case TextFile.Formatting.JustifyCenter:
+                                currentAlignment = HorizontalAlignment.Center;
+                                break;
+                            case TextFile.Formatting.Scale:
+                                currentScale = TryParseScale(token.text);
+                                break;
+                            case TextFile.Formatting.Image:
+                                bookLabels.Add(CreateImageLabel(token.text));
+                                break;
+                            default:
+                                bookLabels.Add(CreateLabel(currentFont, currentAlignment, currentColor, token.text, currentScale));
+                                break;
+                        }
+
+                    }
+                }
+            }
+        }
+
         TextLabel CreateLabel(DaggerfallFont font, HorizontalAlignment alignment, Color color, string text, float scale = 1.0f)
         {
             // Every group is cast into a word-wrapping label
