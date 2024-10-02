@@ -677,6 +677,7 @@ namespace DaggerfallWorkshop.Game.Questing
                 // Parse quest
                 Parser parser = new Parser();
                 Quest quest = parser.Parse(questSource, factionId, partialParse);
+                quest.questSource = string.Join("\n", questSource);
 
                 // Parse localized version of quest file (if present) and store display name in quest
                 if (ParseLocalizedQuestText(questName))
