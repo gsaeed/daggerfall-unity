@@ -57,7 +57,7 @@ namespace DaggerfallWorkshop.Game.Questing
         DaggerfallDateTime questStartTime;
         int factionId = 0;
         IMacroContextProvider mcp = null;
-
+        public string questSource;
         bool questTombstoned = false;
         DaggerfallDateTime questTombstoneTime;
 
@@ -923,6 +923,7 @@ namespace DaggerfallWorkshop.Game.Questing
             public Dictionary<string, QuestorData> questors;
             public Task.TaskSaveData_v1[] tasks;
             public int[] oneTimeDisplayedMessages;
+            public string questSource;
         }
 
         public QuestSaveData_v1 GetSaveData()
@@ -941,6 +942,7 @@ namespace DaggerfallWorkshop.Game.Questing
             data.smallerDungeonsState = smallerDungeonsState;
             data.compiledByVersion = compiledByVersion;
             data.oneTimeDisplayedMessages = oneTimeDisplayedMessages.ToArray();
+            data.questSource = questSource;
 
             // Save active log messages
             List<LogEntry> activeLogMessagesSaveDataList = new List<LogEntry>();
@@ -995,6 +997,7 @@ namespace DaggerfallWorkshop.Game.Questing
             questTombstoneTime = data.questTombstoneTime;
             smallerDungeonsState = data.smallerDungeonsState;
             compiledByVersion = data.compiledByVersion;
+            questSource = data.questSource;
 
             // Restore active log messages
             activeLogMessages.Clear();
