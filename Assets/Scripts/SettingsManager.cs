@@ -100,6 +100,19 @@ namespace DaggerfallWorkshop
             }
         }
 
+        public string PersistentDataPathForBlockData
+        {
+            get
+            {
+                string blockDataPath = Path.Combine(PersistentDataPath, "BlockData");
+                if (!Directory.Exists(blockDataPath))
+                {
+                    Directory.CreateDirectory(blockDataPath);
+                }
+                return blockDataPath;
+            }
+        }
+
         /// <summary>
         /// Distribution suffix for alternate distributions of DFU.
         /// Can be null or empty if no distribution suffix is loaded.
