@@ -79,6 +79,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             }
         };
 
+        public static Dictionary<string, String> ModIdentifier = new Dictionary<string, string>();
+
         public static List<ActiveModListComponents> fileActiveModList = new List<ActiveModListComponents>();
         public static List<string> fileBisectRange = new List<string>();
 
@@ -439,9 +441,18 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 #else
                         where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
 #endif
-                        select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name);
+                        select new { Name = name, Mod = mod, Asset = clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name) };
 
-            return (asset = query.FirstOrDefault(x => x != null)) != null;
+            var result = query.FirstOrDefault(x => x.Asset != null);
+            asset = null;
+            if (result != null)
+            {
+                ModIdentifier[result.Name] = result.Mod.ModInfo.GUID;
+                asset = result.Asset;
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -466,9 +477,18 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                         where mod.AssetBundle != null
                         from name in names where mod.AssetBundle.Contains(name)
 #endif
-                        select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name);
+            select new { Name = name, Mod = mod, Asset = clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name) };
 
-            return (asset = query.FirstOrDefault(x => x != null)) != null;
+            var result = query.FirstOrDefault(x => x.Asset != null);
+            asset = null;
+            if (result != null)
+            {
+                ModIdentifier[result.Name] = result.Mod.GUID;
+                asset = result.Asset;
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
