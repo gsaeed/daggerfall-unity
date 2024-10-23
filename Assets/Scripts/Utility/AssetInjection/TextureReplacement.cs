@@ -1001,7 +1001,10 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
             {
                 // Seek from loose files
                 if (TryImportTextureFromDisk(Path.Combine(path, name), false, isLinear, readOnly, out tex))
+                {
+                    ModManager.ModIdentifier[name] = "Loose File";
                     return true;
+                }
 
                 // Seek from mods
                 if (ModManager.Instance && ModManager.Instance.TryGetAsset(name, null, out tex))
