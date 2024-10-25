@@ -162,7 +162,7 @@ namespace DaggerfallWorkshop.Game
 
         const string NameGameobjectUserMarkerNotes = "UserMarkerNotes";
         const string NameGameobjectUserNoteMarkerSubStringStart = "UserNoteMarker_";
-
+        public static float userNoteMarkerSize = 0.6f; // size of user note markers
         const string NameGameobjectDiamond = "Diamond";
 
         const float raycastDistanceDown = 3.0f; // 3 meters should be enough (note: flying too high will result in geometry not being revealed by this raycast
@@ -1582,7 +1582,7 @@ namespace DaggerfallWorkshop.Game
             materialUserNoteMarker.color = new Color(1.0f, 0.55f, 0.0f);
             gameObjectUserNoteMarker.GetComponent<MeshRenderer>().material = materialUserNoteMarker;
             gameObjectUserNoteMarker.layer = layerAutomap;
-            gameObjectUserNoteMarker.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+            gameObjectUserNoteMarker.transform.localScale = new Vector3(userNoteMarkerSize, userNoteMarkerSize, userNoteMarkerSize);
             return gameObjectUserNoteMarker;
         }
 
