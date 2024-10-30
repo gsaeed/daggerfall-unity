@@ -639,6 +639,7 @@ namespace DaggerfallWorkshop.Utility
 
                         // Check if model has an action record
                         bool hasAction = HasAction(obj);
+                        bool hasCustomActivation = PlayerActivate.HasCustomActivation(modelId);
 
                         // Get GameObject
                         Transform parent = (hasAction) ? actionModelsParent : modelsParent;
@@ -656,15 +657,12 @@ namespace DaggerfallWorkshop.Utility
                             // Some of these are so far out from wall player can become stuck behind them
                             // Adding model invidually without collider to avoid problem
                             // Not sure if these object ever actions, but bypass this hack if they do
-                            if (modelId >= minTapestryID && modelId <= maxTapestryID && !hasAction)
+                            if (modelId >= minTapestryID && modelId <= maxTapestryID && !hasAction && !hasCustomActivation)
                             {
                                 AddStandaloneModel(dfUnity, ref modelData, modelMatrix, modelsParent, isAutomapRun, hasAction, true);
-                                continue;
                             }
-                            if (modelId == 41313)
-                                Debug.Log("Hi");
                             // Add or combine
-                            if (combiner == null || DaggerfallUnity.Settings.IgnoreCombiner || hasAction || PlayerActivate.HasCustomActivation(modelId))
+                            else if (combiner == null || DaggerfallUnity.Settings.IgnoreCombiner || hasAction || PlayerActivate.HasCustomActivation(modelId))
                             {
                                 standaloneObject = AddStandaloneModel(dfUnity, ref modelData, modelMatrix, parent, isAutomapRun, hasAction);
                                 standaloneObject.GetComponent<DaggerfallMesh>().SetDungeonTextures(textureTable);
