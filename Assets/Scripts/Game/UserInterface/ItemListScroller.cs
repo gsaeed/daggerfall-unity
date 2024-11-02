@@ -462,7 +462,11 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
                 // Tooltip text
                 itemButtons[i].ToolTipText =
-                    (item.ItemGroup == ItemGroups.Books && !item.IsArtifact) ? DaggerfallUnity.Instance.ItemHelper.GetBookTitle(item.message, item.LongName) : item.LongName;
+                    (item.ItemGroup == ItemGroups.Books && !item.IsArtifact) ?
+                        DaggerfallUnity.Instance.ItemHelper.GetBookTitle(item.message, item.LongName) :
+                        item.IsPotionRecipe ?
+                            TextManager.Instance.GetLocalizedText("potionRecipeFor").Replace("%po", GameManager.Instance.EntityEffectBroker.GetPotionRecipe(item.PotionRecipeKey)?.DisplayName) :
+                            item.LongName;
             }
         }
 
