@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DaggerfallWorkshop.Game.UserInterface
 {
@@ -101,7 +102,16 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
             // Raise event
             if (OnWindowChange != null)
-                OnWindowChange(this, null);
+                try
+                {
+                    OnWindowChange(this, null);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    UnityEngine.Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    UnityEngine.Debug.LogError($"{e.ToString()}");
+                }
         }
 
         /// <summary>
@@ -114,7 +124,16 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
             // Raise event
             if (OnWindowChange != null)
-                OnWindowChange(this, null);
+                try
+                {
+                    OnWindowChange(this, null);
+                }
+                catch (Exception e)
+                {
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    UnityEngine.Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
+                    UnityEngine.Debug.LogError($"{e.ToString()}");
+                }
         }
 
         /// <summary>
