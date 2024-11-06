@@ -677,7 +677,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                     if (mods.Any(x => x.ModInfo.GUID == modInfo.GUID))
                     {
-                        Debug.LogWarningFormat("Ignoring virtual mod {0} because release mod is already loaded.", modInfo.ModTitle);
+                        Debug.LogErrorFormat("Ignoring virtual mod {0} because release mod is already loaded.", modInfo.ModTitle);
                         continue;
                     }
 
