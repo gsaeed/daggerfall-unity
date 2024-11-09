@@ -25,7 +25,9 @@ namespace DaggerfallWorkshop.Game.UserInterface
     /// </summary>
     public class SkillsRollout : Panel
     {
-        const int bonusPoolPerSkillGroup = 6;
+        public static  int PrimaryBonusPoolPerSkillGroup = 6;
+        public static  int MajorBonusPoolPerSkillGroup = 6;
+        public static  int MinorBonusPoolPerSkillGroup = 6;
 
         const int minPrimarySkill = 28;
         const int minMajorSkill = 18;
@@ -138,9 +140,9 @@ namespace DaggerfallWorkshop.Game.UserInterface
             workingSkills.Copy(startingSkills);
 
             // Reset bonus pool values
-            primarySkillSpinner.Value = bonusPoolPerSkillGroup;
-            majorSkillSpinner.Value = bonusPoolPerSkillGroup;
-            minorSkillSpinner.Value = bonusPoolPerSkillGroup;
+            primarySkillSpinner.Value = PrimaryBonusPoolPerSkillGroup;
+            majorSkillSpinner.Value = MajorBonusPoolPerSkillGroup;
+            minorSkillSpinner.Value = MinorBonusPoolPerSkillGroup;
 
             // Update value labels
             UpdateSkillValueLabels();
@@ -241,7 +243,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             this.Components.Add(primarySkillSpinner);
             primarySkillSpinner.OnLeftButtonClicked += PrimarySkillSpinner_OnLeftButtonClicked;
             primarySkillSpinner.OnRightButtonClicked += PrimarySkillSpinner_OnRightButtonClicked;
-            primarySkillSpinner.Value = bonusPoolPerSkillGroup;
+            primarySkillSpinner.Value = PrimaryBonusPoolPerSkillGroup;
             SelectPrimarySkill(0);
 
             // Add major skill spinner
@@ -249,7 +251,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             this.Components.Add(majorSkillSpinner);
             majorSkillSpinner.OnLeftButtonClicked += MajorSkillSpinner_OnLeftButtonClicked;
             majorSkillSpinner.OnRightButtonClicked += MajorSkillSpinner_OnRightButtonClicked;
-            majorSkillSpinner.Value = bonusPoolPerSkillGroup;
+            majorSkillSpinner.Value = MajorBonusPoolPerSkillGroup;
             SelectMajorSkill(0);
 
             // Add minor skill spinner
@@ -257,7 +259,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             this.Components.Add(minorSkillSpinner);
             minorSkillSpinner.OnLeftButtonClicked += MinorSkillSpinner_OnLeftButtonClicked;
             minorSkillSpinner.OnRightButtonClicked += MinorSkillSpinner_OnRightButtonClicked;
-            minorSkillSpinner.Value = bonusPoolPerSkillGroup;
+            minorSkillSpinner.Value = MinorBonusPoolPerSkillGroup;
             SelectMinorSkill(0);
         }
 
