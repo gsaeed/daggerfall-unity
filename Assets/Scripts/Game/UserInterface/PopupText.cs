@@ -62,7 +62,8 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 {
                     timer += nextPopDelay;
                     // Remove item from front of list
-                    textRows.RemoveFirst();
+                    if (textRows != null && textRows.Count > 0)
+                        textRows.RemoveFirst();
 
                     // Reset pop delay to default
                     nextPopDelay = popDelay;
