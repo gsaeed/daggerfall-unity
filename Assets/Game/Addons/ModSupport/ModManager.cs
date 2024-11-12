@@ -79,7 +79,26 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             }
         };
 
-        public static Dictionary<string, String> ModIdentifier = new Dictionary<string, string>();
+        public struct modpics
+        {
+            public string GUID;
+            public bool IsImage;
+            public List<Texture2D> Pics;
+
+            public modpics(string guid, bool isImage, List<Texture2D> pics = null)
+            {
+                GUID = guid;
+                IsImage = isImage;
+                if (isImage)
+                    Pics = pics;
+                else
+                {
+                    Pics = null;
+                }
+            }
+        }
+
+        public static Dictionary<string, modpics> ModIdentifier = new Dictionary<string, modpics>();
 
         public static List<ActiveModListComponents> fileActiveModList = new List<ActiveModListComponents>();
         public static List<string> fileBisectRange = new List<string>();
@@ -447,8 +466,56 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             asset = null;
             if (result != null)
             {
-                ModIdentifier[result.Name] = result.Mod.ModInfo.GUID;
+                Texture2D pic = null;
+                bool isTexture = false;
+                List<Texture2D> pics = new List<Texture2D>();
+
+                if (result.Asset is Texture2D)
+                {
+                    pic = result.Asset as Texture2D;
+                    if (pic != null)
+                    {
+                        pics.Add(pic);
+                        isTexture = true;
+                    }
+                }
+
+                if (result.Asset is Material)
+                {
+                    pic = (result.Asset as Material).mainTexture as Texture2D;
+                    if (pic != null)
+                    {
+                        pics.Add(pic);
+                        isTexture = true;
+                    }
+                }
+
+                if (result.Asset is GameObject)
+                {
+                    var gO = result.Asset as GameObject;
+                    MeshRenderer meshRenderer;
+                    meshRenderer = gO.GetComponent<MeshRenderer>();
+                    if (meshRenderer == null)
+                        meshRenderer = gO.GetComponentInChildren<MeshRenderer>();
+                    
+                    if (meshRenderer != null)
+                    {
+                        var materials = meshRenderer.sharedMaterials;
+                        if (materials != null)
+                        {
+                            pics.AddRange(materials
+                                .Where(material => material != null && material.mainTexture != null)
+                                .Select(material => material.mainTexture as Texture2D));
+                            if (pics.Count > 0)
+                                isTexture = true;
+                        }
+                    }
+                }
+                var modPics = new modpics(result.Mod.GUID, isTexture, pics);
+                ModIdentifier[result.Name] = modPics;
+                
                 asset = result.Asset;
+
                 return true;
             }
 
@@ -483,7 +550,50 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             asset = null;
             if (result != null)
             {
-                ModIdentifier[result.Name] = result.Mod.GUID;
+                Texture2D pic = null;
+                bool isTexture = false;
+                List<Texture2D> pics = new List<Texture2D>();
+                if (result.Asset is Texture2D)
+                {
+                    pic = result.Asset as Texture2D;
+                    if (pic != null)
+                    {
+                        pics.Add(pic);
+                        isTexture = true;
+                    }
+                }
+
+                if (result.Asset is Material)
+                {
+                    pic = (result.Asset as Material).mainTexture as Texture2D;
+                    if (pic != null)
+                    {
+                        pics.Add(pic);
+                        isTexture = true;
+                    }
+                }
+
+                if (result.Asset is GameObject)
+                {
+                    var gO = result.Asset as GameObject;
+                    MeshRenderer meshRenderer;
+                    meshRenderer = gO.GetComponent<MeshRenderer>();
+                    if (meshRenderer != null)
+                    {
+                        var materials = meshRenderer.sharedMaterials;
+                        if (materials != null)
+                        {
+                            pics.AddRange(materials
+                                .Where(material => material != null && material.mainTexture != null)
+                                .Select(material => material.mainTexture as Texture2D));
+                            if (pics.Count > 0)
+                                isTexture = true;
+                        }
+                    }
+                }
+
+                var modPics = new modpics(result.Mod.GUID, isTexture, pics);
+                ModIdentifier[result.Name] = modPics;
                 asset = result.Asset;
                 return true;
             }

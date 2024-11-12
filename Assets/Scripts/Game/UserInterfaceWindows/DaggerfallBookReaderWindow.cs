@@ -288,7 +288,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        public void CreateBook(string content)
+        public void CreateBook(string content, List<Texture2D> images = null)
         {
             DaggerfallFont currentFont = DaggerfallUI.DefaultFont;
             HorizontalAlignment currentAlignment = HorizontalAlignment.Left;
@@ -334,7 +334,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                                 currentScale = TryParseScale(token.text);
                                 break;
                             case TextFile.Formatting.Image:
-                                bookLabels.Add(CreateImageLabel(token.text));
+                                bookLabels.Add(CreateImageLabel(images, token.text));
                                 break;
                             default:
                                 bookLabels.Add(CreateLabel(currentFont, currentAlignment, currentColor, token.text, currentScale));
@@ -387,6 +387,52 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 Texture2D image = new Texture2D(0, 0);
                 image.LoadImage(data);
                 label.Image = image;
+            }
+
+            return label;
+        }
+
+        ImageLabel CreateImageLabel(List<Texture2D>images, string text )
+        {
+            ImageLabel label = new ImageLabel();
+
+            if (images == null || images.Count == 0)
+                return label;
+
+            string[] parts = text.Split(':');
+            int index = 0, scale = 0, width = 0, height = 0;
+            switch (parts.Length)
+            {
+                case 1:
+                    int.TryParse(parts[0], out index);
+                    break;
+                case 2:
+                    int.TryParse(parts[0], out index);
+                    int.TryParse(parts[1], out scale);
+                    break;
+                case 3:
+                    int.TryParse(parts[0], out index);
+                    int.TryParse(parts[1], out height);
+                    int.TryParse(parts[2], out width);
+                    break;
+                default:
+                    return label;
+            }
+
+            if (index < 0 || index >= images.Count)
+                return label;
+
+            label.Image = images[index];
+            if (parts.Length == 3 && width > 0 && height > 0)
+            {
+                label.width = width;
+                label.height = height;
+                label.custom = false;
+            }
+            if (parts.Length == 2 && scale > 0)
+            {
+                label.scale = scale;
+                label.custom = false;
             }
 
             return label;
