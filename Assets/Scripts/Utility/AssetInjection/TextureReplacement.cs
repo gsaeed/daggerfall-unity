@@ -28,6 +28,7 @@ using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using static DaggerfallWorkshop.Game.Utility.ModSupport.ModManager;
 
 namespace DaggerfallWorkshop.Utility.AssetInjection
 {
@@ -1002,7 +1003,19 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                 // Seek from loose files
                 if (TryImportTextureFromDisk(Path.Combine(path, name), false, isLinear, readOnly, out tex))
                 {
-                    ModManager.ModIdentifier[name] = "Loose File";
+                    List<Texture2D> pics = new List<Texture2D>();
+                    bool isImage = tex != null;
+                    if (isImage)
+                        pics.Add(tex);
+
+                    var modPics = new ModManager.modpics()
+                    {
+                        GUID = "Loose Files",
+                        IsImage = isImage,
+                        Pics = pics,
+                    };
+
+                    ModManager.ModIdentifier[name] = modPics;
                     return true;
                 }
 
@@ -1018,10 +1031,29 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                         //Graphics.CopyTexture(tex, newTexture);
 
                         //Graphics.CopyTexture(newTexture, tex);
-                        tex = duplicateTexture(tex);
+                        tex = DuplicateTexture(tex);
 
                         if (!tex.isReadable)
                             Debug.LogWarning($"Texture {name} is not readable.");
+                    }
+
+                    if (!ModManager.ModIdentifier.ContainsKey(name))
+                    {
+                        Debug.LogError($"unable to retrieve mod information for {name}");
+
+                        
+                    }
+                    else
+                    {
+                        var modPics = ModManager.ModIdentifier[name];
+                        List<Texture2D> pics = new List<Texture2D>();
+                        bool isImage = tex != null;
+                        if (isImage)
+                        {
+                            pics.Add(tex);
+                            modPics.Pics = pics;
+                        }
+                        ModManager.ModIdentifier[name] = modPics;
                     }
 
                     return true;
@@ -1032,7 +1064,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
             return false;
         }
 
-        static Texture2D duplicateTexture(Texture2D source)
+        public static Texture2D DuplicateTexture(Texture2D source)
         {
             RenderTexture renderTex = RenderTexture.GetTemporary(
                 source.width,
