@@ -16,8 +16,6 @@ using System.Diagnostics;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.Entity;
-using Debug = UnityEngine.Debug;
-
 namespace DaggerfallWorkshop.Game
 {
     /// <summary>
@@ -645,9 +643,18 @@ namespace DaggerfallWorkshop.Game
                 }
                 catch (Exception e)
                 {
+                    var del = OnComplete;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
