@@ -25,10 +25,8 @@ using DaggerfallConnect.Save;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Banking;
-using DaggerfallWorkshop.Game.Questing.Actions;
 using DaggerfallWorkshop.Game.UserInterface;
 using System.Linq;
-using Mono.CSharp;
 using Delegate = System.Delegate;
 
 namespace DaggerfallWorkshop.Game.Formulas
@@ -41,7 +39,7 @@ namespace DaggerfallWorkshop.Game.Formulas
     /// </summary>
     public static class FormulaHelper
     {
-        private struct FormulaOverride
+        public struct FormulaOverride
         {
             internal readonly Delegate Formula;
             internal readonly Mod Provider;
@@ -53,7 +51,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
         }
 
-        readonly static Dictionary<string, FormulaOverride> overrides = new Dictionary<string, FormulaOverride>();
+        static Dictionary<string, FormulaOverride> overrides = new Dictionary<string, FormulaOverride>();
 
         public static float specialInfectionChance = 0.6f;
 
@@ -3615,6 +3613,16 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             formula = default(TDelegate);
             return false;
+        }
+
+
+        /// <summary>
+        /// Retrieve table of overridees
+        /// </summary>
+        /// 
+        public static Dictionary<string, FormulaOverride> GetOverrides()
+        {
+            return overrides;
         }
 
         #endregion
