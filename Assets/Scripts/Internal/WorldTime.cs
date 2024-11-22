@@ -163,9 +163,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnDawn;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -181,9 +190,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnDusk;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -199,9 +217,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnMidday;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -217,9 +244,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnMidnight;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -235,9 +271,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnCityLightsOn;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -253,9 +298,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnCityLightsOff;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -271,9 +325,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnNewHour;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -289,9 +352,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnNewDay;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -307,9 +379,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnNewMonth;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -325,9 +406,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnNewYear;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 

@@ -908,9 +908,18 @@ namespace DaggerfallWorkshop
                 }
                 catch (Exception e)
                 {
+                    var del = OnTeleportAction;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
