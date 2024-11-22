@@ -13,7 +13,6 @@ using UnityEngine;
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using FullSerializer;
@@ -23,6 +22,7 @@ using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Player;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Utility.AssetInjection;
 
 namespace DaggerfallWorkshop.Game.Serialization
@@ -1556,9 +1556,23 @@ namespace DaggerfallWorkshop.Game.Serialization
             DaggerfallUI.Instance.FadeBehaviour.FadeHUDFromBlack(1.0f);
 
             // list revised list of Persistent Windows
-            foreach (var item in UIWindowFactory.uiWindowImplementations)
-                Debug.Log($"LoadManager: UI Window Factory: {item.Key}:{item.Value}");
 
+            foreach (var item in UIWindowFactory.uiWindowImplementations)
+            {
+                string modName = "unknown";
+                if (UIWindowFactory.uiWindowModded.ContainsKey(item.Key))
+                {
+                    var mod = UIWindowFactory.uiWindowModded[item.Key];
+                    if (mod != null && mod.FileName != null)
+                        modName = mod.FileName;
+                }
+
+                Debug.Log($"LoadManager: UI Window Factory: {item.Key}:{item.Value} from {modName}");
+            }
+
+            // list overriden formulas in formulaHelper
+            foreach (var item in FormulaHelper.GetOverrides().OrderBy(x => x.Key))
+                Debug.Log($"LoadManager: FormulaHelper - {item.Key} = {item.Value.Formula.Method.DeclaringType.FullName}.{item.Value.Formula.Method.Name} from {item.Value.Provider.ModInfo.ModTitle} ");
 
             // Raise OnLoad event
             RaiseOnLoadEvent(saveData);
