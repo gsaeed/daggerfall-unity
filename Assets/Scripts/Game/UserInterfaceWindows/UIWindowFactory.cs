@@ -13,9 +13,7 @@ using DaggerfallWorkshop.Game.UserInterface;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using UnityEngine;
@@ -119,7 +117,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             { UIWindowType.WitchesCovenPopup, typeof(DaggerfallWitchesCovenPopupWindow) },
         };
 
-        private static Dictionary<UIWindowType, Mod> uiWindowModded = new Dictionary<UIWindowType, Mod>();
+        public static Dictionary<UIWindowType, Mod> uiWindowModded = new Dictionary<UIWindowType, Mod>();
 
 
         /// <summary>
