@@ -2414,9 +2414,18 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
                 }
                 catch (Exception e)
                 {
+                    var del = OnAssignBundle;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -2432,9 +2441,18 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
                 }
                 catch (Exception e)
                 {
+                    var del = OnRemoveBundle;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -2450,9 +2468,18 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
                 }
                 catch (Exception e)
                 {
+                    var del = OnAddIncumbentState;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -2468,9 +2495,18 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
                 }
                 catch (Exception e)
                 {
+                    var del = OnNewReadySpell;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -2486,9 +2522,18 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
                 }
                 catch (Exception e)
                 {
+                    var del = OnCastReadySpell;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 

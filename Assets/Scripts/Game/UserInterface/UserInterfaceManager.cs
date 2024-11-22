@@ -108,9 +108,18 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 }
                 catch (Exception e)
                 {
+                    var del = OnWindowChange;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    UnityEngine.Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    UnityEngine.Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
@@ -130,9 +139,18 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 }
                 catch (Exception e)
                 {
+                    var del = OnWindowChange;
+                    var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
-                    UnityEngine.Debug.LogError($"Exception running {currMethod.ReflectedType}:{currMethod} - {e.Message}");
-                    UnityEngine.Debug.LogError($"{e.ToString()}");
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
                 }
         }
 
