@@ -1219,9 +1219,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// </summary>
         public int GetLoadPriority(string filename)
         {
-            foreach(var mod in mods)
-                if (mod.FileName == filename)
-                    return mod.LoadPriority;
+            for(int i = 0; i < mods.Count; i++)
+                if (mods[i].FileName == filename)
+                   // return mods[i].LoadPriority;
+                    return i;
             return 0;
         }
         internal void AutoSortMods()
@@ -1249,6 +1250,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                                     $"Sending {Instance.mods[a].FileName}:{Instance.mods[a].LoadPriority} below {Instance.mods[b].FileName}:{Instance.mods[b].LoadPriority}");
                                 for (int i = a; i < b; i++)
                                 {
+                                    if (i + 1 >= Instance.mods.Count)
+                                        break;
+
                                     var m1 = Instance.mods[i];
                                     var m2 = Instance.mods[i + 1];
                                     m1.LoadPriority += 1;
