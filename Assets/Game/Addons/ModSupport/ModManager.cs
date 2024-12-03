@@ -23,6 +23,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using FullSerializer;
 using Mono.CSharp;
 using Unity.Mathematics;
+using UnityEngine.Windows.WebCam;
 
 namespace DaggerfallWorkshop.Game.Utility.ModSupport
 {
@@ -492,23 +493,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 if (result.Asset is GameObject)
                 {
-                    var gO = result.Asset as GameObject;
-                    MeshRenderer meshRenderer;
-                    meshRenderer = gO.GetComponent<MeshRenderer>();
-                    if (meshRenderer == null)
-                        meshRenderer = gO.GetComponentInChildren<MeshRenderer>();
-                    
-                    if (meshRenderer != null)
+                    pic = GenerateModelTexture(result.Asset as GameObject, 512, 512);
+                    if (pic != null)
                     {
-                        var materials = meshRenderer.sharedMaterials;
-                        if (materials != null)
-                        {
-                            pics.AddRange(materials
-                                .Where(material => material != null && material.mainTexture != null)
-                                .Select(material => material.mainTexture as Texture2D));
-                            if (pics.Count > 0)
-                                isTexture = true;
-                        }
+                        pics.Add(pic);
+                        isTexture = true;
                     }
                 }
                 var modPics = new modpics(result.Mod.GUID, isTexture, pics);
@@ -575,20 +564,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 if (result.Asset is GameObject)
                 {
-                    var gO = result.Asset as GameObject;
-                    MeshRenderer meshRenderer;
-                    meshRenderer = gO.GetComponent<MeshRenderer>();
-                    if (meshRenderer != null)
+                    pic = GenerateModelTexture(result.Asset as GameObject, 512, 512);
+                    if (pic != null)
                     {
-                        var materials = meshRenderer.sharedMaterials;
-                        if (materials != null)
-                        {
-                            pics.AddRange(materials
-                                .Where(material => material != null && material.mainTexture != null)
-                                .Select(material => material.mainTexture as Texture2D));
-                            if (pics.Count > 0)
-                                isTexture = true;
-                        }
+                        pics.Add(pic);
+                        isTexture = true;
                     }
                 }
 
@@ -601,14 +581,70 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             return false;
         }
 
-        /// <summary>
-        /// Seeks assets inside a directory from all mods with load order. An asset is accepted if its directory ends with the given subdirectory.
-        /// For example "Assets/Textures" matches "Water.png" from "Assets/Game/Mods/Example/Assets/Textures/Water.png".
-        /// </summary>
-        /// <param name="relativeDirectory">A relative directory with forward slashes (i.e. "Assets/Textures").</param>
-        /// <param name="extension">An extension including the dots (i.e ".json") or null.</param>
-        /// <returns>A list of assets or null if there are no matches.</returns>
-        public List<T> FindAssets<T>(string relativeDirectory, string extension = null) where T : UnityEngine.Object
+    public static Texture2D GenerateModelTexture(GameObject prefab, int textureWidth = 256, int textureHeight = 256)
+        {
+            // Create a temporary camera
+            GameObject tempCameraObj = new GameObject("TempCamera");
+            Camera tempCamera = tempCameraObj.AddComponent<Camera>();
+            tempCamera.clearFlags = CameraClearFlags.SolidColor;
+            tempCamera.backgroundColor = Color.clear;
+            tempCamera.orthographic = true;
+
+            // Create a RenderTexture
+            RenderTexture renderTexture = new RenderTexture(textureWidth, textureHeight, 24);
+            tempCamera.targetTexture = renderTexture;
+
+            // Instantiate the prefab model
+            GameObject modelInstance = Instantiate(prefab);
+            Bounds bounds = CalculateBounds(modelInstance);
+
+            // Position the camera to fit the model
+            tempCamera.transform.position = bounds.center - Vector3.forward * (bounds.extents.z + 1);
+            tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+            tempCamera.transform.LookAt(bounds.center);
+
+            // Render the model
+            tempCamera.Render();
+
+            // Read the RenderTexture into a Texture2D
+            RenderTexture.active = renderTexture;
+            Texture2D resultTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.ARGB32, false);
+            resultTexture.ReadPixels(new Rect(0, 0, textureWidth, textureHeight), 0, 0);
+            resultTexture.Apply();
+
+            // Clean up
+            RenderTexture.active = null;
+            tempCamera.targetTexture = null;
+            DestroyImmediate(renderTexture);
+            DestroyImmediate(tempCameraObj);
+            DestroyImmediate(modelInstance);
+
+            return resultTexture;
+        }
+
+    private static Bounds CalculateBounds(GameObject obj)
+        {
+            Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
+            Bounds bounds = new Bounds(obj.transform.position, Vector3.zero);
+
+            foreach (Renderer renderer in renderers)
+            {
+                bounds.Encapsulate(renderer.bounds);
+            }
+
+            return bounds;
+        }
+    
+
+
+    /// <summary>
+    /// Seeks assets inside a directory from all mods with load order. An asset is accepted if its directory ends with the given subdirectory.
+    /// For example "Assets/Textures" matches "Water.png" from "Assets/Game/Mods/Example/Assets/Textures/Water.png".
+    /// </summary>
+    /// <param name="relativeDirectory">A relative directory with forward slashes (i.e. "Assets/Textures").</param>
+    /// <param name="extension">An extension including the dots (i.e ".json") or null.</param>
+    /// <returns>A list of assets or null if there are no matches.</returns>
+    public List<T> FindAssets<T>(string relativeDirectory, string extension = null) where T : UnityEngine.Object
         {
             if (relativeDirectory == null)
                 throw new ArgumentNullException("relativeDirectory");
