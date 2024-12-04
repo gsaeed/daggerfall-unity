@@ -1003,16 +1003,12 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                 // Seek from loose files
                 if (TryImportTextureFromDisk(Path.Combine(path, name), false, isLinear, readOnly, out tex))
                 {
-                    List<Texture2D> pics = new List<Texture2D>();
                     bool isImage = tex != null;
-                    if (isImage)
-                        pics.Add(tex);
 
                     var modPics = new ModManager.modpics()
                     {
                         GUID = "Loose Files",
                         IsImage = isImage,
-                        Pics = pics,
                     };
 
                     ModManager.ModIdentifier[name] = modPics;
@@ -1048,11 +1044,6 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                         var modPics = ModManager.ModIdentifier[name];
                         List<Texture2D> pics = new List<Texture2D>();
                         bool isImage = tex != null;
-                        if (isImage)
-                        {
-                            pics.Add(tex);
-                            modPics.Pics = pics;
-                        }
                         ModManager.ModIdentifier[name] = modPics;
                     }
 
