@@ -84,18 +84,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             public string GUID;
             public bool IsImage;
-            public List<Texture2D> Pics;
 
-            public modpics(string guid, bool isImage, List<Texture2D> pics = null)
+            public modpics(string guid, bool isImage)
             {
                 GUID = guid;
                 IsImage = isImage;
-                if (isImage)
-                    Pics = pics;
-                else
-                {
-                    Pics = null;
-                }
             }
         }
 
@@ -467,40 +460,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             asset = null;
             if (result != null)
             {
-                Texture2D pic = null;
-                bool isTexture = false;
-                List<Texture2D> pics = new List<Texture2D>();
+                bool isTexture = result.Asset is Texture2D || result.Asset is Material || result.Asset is GameObject;
 
-                if (result.Asset is Texture2D)
-                {
-                    pic = result.Asset as Texture2D;
-                    if (pic != null)
-                    {
-                        pics.Add(pic);
-                        isTexture = true;
-                    }
-                }
-
-                if (result.Asset is Material)
-                {
-                    pic = (result.Asset as Material).mainTexture as Texture2D;
-                    if (pic != null)
-                    {
-                        pics.Add(pic);
-                        isTexture = true;
-                    }
-                }
-
-                if (result.Asset is GameObject)
-                {
-                    pic = GenerateModelTexture(result.Asset as GameObject, 512, 512);
-                    if (pic != null)
-                    {
-                        pics.Add(pic);
-                        isTexture = true;
-                    }
-                }
-                var modPics = new modpics(result.Mod.GUID, isTexture, pics);
+                var modPics = new modpics(result.Mod.GUID, isTexture);
                 ModIdentifier[result.Name] = modPics;
                 
                 asset = result.Asset;
@@ -539,41 +501,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             asset = null;
             if (result != null)
             {
-                Texture2D pic = null;
-                bool isTexture = false;
-                List<Texture2D> pics = new List<Texture2D>();
-                if (result.Asset is Texture2D)
-                {
-                    pic = result.Asset as Texture2D;
-                    if (pic != null)
-                    {
-                        pics.Add(pic);
-                        isTexture = true;
-                    }
-                }
+                bool isTexture = result.Asset is Texture2D || result.Asset is Material || result.Asset is GameObject;
 
-                if (result.Asset is Material)
-                {
-                    pic = (result.Asset as Material).mainTexture as Texture2D;
-                    if (pic != null)
-                    {
-                        pics.Add(pic);
-                        isTexture = true;
-                    }
-                }
-
-                if (result.Asset is GameObject)
-                {
-                    pic = GenerateModelTexture(result.Asset as GameObject, 512, 512);
-                    if (pic != null)
-                    {
-                        pics.Add(pic);
-                        isTexture = true;
-                    }
-                }
-
-                var modPics = new modpics(result.Mod.GUID, isTexture, pics);
+                var modPics = new modpics(result.Mod.GUID, isTexture);
                 ModIdentifier[result.Name] = modPics;
+
                 asset = result.Asset;
                 return true;
             }
@@ -581,7 +513,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             return false;
         }
 
-    public static Texture2D GenerateModelTexture(GameObject prefab, int textureWidth = 256, int textureHeight = 256)
+    public static Texture2D GenerateModelTexture(GameObject modelInstance, int textureWidth = 256, int textureHeight = 256)
         {
             // Create a temporary camera
             GameObject tempCameraObj = new GameObject("TempCamera");
@@ -595,13 +527,25 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             tempCamera.targetTexture = renderTexture;
 
             // Instantiate the prefab model
-            GameObject modelInstance = Instantiate(prefab);
+            //GameObject modelInstance = Instantiate(prefab);
             Bounds bounds = CalculateBounds(modelInstance);
 
             // Position the camera to fit the model
-            tempCamera.transform.position = bounds.center - Vector3.forward * (bounds.extents.z + 1);
+            //tempCamera.transform.position = bounds.center - Vector3.forward * (bounds.extents.z + 1);
+            //tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+            //tempCamera.transform.LookAt(bounds.center);
+
+            // Calculate the isometric position for the camera
+            Vector3 isometricPosition = bounds.center + new Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z) * 1.5f;
+
+            // Position the camera to fit the model
+            tempCamera.transform.position = isometricPosition;
             tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+
+            // Rotate the camera to look at the object from an isometric angle
+            tempCamera.transform.rotation = Quaternion.Euler(30, 45, 0);
             tempCamera.transform.LookAt(bounds.center);
+
 
             // Render the model
             tempCamera.Render();
@@ -611,13 +555,13 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             Texture2D resultTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.ARGB32, false);
             resultTexture.ReadPixels(new Rect(0, 0, textureWidth, textureHeight), 0, 0);
             resultTexture.Apply();
-
+            Debug.Break();
             // Clean up
             RenderTexture.active = null;
             tempCamera.targetTexture = null;
             DestroyImmediate(renderTexture);
             DestroyImmediate(tempCameraObj);
-            DestroyImmediate(modelInstance);
+            //DestroyImmediate(modelInstance);
 
             return resultTexture;
         }
