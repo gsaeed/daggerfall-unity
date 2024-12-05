@@ -574,7 +574,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             return false;
         }
 
-    public static Texture2D GenerateModelTexture(GameObject prefab, int textureWidth = 256, int textureHeight = 256)
+    public static Texture2D GenerateModelTexture2(GameObject prefab, int textureWidth = 256, int textureHeight = 256)
         {
             // Create a temporary camera
             GameObject tempCameraObj = new GameObject("TempCamera");
@@ -633,7 +633,91 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             return resultTexture;
         }
 
-    private static Bounds CalculateBounds(GameObject obj)
+        public static Texture2D GenerateModelTexture(GameObject prefab, int textureWidth = 256, int textureHeight = 256, bool isometric = false)
+        {
+            // Create a temporary camera
+            GameObject tempCameraObj = new GameObject("TempCamera");
+            Camera tempCamera = tempCameraObj.AddComponent<Camera>();
+            tempCamera.clearFlags = CameraClearFlags.SolidColor;
+            tempCamera.backgroundColor = Color.clear;
+            tempCamera.orthographic = true;
+
+            // Create a RenderTexture
+            RenderTexture renderTexture = new RenderTexture(textureWidth, textureHeight, 24);
+            tempCamera.targetTexture = renderTexture;
+
+            // Create a new layer for rendering
+            int renderLayer = 31; // Use layer 31 (or any unused layer)
+            tempCamera.cullingMask = 1 << renderLayer;
+
+            // Instantiate the prefab model
+            GameObject modelInstance = Instantiate(prefab);
+            SetLayerRecursively(modelInstance, renderLayer);
+
+            // Calculate the bounds of the model
+            Bounds bounds = CalculateBounds(modelInstance);
+
+            // Position the camera to fit the model
+            tempCamera.transform.position = bounds.center - Vector3.back * (bounds.extents.z + 1);
+            tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+
+            if (isometric)
+            {
+                // Calculate the isometric position for the camera
+                Vector3 isometricPosition = bounds.center + new Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z) * 1.5f;
+                // Position the camera to fit the model
+                tempCamera.transform.position = isometricPosition;
+                tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+            }
+        
+
+            // Rotate the camera to look at the object from an isometric angle
+            tempCamera.transform.rotation = Quaternion.Euler(45, 45, 0);
+            tempCamera.transform.LookAt(bounds.center);
+
+            // Add a temporary light source
+            GameObject tempLightObj = new GameObject("TempLight");
+            Light tempLight = tempLightObj.AddComponent<Light>();
+            tempLight.type = LightType.Directional;
+            tempLight.color = Color.white;
+            tempLight.intensity = 1.0f;
+            tempLight.transform.rotation = Quaternion.Euler(50, -30, 0);
+
+            // Render the model
+            tempCamera.Render();
+
+            // Read the RenderTexture into a Texture2D
+            RenderTexture.active = renderTexture;
+            Texture2D resultTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.ARGB32, false);
+            resultTexture.ReadPixels(new Rect(0, 0, textureWidth, textureHeight), 0, 0);
+            resultTexture.Apply();
+
+            // Clean up
+            RenderTexture.active = null;
+            tempCamera.targetTexture = null;
+            DestroyImmediate(renderTexture);
+            DestroyImmediate(tempCameraObj);
+            DestroyImmediate(modelInstance);
+            DestroyImmediate(tempLightObj);
+
+            return resultTexture;
+        }
+
+        private static void SetLayerRecursively(GameObject obj, int newLayer)
+        {
+            if (obj == null) return;
+
+            obj.layer = newLayer;
+
+            foreach (Transform child in obj.transform)
+            {
+                if (child == null) continue;
+                SetLayerRecursively(child.gameObject, newLayer);
+            }
+        }
+
+
+        private static Bounds CalculateBounds(GameObject obj)
         {
             Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
             Bounds bounds = new Bounds(obj.transform.position, Vector3.zero);
