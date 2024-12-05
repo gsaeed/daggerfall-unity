@@ -80,6 +80,17 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             }
         };
 
+        public struct ModAsset
+        {
+            public bool found;
+            public string name;
+            public Mod mod;
+            public int type;
+            public GameObject go;
+            public Material mat;
+            public Texture2D tex;
+        }
+
         public struct modpics
         {
             public string GUID;
@@ -475,6 +486,56 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         /// <summary>
         /// Seek asset in all mods with load order.
+        /// </summary>
+        /// <param name="name">Name of asset to seek.</param>
+        /// <remarks>
+        /// If multiple mods contain an asset with given name, priority is defined by load order.
+        /// </remarks>
+        /// <returns>True if asset is found and loaded sucessfully.</returns>
+        public ModAsset TryGetModAsset<T>(string name) where T : UnityEngine.Object
+        {
+            var query = from mod in EnumerateEnabledModsReverse()
+#if UNITY_EDITOR
+                where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) || (mod.IsVirtual && mod.HasAsset(name))
+#else
+                        where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
+#endif
+                select new { Name = name, Mod = mod, Asset = mod.LoadAsset<T>(name) };
+
+            var result = query.FirstOrDefault(x => x.Asset != null);
+            var modAsset = new ModAsset();
+            modAsset.found = false;
+            if (result != null)
+            {
+                modAsset.name = result.Name;
+                modAsset.mod = result.Mod;
+                modAsset.type = result.Asset is Texture2D ? 1 : result.Asset is Material ? 2 : result.Asset is GameObject ? 3 : -1;
+                switch (modAsset.type)
+                {
+                    case 1:
+                        modAsset.tex = result.Asset as Texture2D;
+                        modAsset.found = true;
+                        break;
+                    case 2:
+                        modAsset.mat = result.Asset as Material;
+                        modAsset.found = true;
+                        break;
+                    case 3:
+                        modAsset.go = result.Asset as GameObject;
+                        modAsset.found = true;
+                        break;
+                    default:
+                        modAsset.found = false;
+                        break;
+                }
+
+            }
+
+            return modAsset;
+        }
+
+        /// <summary>
+        /// Seek asset in all mods with load order.
         /// Check all names for each mod with the given priority.
         /// </summary>
         /// <param name="names">Names of asset to seek ordered by priority.</param>
@@ -513,7 +574,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             return false;
         }
 
-    public static Texture2D GenerateModelTexture(GameObject modelInstance, int textureWidth = 256, int textureHeight = 256)
+    public static Texture2D GenerateModelTexture(GameObject prefab, int textureWidth = 256, int textureHeight = 256)
         {
             // Create a temporary camera
             GameObject tempCameraObj = new GameObject("TempCamera");
@@ -527,24 +588,30 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             tempCamera.targetTexture = renderTexture;
 
             // Instantiate the prefab model
-            //GameObject modelInstance = Instantiate(prefab);
+            GameObject modelInstance = Instantiate(prefab);
             Bounds bounds = CalculateBounds(modelInstance);
 
             // Position the camera to fit the model
-            //tempCamera.transform.position = bounds.center - Vector3.forward * (bounds.extents.z + 1);
-            //tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
-            //tempCamera.transform.LookAt(bounds.center);
-
-            // Calculate the isometric position for the camera
-            Vector3 isometricPosition = bounds.center + new Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z) * 1.5f;
-
-            // Position the camera to fit the model
-            tempCamera.transform.position = isometricPosition;
+            tempCamera.transform.position = bounds.center - Vector3.forward * (bounds.extents.z + 1);
             tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
 
-            // Rotate the camera to look at the object from an isometric angle
-            tempCamera.transform.rotation = Quaternion.Euler(30, 45, 0);
+            // Position the camera behind the object
+            tempCamera.transform.position = bounds.center + Vector3.back * (bounds.extents.z + 1);
+            tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+
+
             tempCamera.transform.LookAt(bounds.center);
+
+            //// Calculate the isometric position for the camera
+            //Vector3 isometricPosition = bounds.center + new Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z) * 1.5f;
+
+            //// Position the camera to fit the model
+            //tempCamera.transform.position = isometricPosition;
+            //tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+
+            //// Rotate the camera to look at the object from an isometric angle
+            //tempCamera.transform.rotation = Quaternion.Euler(30, 45, 0);
+            //tempCamera.transform.LookAt(bounds.center);
 
 
             // Render the model
@@ -555,13 +622,13 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             Texture2D resultTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.ARGB32, false);
             resultTexture.ReadPixels(new Rect(0, 0, textureWidth, textureHeight), 0, 0);
             resultTexture.Apply();
-            Debug.Break();
+
             // Clean up
             RenderTexture.active = null;
             tempCamera.targetTexture = null;
             DestroyImmediate(renderTexture);
             DestroyImmediate(tempCameraObj);
-            //DestroyImmediate(modelInstance);
+            DestroyImmediate(modelInstance);
 
             return resultTexture;
         }
