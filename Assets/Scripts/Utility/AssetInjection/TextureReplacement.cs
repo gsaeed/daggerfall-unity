@@ -1002,50 +1002,13 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
             {
                 // Seek from loose files
                 if (TryImportTextureFromDisk(Path.Combine(path, name), false, isLinear, readOnly, out tex))
-                {
-                    bool isImage = tex != null;
-
-                    var modPics = new ModManager.modpics()
-                    {
-                        GUID = "Loose Files",
-                        IsImage = isImage,
-                    };
-
-                    ModManager.ModIdentifier[name] = modPics;
                     return true;
-                }
 
                 // Seek from mods
                 if (ModManager.Instance && ModManager.Instance.TryGetAsset(name, null, out tex))
                 {
                     if (!readOnly && !tex.isReadable)
-                    {
-                        // Create a new texture with the same dimensions and format as the source texture
-                        //var newTexture = new Texture2D(tex.width, tex.height, tex.format, false);
-
-                        // Copy the source texture data to the new texture
-                        //Graphics.CopyTexture(tex, newTexture);
-
-                        //Graphics.CopyTexture(newTexture, tex);
-                        tex = DuplicateTexture(tex);
-
-                        if (!tex.isReadable)
-                            Debug.LogWarning($"Texture {name} is not readable.");
-                    }
-
-                    if (!ModManager.ModIdentifier.ContainsKey(name))
-                    {
-                        Debug.LogError($"unable to retrieve mod information for {name}");
-
-                        
-                    }
-                    else
-                    {
-                        var modPics = ModManager.ModIdentifier[name];
-                        List<Texture2D> pics = new List<Texture2D>();
-                        bool isImage = tex != null;
-                        ModManager.ModIdentifier[name] = modPics;
-                    }
+                        Debug.LogWarning($"Texture {name} is not readable.");
 
                     return true;
                 }
