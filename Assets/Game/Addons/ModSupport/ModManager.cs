@@ -17,9 +17,12 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
+using DaggerfallWorkshop.Utility.AssetInjection;
 using FullSerializer;
 using Mono.CSharp;
 using Unity.Mathematics;
@@ -35,9 +38,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
     {
         #region Fields
 
-        public const string MODEXTENSION        = ".dfmod";
-        public const string MODINFOEXTENSION    = ".dfmod.json";
-        public const string MODCONFIGFILENAME   = "Mod_Settings.json";
+        public const string MODEXTENSION = ".dfmod";
+        public const string MODINFOEXTENSION = ".dfmod.json";
+        public const string MODCONFIGFILENAME = "Mod_Settings.json";
         public static bool SuccessfulSort = false;
         public static int ErrorsEncountered = 0;
         private static bool cyclicError = false;
@@ -48,10 +51,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         const string dataFolder = "GameData";
 #endif
 
-        bool alreadyAtStartMenuState            = false;
-        static bool alreadyStartedInit          = false;
-        [SerializeField]
-        public List<Mod> mods;
+        bool alreadyAtStartMenuState = false;
+        static bool alreadyStartedInit = false;
+        [SerializeField] public List<Mod> mods;
         List<Mod> preSortedMods;
         public static readonly fsSerializer _serializer = new fsSerializer();
 
@@ -84,26 +86,13 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             public bool found;
             public string name;
+            public string searchName;
             public Mod mod;
-            public int type;
-            public GameObject go;
-            public Material mat;
-            public Texture2D tex;
+            public bool isLoose;
+            public Type type;
+            public object go;
         }
 
-        public struct modpics
-        {
-            public string GUID;
-            public bool IsImage;
-
-            public modpics(string guid, bool isImage)
-            {
-                GUID = guid;
-                IsImage = isImage;
-            }
-        }
-
-        public static Dictionary<string, modpics> ModIdentifier = new Dictionary<string, modpics>();
 
         public static List<ActiveModListComponents> fileActiveModList = new List<ActiveModListComponents>();
         public static List<string> fileBisectRange = new List<string>();
@@ -116,7 +105,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         // Returns whether the ModManager has been through Init
         // Before Initialized is true, disabled mods are not filtered out
         // Systems that run on launch should ensure this is true before touching systems involving mods
-        public bool Initialized { get { return alreadyStartedInit; } }
+        public bool Initialized
+        {
+            get { return alreadyStartedInit; }
+        }
 
         #endregion
 
@@ -124,6 +116,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         private Dictionary<string, List<string>> modMove = new Dictionary<string, List<string>>();
         private List<string> modMoveOrder = new List<string>();
+
         /// <summary>
         /// The number of mods loaded by Mod Manager.
         /// </summary>
@@ -230,6 +223,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 if (mods[i].Title == modTitle)
                     return i;
             }
+
             return -1;
         }
 
@@ -302,6 +296,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     if (mod.GUID == modGUID)
                         return mod.Title;
                 }
+
                 return null;
             }
         }
@@ -349,7 +344,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public string[] GetAllModTitles()
         {
             var selection = from modInfo in GetAllModInfo()
-                            select modInfo.ModTitle;
+                select modInfo.ModTitle;
             return selection.ToArray();
         }
 
@@ -360,7 +355,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public string[] GetAllModFileNames()
         {
             var selection = from mod in mods
-                            select mod.FileName;
+                select mod.FileName;
             return selection.ToArray();
         }
 
@@ -371,8 +366,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public ModInfo[] GetAllModInfo()
         {
             var selection = from mod in GetAllMods()
-                            where (mod.ModInfo != null)
-                            select mod.ModInfo;
+                where (mod.ModInfo != null)
+                select mod.ModInfo;
             return selection.ToArray();
         }
 
@@ -383,8 +378,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public string[] GetAllModGUID()
         {
             var selection = from mod in mods
-                            where (mod.ModInfo != null && mod.GUID != "invalid")
-                            select mod.ModInfo.GUID;
+                where (mod.ModInfo != null && mod.GUID != "invalid")
+                select mod.ModInfo.GUID;
             return selection.ToArray();
         }
 
@@ -395,8 +390,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public IEnumerable<Mod> GetAllModsWithSaveData()
         {
             return from mod in mods
-                   where mod.SaveDataInterface != null
-                   select mod;
+                where mod.SaveDataInterface != null
+                select mod;
         }
 
         /// <summary>
@@ -406,7 +401,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <returns>An enumeration of mods with contributes.</returns>
         internal IEnumerable<Mod> GetAllModsWithContributes(Predicate<ModContributes> filter = null)
         {
-            return EnumerateModsReverse().Where(x => x.Enabled && x.ModInfo.Contributes != null && (filter == null || filter(x.ModInfo.Contributes)));
+            return EnumerateModsReverse().Where(x =>
+                x.Enabled && x.ModInfo.Contributes != null && (filter == null || filter(x.ModInfo.Contributes)));
         }
 
         /// <summary>
@@ -432,7 +428,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <param name="clone">return copy of asset</param>
         ///<param name="check">true if loaded sucessfully</param>
         /// <returns>The loaded asset or null if not found.</returns>
-        public T GetAssetFromMod<T>(string assetName, string modTitle, bool clone, out bool check) where T : UnityEngine.Object
+        public T GetAssetFromMod<T>(string assetName, string modTitle, bool clone, out bool check)
+            where T : UnityEngine.Object
         {
             check = false;
             T asset = null;
@@ -461,77 +458,14 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             var query = from mod in EnumerateEnabledModsReverse()
 #if UNITY_EDITOR
-                        where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) || (mod.IsVirtual && mod.HasAsset(name))
+                where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
+                      (mod.IsVirtual && mod.HasAsset(name))
 #else
                         where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
 #endif
-                        select new { Name = name, Mod = mod, Asset = clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name) };
+                select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name);
 
-            var result = query.FirstOrDefault(x => x.Asset != null);
-            asset = null;
-            if (result != null)
-            {
-                bool isTexture = result.Asset is Texture2D || result.Asset is Material || result.Asset is GameObject;
-
-                var modPics = new modpics(result.Mod.GUID, isTexture);
-                ModIdentifier[result.Name] = modPics;
-                
-                asset = result.Asset;
-
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Seek asset in all mods with load order.
-        /// </summary>
-        /// <param name="name">Name of asset to seek.</param>
-        /// <remarks>
-        /// If multiple mods contain an asset with given name, priority is defined by load order.
-        /// </remarks>
-        /// <returns>True if asset is found and loaded sucessfully.</returns>
-        public ModAsset TryGetModAsset<T>(string name) where T : UnityEngine.Object
-        {
-            var query = from mod in EnumerateEnabledModsReverse()
-#if UNITY_EDITOR
-                where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) || (mod.IsVirtual && mod.HasAsset(name))
-#else
-                        where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
-#endif
-                select new { Name = name, Mod = mod, Asset = mod.LoadAsset<T>(name) };
-
-            var result = query.FirstOrDefault(x => x.Asset != null);
-            var modAsset = new ModAsset();
-            modAsset.found = false;
-            if (result != null)
-            {
-                modAsset.name = result.Name;
-                modAsset.mod = result.Mod;
-                modAsset.type = result.Asset is Texture2D ? 1 : result.Asset is Material ? 2 : result.Asset is GameObject ? 3 : -1;
-                switch (modAsset.type)
-                {
-                    case 1:
-                        modAsset.tex = result.Asset as Texture2D;
-                        modAsset.found = true;
-                        break;
-                    case 2:
-                        modAsset.mat = result.Asset as Material;
-                        modAsset.found = true;
-                        break;
-                    case 3:
-                        modAsset.go = result.Asset as GameObject;
-                        modAsset.found = true;
-                        break;
-                    default:
-                        modAsset.found = false;
-                        break;
-                }
-
-            }
-
-            return modAsset;
+            return (asset = query.FirstOrDefault(x => x != null)) != null;
         }
 
         /// <summary>
@@ -550,88 +484,222 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             var query = from mod in EnumerateEnabledModsReverse()
 #if UNITY_EDITOR
-                        where mod.AssetBundle != null || mod.IsVirtual
-                        from name in names where mod.IsVirtual ? mod.HasAsset(name) : mod.AssetBundle.Contains(name)
+                where mod.AssetBundle != null || mod.IsVirtual
+                from name in names
+                where mod.IsVirtual ? mod.HasAsset(name) : mod.AssetBundle.Contains(name)
 #else
                         where mod.AssetBundle != null
                         from name in names where mod.AssetBundle.Contains(name)
 #endif
-            select new { Name = name, Mod = mod, Asset = clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name) };
+                select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name);
 
-            var result = query.FirstOrDefault(x => x.Asset != null);
-            asset = null;
-            if (result != null)
+            return (asset = query.FirstOrDefault(x => x != null)) != null;
+        }
+
+        /// <summary>
+        /// Seek asset in all mods with load order.
+        /// </summary>
+        /// <param name="name">Name of asset to seek.</param>
+        /// <remarks>
+        /// If multiple mods contain an asset with given name, priority is defined by load order.
+        /// </remarks>
+        /// <returns>True if asset is found and loaded sucessfully.</returns>
+        public ModAsset TryGetModAsset<T>(string name) where T : UnityEngine.Object
+        {
+            // Define the regular expression pattern for N_N-N
+            string pattern = @"^(\d{1,4})_(\d{1,4})-(\d{1,4})$";
+            string prefabName = string.Empty;
+            int archive = 0, record = 0, frame = 0;
+
+            // Check if the name matches the pattern
+            Match match = Regex.Match(name, pattern);
+            if (match.Success)
             {
-                bool isTexture = result.Asset is Texture2D || result.Asset is Material || result.Asset is GameObject;
+                // Extract the integers as archive, record, and frame
+                archive = int.Parse(match.Groups[1].Value);
+                record = int.Parse(match.Groups[2].Value);
+                frame = int.Parse(match.Groups[3].Value);
 
-                var modPics = new modpics(result.Mod.GUID, isTexture);
-                ModIdentifier[result.Name] = modPics;
-
-                asset = result.Asset;
-                return true;
+                // Modify the name to N_N.prefab by removing the -N part
+                int lastDashIndex = name.LastIndexOf('-');
+                prefabName = name.Substring(0, lastDashIndex) + ".prefab";
+            }
+            else
+            {
+                // Append ".prefab" to the name
+                prefabName = name + ".prefab";
             }
 
-            return false;
+            if (match.Success)
+            {
+                //check loose files
+                Texture2D tex = null;
+                var found = TextureReplacement.TryImportTextureFromLooseFiles(archive, record, frame, TextureMap.Albedo,
+                    true, out tex);
+                if (found)
+                {
+                    var types = tex.GetType();
+                    ModAsset modAsset = new ModAsset();
+                    modAsset.found = true;
+                    modAsset.isLoose = true;
+                    modAsset.name = name;
+                    modAsset.searchName = name;
+                    modAsset.mod = null;
+                    modAsset.type = tex.GetType();
+                    modAsset.go = tex;
+                    return modAsset;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(prefabName))
+
+            {
+                var query = from mod in EnumerateEnabledModsReverse()
+#if UNITY_EDITOR
+                    where (mod.AssetBundle != null && mod.AssetBundle.Contains(prefabName)) ||
+                          (mod.IsVirtual && mod.HasAsset(prefabName))
+#else
+                        where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
+#endif
+                    select new { Name = prefabName, Mod = mod, Asset = mod.LoadAsset<T>(prefabName) };
+
+                var result = query.FirstOrDefault(x => x.Asset != null);
+                var modAsset = new ModAsset();
+                modAsset.found = false;
+                if (result != null)
+                {
+                    modAsset.found = true;
+                    modAsset.isLoose = false;
+                    modAsset.name = result.Asset.name;
+                    modAsset.searchName = result.Name;
+                    modAsset.mod = result.Mod;
+                    modAsset.type = result.Asset.GetType();
+                    modAsset.go = result.Asset;
+                    return modAsset;
+
+                }
+            }
+            else
+            {
+
+                var query = from mod in EnumerateEnabledModsReverse()
+#if UNITY_EDITOR
+                    where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
+                          (mod.IsVirtual && mod.HasAsset(name))
+#else
+                    where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
+#endif
+                    select new { Name = name, Mod = mod, Asset = mod.LoadAsset<T>(name) };
+
+                var result = query.FirstOrDefault(x => x.Asset != null);
+                var modAsset = new ModAsset();
+                modAsset.found = false;
+                if (result != null)
+                {
+                    modAsset.found = true;
+                    modAsset.isLoose = false;
+                    modAsset.name = result.Asset.name;
+                    modAsset.searchName = result.Name;
+                    modAsset.mod = result.Mod;
+                    modAsset.type = result.Asset.GetType();
+                    modAsset.go = result.Asset;
+                    return modAsset;
+                }
+            }
+
+            return new ModAsset();
         }
 
-    public static Texture2D GenerateModelTexture2(GameObject prefab, int textureWidth = 256, int textureHeight = 256)
+        public Type TryFindModAssetType(string name)
         {
-            // Create a temporary camera
-            GameObject tempCameraObj = new GameObject("TempCamera");
-            Camera tempCamera = tempCameraObj.AddComponent<Camera>();
-            tempCamera.clearFlags = CameraClearFlags.SolidColor;
-            tempCamera.backgroundColor = Color.clear;
-            tempCamera.orthographic = true;
+            List<Type> typesArray = new List<Type>
+    {
+        typeof(GameObject),
+        typeof(Material),
+        typeof(Texture),
+        typeof(Texture2D)
+    };
 
-            // Create a RenderTexture
-            RenderTexture renderTexture = new RenderTexture(textureWidth, textureHeight, 24);
-            tempCamera.targetTexture = renderTexture;
+            // Define the regular expression pattern for N_N-N
+            string pattern = @"^(\d{1,4})_(\d{1,4})-(\d{1,4})$";
+            string prefabName = string.Empty;
+            int archive = 0, record = 0, frame = 0;
 
-            // Instantiate the prefab model
-            GameObject modelInstance = Instantiate(prefab);
-            Bounds bounds = CalculateBounds(modelInstance);
+            // Check if the name matches the pattern
+            Match match = Regex.Match(name, pattern);
+            if (match.Success)
+            {
+                // Extract the integers as archive, record, and frame
+                archive = int.Parse(match.Groups[1].Value);
+                record = int.Parse(match.Groups[2].Value);
+                frame = int.Parse(match.Groups[3].Value);
 
-            // Position the camera to fit the model
-            tempCamera.transform.position = bounds.center - Vector3.forward * (bounds.extents.z + 1);
-            tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+                // Modify the name to N_N.prefab by removing the -N part
+                int lastDashIndex = name.LastIndexOf('-');
+                prefabName = name.Substring(0, lastDashIndex) + ".prefab";
+            }
+            else
+            {
+                // Append ".prefab" to the name
+                prefabName = name + ".prefab";
+            }
 
-            // Position the camera behind the object
-            tempCamera.transform.position = bounds.center + Vector3.back * (bounds.extents.z + 1);
-            tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
+            if (match.Success)
+            {
+                // Check loose files
+                Texture2D tex = null;
+                var found = TextureReplacement.TryImportTextureFromLooseFiles(archive, record, frame, TextureMap.Albedo,
+                    true, out tex);
+                if (found)
+                {
+                    var type = tex.GetType();
+                    if (typesArray.Contains(type))
+                        return type;
+                }
+            }
 
+            if (!string.IsNullOrEmpty(prefabName))
+            {
+                var query = from mod in EnumerateEnabledModsReverse()
+#if UNITY_EDITOR
+                            where (mod.AssetBundle != null && mod.AssetBundle.Contains(prefabName)) ||
+                                  (mod.IsVirtual && mod.HasAsset(prefabName))
+#else
+                    where mod.AssetBundle != null && mod.AssetBundle.Contains(prefabName)
+#endif
+                            let asset = mod.LoadAsset<UnityEngine.Object>(prefabName)
+                            where asset != null && typesArray.Contains(asset.GetType())
+                            select new { Name = prefabName, Mod = mod, Asset = asset };
 
-            tempCamera.transform.LookAt(bounds.center);
+                var result = query.FirstOrDefault();
+                if (result != null)
+                {
+                    return result.Asset.GetType();
+                }
+            }
+            else
+            {
+                var query = from mod in EnumerateEnabledModsReverse()
+#if UNITY_EDITOR
+                            where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
+                                  (mod.IsVirtual && mod.HasAsset(name))
+#else
+                    where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
+#endif
+                            let asset = mod.LoadAsset<UnityEngine.Object>(name)
+                            where asset != null && typesArray.Contains(asset.GetType())
+                            select new { Name = name, Mod = mod, Asset = asset };
 
-            //// Calculate the isometric position for the camera
-            //Vector3 isometricPosition = bounds.center + new Vector3(bounds.extents.x, bounds.extents.y, -bounds.extents.z) * 1.5f;
+                var result = query.FirstOrDefault();
+                if (result != null)
+                {
+                    return result.Asset.GetType();
+                }
+            }
 
-            //// Position the camera to fit the model
-            //tempCamera.transform.position = isometricPosition;
-            //tempCamera.orthographicSize = Mathf.Max(bounds.extents.x, bounds.extents.y);
-
-            //// Rotate the camera to look at the object from an isometric angle
-            //tempCamera.transform.rotation = Quaternion.Euler(30, 45, 0);
-            //tempCamera.transform.LookAt(bounds.center);
-
-
-            // Render the model
-            tempCamera.Render();
-
-            // Read the RenderTexture into a Texture2D
-            RenderTexture.active = renderTexture;
-            Texture2D resultTexture = new Texture2D(textureWidth, textureHeight, TextureFormat.ARGB32, false);
-            resultTexture.ReadPixels(new Rect(0, 0, textureWidth, textureHeight), 0, 0);
-            resultTexture.Apply();
-
-            // Clean up
-            RenderTexture.active = null;
-            tempCamera.targetTexture = null;
-            DestroyImmediate(renderTexture);
-            DestroyImmediate(tempCameraObj);
-            DestroyImmediate(modelInstance);
-
-            return resultTexture;
+            return null;
         }
+
 
         public static Texture2D GenerateModelTexture(GameObject prefab, int textureWidth = 256, int textureHeight = 256, bool isometric = false)
         {
