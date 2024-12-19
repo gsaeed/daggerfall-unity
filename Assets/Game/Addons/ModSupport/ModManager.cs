@@ -559,9 +559,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     where (mod.AssetBundle != null && mod.AssetBundle.Contains(prefabName)) ||
                           (mod.IsVirtual && mod.HasAsset(prefabName))
 #else
-                        where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
+                        where mod.AssetBundle != null && mod.AssetBundle.Contains(prefabName)
 #endif
-                    select new { Name = prefabName, Mod = mod, Asset = mod.LoadAsset<T>(prefabName) };
+                            select new { Name = prefabName, Mod = mod, Asset = mod.LoadAsset<T>(prefabName) };
 
                 var result = query.FirstOrDefault(x => x.Asset != null);
                 var modAsset = new ModAsset();
