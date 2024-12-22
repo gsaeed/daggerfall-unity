@@ -222,7 +222,7 @@ namespace DaggerfallWorkshop.Game.Questing
             Task task = ParentQuest.GetTask(symbol);
             if (task == null)
             {
-                Debug.LogErrorFormat("Task/Variable not found '{0}'", symbol.Name);
+                Debug.LogErrorFormat("Task/Variable not found '{0}' in {1}:{2}", symbol.Name, ParentQuest.QuestName, ParentQuest.DisplayName);
                 return false;
             }
 
