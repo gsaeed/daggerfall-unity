@@ -579,7 +579,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 }
             }
-            else
+            
             {
 
                 var query = from mod in EnumerateEnabledModsReverse()
@@ -613,12 +613,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public Type TryFindModAssetType(string name)
         {
             List<Type> typesArray = new List<Type>
-    {
-        typeof(GameObject),
-        typeof(Material),
-        typeof(Texture),
-        typeof(Texture2D)
-    };
+            {
+                typeof(GameObject),
+                typeof(Material),
+                typeof(Texture),
+                typeof(Texture2D)
+            };
 
             // Define the regular expression pattern for N_N-N
             string pattern = @"^(\d{1,4})_(\d{1,4})-(\d{1,4})$";
@@ -677,18 +677,19 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     return result.Asset.GetType();
                 }
             }
-            else
+
+
             {
                 var query = from mod in EnumerateEnabledModsReverse()
 #if UNITY_EDITOR
-                            where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
-                                  (mod.IsVirtual && mod.HasAsset(name))
+                    where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
+                          (mod.IsVirtual && mod.HasAsset(name))
 #else
-                    where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
+                where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
 #endif
-                            let asset = mod.LoadAsset<UnityEngine.Object>(name)
-                            where asset != null && typesArray.Contains(asset.GetType())
-                            select new { Name = name, Mod = mod, Asset = asset };
+                    let asset = mod.LoadAsset<UnityEngine.Object>(name)
+                    where asset != null && typesArray.Contains(asset.GetType())
+                    select new { Name = name, Mod = mod, Asset = asset };
 
                 var result = query.FirstOrDefault();
                 if (result != null)
@@ -696,6 +697,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     return result.Asset.GetType();
                 }
             }
+        
 
             return null;
         }
@@ -703,6 +705,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         public static Texture2D GenerateModelTexture(GameObject prefab, int textureWidth = 256, int textureHeight = 256, bool isometric = false)
         {
+            if (prefab == null)
+                return null;
             // Create a temporary camera
             GameObject tempCameraObj = new GameObject("TempCamera");
             Camera tempCamera = tempCameraObj.AddComponent<Camera>();
