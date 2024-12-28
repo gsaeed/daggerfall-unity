@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DaggerfallWorkshop.Utility;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using FullSerializer;
@@ -384,7 +385,9 @@ namespace DaggerfallWorkshop.Game.Questing
             // Update faction reputation if this quest was for a specific faction
             if (factionId > 0)
             {
-                int repChange = QuestSuccess ? QuestSuccessRep : QuestFailureRep;
+                var questSuccessRep = FormulaHelper.GetReputationIncrease(factionId, QuestSuccessRep, QuestSuccess);
+                var questFailureRep = FormulaHelper.GetReputationIncrease(factionId, QuestFailureRep, QuestSuccess);
+                int repChange = QuestSuccess ? questSuccessRep : questFailureRep;
                 GameManager.Instance.PlayerEntity.FactionData.ChangeReputation(factionId, repChange, true);
             }
             // Add the active quest messages to player notebook.
