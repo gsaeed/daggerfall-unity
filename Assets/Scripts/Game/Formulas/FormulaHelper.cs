@@ -256,7 +256,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             return low;
         }
 
-        //Count Number of Low Skills
+        //Returns number of days between evaluations by guild
         public static int GetIndividualCheckForPromotion(FactionFile.GuildGroups group)
         {
             Func<FactionFile.GuildGroups, int> del;
@@ -264,6 +264,16 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return del(group);
 
             return Guild.DefaultNumDaysToCheckForPromotion;
+        }
+
+        //Returns reputation increase / decrease for success or failure
+        public static int GetReputationIncrease(int factionId, int initialAmount, bool success)
+        {
+            Func<int, int, bool, int> del;
+            if (TryGetOverride("GetReputationIncrease", out del))
+                return del(factionId, initialAmount, success);
+
+            return initialAmount;
         }
 
         public static int AdjustTimeScaleForTravel(int minutesTakenTotal)
