@@ -12,6 +12,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using DaggerfallWorkshop.Game;
@@ -664,6 +665,24 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
             var fields = lineNoQuotes.Split(sep.ToCharArray());
             var target = GetModFromName(fields[0]);
+            if (fields[1].Trim().ToLower() == "ignore in-mod dep checks")
+            {
+                var dependencies = target.ModInfo.Dependencies;
+                if (dependencies != null)
+                {
+                    var newDependencies = new List<ModDependency>();
+                    foreach (var dep in dependencies)
+                    {
+                        if (dep.Name != fields[2])
+                        {
+                            newDependencies.Add(dep);
+                        }
+                    }
+                    target.ModInfo.Dependencies = newDependencies.ToArray();
+                }
+                continue;
+            }
+
             if (target != null && target.Enabled)
             {
                 var depTarget = GetModFromName(fields[2]);
