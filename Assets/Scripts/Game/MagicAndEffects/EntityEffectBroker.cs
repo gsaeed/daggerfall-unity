@@ -17,6 +17,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using DaggerfallConnect.Save;
+using DaggerfallWorkshop.Game.Guilds;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility;
@@ -613,6 +614,9 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects
         /// <returns>True if template exists.</returns>
         public bool HasEffectTemplate(string key)
         {
+            if (magicEffectTemplates == null || key == null)
+                return false;
+
             return magicEffectTemplates.ContainsKey(key);
         }
 
