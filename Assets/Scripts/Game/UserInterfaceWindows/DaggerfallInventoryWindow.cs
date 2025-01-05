@@ -25,6 +25,7 @@ using System.Linq;
 using DaggerfallConnect;
 using DaggerfallWorkshop.Game.Formulas;
 
+
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
     /// <summary>
@@ -1588,29 +1589,39 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (this.maxAmount <= 0)
                 return;
 
-            bool splitRequired = maxAmount < item.stackCount;
-            bool controlPressed = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
-            if (splitRequired || controlPressed)
+            bool splitRequired =  item.stackCount > 1;
+            if (splitRequired)
             {
+                bool controlPressed = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+                bool shiftPressed = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
                 if (allowSplitting && item.IsAStack())
                 {
                     stackItem = item;
                     stackFrom = from;
                     stackTo = to;
                     stackEquip = equip;
-                    string defaultValue = controlPressed ? "0" : this.maxAmount.ToString();
+                    string defaultValue = this.maxAmount.ToString();
 
-                    // Show message box
-                    DaggerfallInputMessageBox mb = new DaggerfallInputMessageBox(uiManager, this);
-                    mb.SetTextBoxLabel(String.Format(TextManager.Instance.GetLocalizedText("howManyItems"), this.maxAmount));
-                    mb.TextPanelDistanceY = 0;
-                    mb.InputDistanceX = 15;
-                    mb.TextBox.Numeric = true;
-                    mb.TextBox.MaxCharacters = 8;
-                    mb.TextBox.Text = defaultValue;
-                    mb.OnGotUserInput += SplitStackPopup_OnGotUserInput;
-                    mb.Show();
-                    return;
+                    if (!controlPressed && !shiftPressed || shiftPressed)
+                    {
+                        var amount = shiftPressed ? item.stackCount : 1;
+                        SplitStackPopup(amount);
+                    }
+                    else
+                    {
+                        // Show message box
+                        DaggerfallInputMessageBox mb = new DaggerfallInputMessageBox(uiManager, this);
+                        mb.SetTextBoxLabel(String.Format(TextManager.Instance.GetLocalizedText("howManyItems"),
+                            this.maxAmount));
+                        mb.TextPanelDistanceY = 0;
+                        mb.InputDistanceX = 15;
+                        mb.TextBox.Numeric = true;
+                        mb.TextBox.MaxCharacters = 8;
+                        mb.TextBox.Text = defaultValue;
+                        mb.OnGotUserInput += SplitStackPopup_OnGotUserInput;
+                        mb.Show();
+                        return;
+                    }
                 }
                 if (splitRequired)
                     return;
@@ -1625,6 +1636,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             int count = 0;
             bool result = int.TryParse(input, out count);
             if (!result || count > maxAmount)
+                return;
+
+            DaggerfallUnityItem item = stackFrom.SplitStack(stackItem, count);
+            if (item != null)
+                DoTransferItem(item, stackFrom, stackTo, stackEquip);
+            else
+                Refresh(false);
+        }
+        private void SplitStackPopup(int count)
+        {
+            if (count > maxAmount)
                 return;
 
             DaggerfallUnityItem item = stackFrom.SplitStack(stackItem, count);
