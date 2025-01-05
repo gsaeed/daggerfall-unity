@@ -615,6 +615,8 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         bool conflictFound = false;
         string lineNoQuotes;
 
+        if (ModManager.Instance.mods == null || ModManager.Instance.mods.Count == 0)
+            return;
 
         var filename = Application.persistentDataPath + @"/mod_order.txt";
         if (!File.Exists(filename))
