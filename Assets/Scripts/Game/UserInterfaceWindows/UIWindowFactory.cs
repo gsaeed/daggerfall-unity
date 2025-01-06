@@ -180,7 +180,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
             }
 
-            if (curMod == null || !uiWindowModded.TryGetValue(windowType, out prevMod) || (prevMod != null && prevMod.LoadPriority < curMod.LoadPriority))
+            if (curMod == null || !uiWindowModded.TryGetValue(windowType, out prevMod) || (prevMod != null && prevMod.LoadPriority <= curMod.LoadPriority))
             {
                 if (prevMod == null)
                 {
