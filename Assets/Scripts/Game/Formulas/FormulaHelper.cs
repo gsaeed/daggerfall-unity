@@ -3314,6 +3314,14 @@ namespace DaggerfallWorkshop.Game.Formulas
         #endregion
 
         #region Localization
+        public static string GetBuildingName(PlayerGPS.DiscoveredBuilding db)
+        {
+            Func<PlayerGPS.DiscoveredBuilding, string> del;
+            if (TryGetOverride("GetBuildingName", out del))
+                return del(db);
+
+            return db.displayName;
+        }
 
         /// <summary>
         /// Construct a procedural building name from parts. See link below for more details how Daggerfall does this.
