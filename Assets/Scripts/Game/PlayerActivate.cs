@@ -527,7 +527,8 @@ namespace DaggerfallWorkshop.Game
                 if (GameManager.Instance.PlayerGPS.GetDiscoveredBuilding(building.buildingKey, out db))
                 {
                     // Check against quest system for an overriding quest-assigned display name for this building
-                    DaggerfallUI.AddHUDText(GrammarManager.grammarProcessor.ProcessGrammar(db.displayName));
+
+                    DaggerfallUI.AddHUDText(FormulaHelper.GetBuildingName(db));
 
                     if (!buildingUnlocked && buildingType < DFLocation.BuildingTypes.Temple
                         && buildingType != DFLocation.BuildingTypes.HouseForSale)
