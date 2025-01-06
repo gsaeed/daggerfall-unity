@@ -669,18 +669,22 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             var target = GetModFromName(fields[0]);
             if (fields[1].Trim().ToLower() == "ignore in-mod dep checks")
             {
-                var dependencies = target.ModInfo.Dependencies;
-                if (dependencies != null)
+                if (target != null && target.ModInfo != null && target.ModInfo.Dependencies != null)
                 {
-                    var newDependencies = new List<ModDependency>();
-                    foreach (var dep in dependencies)
+                    var dependencies = target.ModInfo.Dependencies;
+                    if (dependencies != null)
                     {
-                        if (dep.Name != fields[2])
+                        var newDependencies = new List<ModDependency>();
+                        foreach (var dep in dependencies)
                         {
-                            newDependencies.Add(dep);
+                            if (dep.Name != fields[2])
+                            {
+                                newDependencies.Add(dep);
+                            }
                         }
+
+                        target.ModInfo.Dependencies = newDependencies.ToArray();
                     }
-                    target.ModInfo.Dependencies = newDependencies.ToArray();
                 }
                 continue;
             }
