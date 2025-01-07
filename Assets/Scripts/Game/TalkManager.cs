@@ -2001,6 +2001,7 @@ namespace DaggerfallWorkshop.Game
                     if (n == selectedLoc)
                     {
                         location = kv.Key;
+                        GameManager.Instance.PlayerGPS.DiscoverLocation(location.RegionName, location.Name);
                         return true;
                     }
                     n++;
