@@ -1572,6 +1572,7 @@ namespace DaggerfallWorkshop.Game
             QuestResourceBehaviour questResourceBehaviour = npc.gameObject.GetComponent<QuestResourceBehaviour>();
             if (questResourceBehaviour && TriggerQuestResourceBehaviourClick(questResourceBehaviour))
             {
+                FormulaHelper.ReplyFinishTheQuestFirst(questResourceBehaviour);
                 return;
             }
 

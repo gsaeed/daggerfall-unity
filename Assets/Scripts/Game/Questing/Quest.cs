@@ -38,7 +38,7 @@ namespace DaggerfallWorkshop.Game.Questing
         public const int QuestFailureRep = -2;
 
         // Quest object collections
-        Dictionary<int, Message> messages = new Dictionary<int, Message>();
+        public Dictionary<int, Message> messages = new Dictionary<int, Message>();
         public Dictionary<string, Task> tasks = new Dictionary<string, Task>();
 
         // Clock, Place, Person, Foe, etc. all share a common resource dictionary
@@ -247,7 +247,8 @@ namespace DaggerfallWorkshop.Game.Questing
         /// </summary>
         public int CurrentLogMessageId
         {
-            set { currentLogMessageId = value; }
+            get => currentLogMessageId;
+            set => currentLogMessageId = value;
         }
 
         /// <summary>
