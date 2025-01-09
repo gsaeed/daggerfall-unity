@@ -28,6 +28,7 @@ using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.UserInterface;
 using System.Linq;
 using Delegate = System.Delegate;
+using DaggerfallWorkshop.Game.Questing;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
@@ -264,6 +265,16 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return del(group);
 
             return Guild.DefaultNumDaysToCheckForPromotion;
+        }
+
+        //Let player know that a quest is in process
+        public static bool ReplyFinishTheQuestFirst(QuestResourceBehaviour questResourceBehaviour)
+        {
+            Func<QuestResourceBehaviour, bool> del;
+            if (TryGetOverride("ReplyFinishTheQuestFirst", out del))
+                return del(questResourceBehaviour);
+
+            return false;
         }
 
         //Returns reputation increase / decrease for success or failure
