@@ -40,7 +40,11 @@ namespace DaggerfallWorkshop.Game.Entity
 
         public const string vampireSpellTag = "vampire";
         public const string lycanthropySpellTag = "lycanthrope";
-
+        public static byte CitizenKill = 5;
+        public static byte GuardKill = 1;
+        public static byte PickPocket = 1;
+        public static byte BuildingBreakIn = 1;
+        public static byte Steal = 1;
         bool godMode = false;
         bool noClipMode = false;
         bool noTargetMode = false;
