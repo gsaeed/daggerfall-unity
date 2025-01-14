@@ -222,7 +222,7 @@ namespace DaggerfallWorkshop.Game.Entity
                         {
                             if (!mobileNpc.IsGuard)
                             {
-                                playerEntity.TallyCrimeGuildRequirements(false, 5);
+                                playerEntity.TallyCrimeGuildRequirements(false, PlayerEntity.CitizenKill);
                                 playerEntity.CrimeCommitted = PlayerEntity.Crimes.Murder;
                                 playerEntity.SpawnCityGuards(true);
                             }
@@ -267,7 +267,7 @@ namespace DaggerfallWorkshop.Game.Entity
                     EnemyEntity enemyEntity = entity as EnemyEntity;
                     if (enemyEntity.MobileEnemy.ID == (int)MobileTypes.Knight_CityWatch && entity.CurrentHealth <= 0)
                     {
-                        playerEntity.TallyCrimeGuildRequirements(false, 1);
+                        playerEntity.TallyCrimeGuildRequirements(false, PlayerEntity.GuardKill);
                         playerEntity.CrimeCommitted = PlayerEntity.Crimes.Murder;
                     }
                 }
