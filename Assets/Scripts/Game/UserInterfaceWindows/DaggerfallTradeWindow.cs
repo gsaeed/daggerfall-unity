@@ -922,7 +922,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     DaggerfallUI.AddHUDText(TextManager.Instance.GetLocalizedText("stealSuccess"), 2);
                     RaiseOnTradeHandler(basketItems.GetNumItems(), 0);
                     PlayerEntity.Items.TransferAll(basketItems);
-                    PlayerEntity.TallyCrimeGuildRequirements(true, 1);
+                    PlayerEntity.TallyCrimeGuildRequirements(true, PlayerEntity.Steal);
                 }
                 else
                 {   // Register crime and start spawning guards.

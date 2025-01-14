@@ -439,7 +439,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             if (chance > roll)
             {
                 // Show success and play unlock sound
-                GameManager.Instance.PlayerEntity.TallyCrimeGuildRequirements(true, 1);
+                GameManager.Instance.PlayerEntity.TallyCrimeGuildRequirements(true, PlayerEntity.BuildingBreakIn);
                 DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("lockpickingSuccess"));
                 if (dfAudioSource != null)
                     dfAudioSource.PlayOneShot(SoundClips.ActivateLockUnlock);

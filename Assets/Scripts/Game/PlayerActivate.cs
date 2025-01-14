@@ -1687,7 +1687,7 @@ namespace DaggerfallWorkshop.Game
                         gotGold = gotGold.Replace("%d", pinchedGoldPieces.ToString());
                     }
                     DaggerfallUI.MessageBox(gotGold);
-                    player.TallyCrimeGuildRequirements (true, 1);
+                    player.TallyCrimeGuildRequirements (true, PlayerEntity.PickPocket);
                 }
                 else
                 {

@@ -682,7 +682,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             // Handle stealing and reset shop shelf stealing mode
             if (shopShelfStealing && remoteItems.Count < lootTargetStartCount)
             {
-                playerEntity.TallyCrimeGuildRequirements(true, 1);
+                playerEntity.TallyCrimeGuildRequirements(true, PlayerEntity.Steal);
                 Debug.Log("Player crime detected: stealing from a shop!!");
             }
             shopShelfStealing = false;
@@ -1945,7 +1945,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         private void AttemptPrivatePropertyTheft()
         {
-            GameManager.Instance.PlayerEntity.TallyCrimeGuildRequirements(true, 1);
+            GameManager.Instance.PlayerEntity.TallyCrimeGuildRequirements(true, PlayerEntity.Steal);
             PlayerGPS.DiscoveredBuilding buildingDiscoveryData = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData;
             int weightAndNumItems = (int)theftBasket.GetWeight() + theftBasket.Count;
             int chanceBeingDetected = FormulaHelper.CalculateShopliftingChance(playerEntity, buildingDiscoveryData.quality, weightAndNumItems);

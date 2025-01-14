@@ -515,7 +515,7 @@ namespace DaggerfallWorkshop.Game
                         blood.ShowBloodSplash(0, impactPosition);
                     }
                     mobileNpc.Motor.gameObject.SetActive(false);
-                    playerEntity.TallyCrimeGuildRequirements(false, 5);
+                    playerEntity.TallyCrimeGuildRequirements(false, PlayerEntity.CitizenKill);
                     playerEntity.CrimeCommitted = PlayerEntity.Crimes.Murder;
                     playerEntity.SpawnCityGuards(true);
 
