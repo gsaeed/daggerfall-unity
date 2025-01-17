@@ -2205,6 +2205,21 @@ namespace DaggerfallWorkshop.Game.Formulas
             DFRandom.Seed = seed;
             return (uint)DFRandom.random_range_inclusive(300, 800);
         }
+        /// <summary>
+        /// Calculate stocked Date.
+        /// </summary>
+        /// <param name="date">base date to apply</param>
+        /// <param name="buildingData">buildingData for current building</param>
+        /// <param name=</param>
+        /// <returns>book cost</returns>
+        public static int CreateStockedDate(DaggerfallDateTime date, PlayerGPS.DiscoveredBuilding buildingData)
+        {
+            Func<DaggerfallDateTime, PlayerGPS.DiscoveredBuilding, int> del;
+            if (TryGetOverride("CreateStockedDate", out del))
+                return del(date, buildingData);
+
+            return (date.Year * 1000) + date.DayOfYear;
+        }
 
         /// <summary>
         /// Calculate the cost of something in a given shop.

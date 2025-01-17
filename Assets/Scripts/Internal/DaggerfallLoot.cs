@@ -152,7 +152,7 @@ namespace DaggerfallWorkshop
 
         public void StockShopShelf(PlayerGPS.DiscoveredBuilding buildingData)
         {
-            stockedDate = CreateStockedDate(DaggerfallUnity.Instance.WorldTime.Now);
+            stockedDate = FormulaHelper.CreateStockedDate(DaggerfallUnity.Instance.WorldTime.Now, buildingData);
             items.Clear();
 
             DFLocation.BuildingTypes buildingType = buildingData.buildingType;
@@ -298,7 +298,7 @@ namespace DaggerfallWorkshop
 
         public void StockHouseContainer(PlayerGPS.DiscoveredBuilding buildingData)
         {
-            stockedDate = CreateStockedDate(DaggerfallUnity.Instance.WorldTime.Now);
+            stockedDate = FormulaHelper.CreateStockedDate(DaggerfallUnity.Instance.WorldTime.Now, buildingData);
             items.Clear();
 
             DFLocation.BuildingTypes buildingType = buildingData.buildingType;
