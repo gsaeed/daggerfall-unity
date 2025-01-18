@@ -212,6 +212,33 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                     TextAsset textAsset;
                     if (ModManager.Instance.TryGetAsset(name, false, out textAsset))
                     {
+                        if (textAsset.bytes.Length == 0)
+                        {
+                            // Change name from xxx_yy-z_anytext.xml to xxx_yy-z.xml
+                            int lastUnderscoreIndex = name.LastIndexOf('_');
+                            if (lastUnderscoreIndex != -1)
+                            {
+                                name = name.Substring(0, lastUnderscoreIndex) + ".xml";
+                            }
+
+                            // Try to get the asset again with the modified name
+                            if (ModManager.Instance.TryGetAsset(name, false, out textAsset))
+                            {
+                                if (textAsset.bytes.Length == 0)
+                                {
+                                    Debug.LogError($"XML Injection Error: The file {name} is empty.");
+                                    xml = null;
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                Debug.LogError($"XML Injection Error: The file {name} could not be found.");
+                                xml = null;
+                                return false;
+                            }
+                        }
+
                         using (var stringReader = new StringReader(textAsset.text))
                             xml = new XMLManager(stringReader);
                         return true;
