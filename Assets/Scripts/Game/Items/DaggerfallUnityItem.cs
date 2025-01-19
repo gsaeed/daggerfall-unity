@@ -9,19 +9,17 @@
 // Notes:
 //
 
+using DaggerfallConnect;
+using DaggerfallConnect.FallExe;
+using DaggerfallConnect.Save;
+using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
+using DaggerfallWorkshop.Game.MagicAndEffects;
+using DaggerfallWorkshop.Game.Questing;
+using DaggerfallWorkshop.Game.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using DaggerfallConnect;
-using DaggerfallConnect.Save;
-using DaggerfallConnect.FallExe;
-using DaggerfallWorkshop.Game.Serialization;
-using DaggerfallWorkshop.Game.Entity;
-using DaggerfallWorkshop.Game.Questing;
-using DaggerfallWorkshop.Game.Utility;
-using DaggerfallWorkshop.Game.MagicAndEffects;
-using DaggerfallWorkshop.Game.Formulas;
-using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game.Items
 {
@@ -210,6 +208,19 @@ namespace DaggerfallWorkshop.Game.Items
         public virtual string ItemName
         {
             get { return DaggerfallUnity.Instance.ItemHelper.ResolveItemName(this); }
+        }
+
+        private string toolTipString;
+        public virtual string ToolTipString
+        {
+            get
+            {
+                var str = string.IsNullOrEmpty(toolTipString)
+                    ? DaggerfallUnity.Instance.ItemHelper.ResolveItemLongName(this)
+                    : $"{DaggerfallUnity.Instance.ItemHelper.ResolveItemLongName(this)}: {toolTipString}";
+                return str;
+            }
+            set => toolTipString = value;
         }
 
         /// <summary>
