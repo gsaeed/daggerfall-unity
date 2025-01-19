@@ -466,7 +466,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
                         DaggerfallUnity.Instance.ItemHelper.GetBookTitle(item.message, item.LongName) :
                         item.IsPotionRecipe ?
                             TextManager.Instance.GetLocalizedText("potionRecipeFor").Replace("%po", GameManager.Instance.EntityEffectBroker.GetPotionRecipe(item.PotionRecipeKey)?.DisplayName) :
-                            item.LongName;
+                            item.ToolTipString;
             }
         }
 
