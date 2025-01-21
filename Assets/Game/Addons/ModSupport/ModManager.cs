@@ -14,6 +14,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 using System;
+using System.CodeDom;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 #else
         const string dataFolder = "GameData";
 #endif
-
+        private static List<string> _alwaysIncludeModList = new List<string>();
         bool alreadyAtStartMenuState = false;
         static bool alreadyStartedInit = false;
         [SerializeField] public List<Mod> mods;
@@ -1770,6 +1771,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             if (startOfFirstBisect)
             {
+                ReadAlwaysIncludeModList();
                 //create bisect.txt file
                 //in mod order list modname, tab, X for active and O for inactive
                 var activeModList = ModManager.Instance.mods.Where(x => x.Enabled).ToList();
@@ -1789,7 +1791,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 for (int i = 0; i < activeModList.Count; i++)
                 {
                     halfWay = UnityEngine.Mathf.RoundToInt(activeModList.Count / 2f);
-                    if (i < halfWay)
+                    if (i < halfWay || _alwaysIncludeModList.Contains(activeModList[i].FileName.ToLower()))
                     {
                         str += $"{activeModList[i].FileName}\tX\n";
                         var mod = ModLoaderInterfaceWindow.GetModFromName(activeModList[i].FileName);
@@ -1846,9 +1848,14 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     {
                         messageBox.CloseWindow();
                         if (!allSameIndicator)
+                        {
                             BisectSuccessXO();
+                        }
                         else
+                        {
                             BisectSuccessX();
+                        }
+
                     }
                     else
                     {
@@ -1856,13 +1863,34 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                         File.Copy(Application.persistentDataPath + @"/bisect.txt",
                             Application.persistentDataPath + @"/bisectLastFail.txt", overwrite:true);
                         if (!allSameIndicator)
+                        {
                             BisectFailXO();
+                        }
                         else
+                        {
                             BisectFailX();
+                        }
                     }
                 };
                 messageBox.Show();
 
+            }
+        }
+
+        private static void ReadAlwaysIncludeModList()
+        {
+            string filePath = Application.persistentDataPath + @"/bisectAlwaysInclude.txt";
+
+            if (File.Exists(filePath))
+            {
+                _alwaysIncludeModList = File.ReadAllLines(filePath)
+                    .Select(line => line.Trim().ToLower())
+                    .Where(line => !line.StartsWith("#"))
+                    .ToList();
+            }
+            else
+            {
+                _alwaysIncludeModList = new List<string>();
             }
         }
 
@@ -1901,11 +1929,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             {
                 var activeModListComponents = fileActiveModList[i];
 
-                activeModListComponents.EnableIndicator = i >= firstIndex && i <= halfway ? "X" : "O";
+                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfway) || _alwaysIncludeModList.Contains(activeModListComponents.Filename.ToLower()) ? "X" : "O";
                 fileActiveModList[i] = activeModListComponents;
                 var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
                 if (mod != null)
-                    mod.Enabled = (i >= firstIndex && i <= halfway);
+                    mod.Enabled = activeModListComponents.EnableIndicator == "X";
             }
             CreateBisectFile(firstIndex, lastIndex);
 
@@ -1917,9 +1945,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             string str = string.Empty;
             
-            for(int i = firstIndex; i <= lastIndex; i++)
+           // for(int i = firstIndex; i <= lastIndex; i++)
+           for (int i = 0; i < fileActiveModList.Count; i++)
             {
-                str += $"{fileActiveModList[i].Filename}\t{fileActiveModList[i].EnableIndicator}\n";
+                if ((i >= firstIndex && i <= lastIndex) || _alwaysIncludeModList.Contains(fileActiveModList[i].Filename.ToLower()))
+                    str += $"{fileActiveModList[i].Filename}\t{fileActiveModList[i].EnableIndicator}\n";
             }
 
             File.WriteAllText(Application.persistentDataPath + @"/bisect.txt", str);
@@ -1972,11 +2002,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             for (int i = 0; i < fileActiveModList.Count; i++)
             {
                 var activeModListComponents = fileActiveModList[i];
-                activeModListComponents.EnableIndicator = i >= firstIndex && i <= halfway ? "X" : "O";
+                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfway) || _alwaysIncludeModList.Contains(activeModListComponents.Filename.ToLower()) ? "X" : "O";
                 fileActiveModList[i] = activeModListComponents;
                 var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
                 if (mod != null)
-                    mod.Enabled = (i >= firstIndex && i <= halfway);
+                    mod.Enabled = activeModListComponents.EnableIndicator == "X";
 
             }
             CreateBisectFile(firstIndex, lastIndex);
@@ -1991,11 +2021,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             for (int i = 0; i < fileActiveModList.Count; i++)
             {
                 var activeModListComponents = fileActiveModList[i];
-                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfWay ? "X" : "O");
+                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfWay) || _alwaysIncludeModList.Contains(activeModListComponents.Filename.ToLower()) ? "X" : "O";
                 fileActiveModList[i] = activeModListComponents;
                 var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
                 if (mod != null)
-                    mod.Enabled = (i >= firstIndex && i <= halfWay);
+                    mod.Enabled = activeModListComponents.EnableIndicator == "X";
 
             }
             CreateBisectFile(firstIndex, lastIndex);
