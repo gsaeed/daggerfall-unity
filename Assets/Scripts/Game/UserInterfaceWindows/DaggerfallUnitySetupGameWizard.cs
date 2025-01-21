@@ -203,7 +203,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             
             var messageBox = new DaggerfallMessageBox(uiManager, this);
             messageBox.EnableVerticalScrolling(80);
-            messageBox.SetText("You are about to perform a binary search across your active mods, Are you sure?");
+            messageBox.SetText("You are about to perform a binary search, (make sure you updated bisectAlwaysInclude.txt), are you sure?");
             messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
             messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
             messageBox.OnButtonClick += (box, button) =>
