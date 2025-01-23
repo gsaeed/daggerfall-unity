@@ -64,6 +64,9 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
 
         public override void Start(EntityEffectManager manager, DaggerfallEntityBehaviour caster = null)
         {
+            if (manager == null || caster == null)
+                End();
+
             base.Start(manager, caster);
             DaggerfallUI.AddHUDText("Press [END] to cancel Levitation.", 5);
             StartLevitating();
@@ -113,6 +116,9 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
 
         void StopLevitating()
         {
+            if (manager == null)
+                return;
+
             // Get peered entity gameobject
             DaggerfallEntityBehaviour entityBehaviour = GetPeeredEntityBehaviour(manager);
             if (!entityBehaviour)
