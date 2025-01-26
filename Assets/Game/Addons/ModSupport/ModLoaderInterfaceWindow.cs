@@ -438,7 +438,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             modSettings = new ModSettings[mods.Count];
         }
 
-        Debug.Log($"count = {mods.Count}");
         for (int i = 0; i < mods.Count; i++)
         {
             ModSettings modsett = new ModSettings();
