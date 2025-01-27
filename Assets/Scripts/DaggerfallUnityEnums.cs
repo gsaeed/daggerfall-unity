@@ -562,7 +562,8 @@ namespace DaggerfallWorkshop
         CorpseMarker,
         DroppedLoot,
         ShopShelves,
-        HouseContainers
+        HouseContainers,
+        CustomLoot
     }
 
     /// <summary>
