@@ -1674,7 +1674,24 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (item.IsQuestItem)
                 order = ItemCollection.AddPosition.Front;
 
+            var fromCount = from.Count;
+            var toCount = to.Count;
+            var stack = FindExistingStack(to, item);
+            var stackCount = 0;
+            var itemStackCount = item.stackCount;
+            if (stack != null)
+                stackCount = stack.stackCount;
+            
             to.Transfer(item, from, order);
+
+            if (stack != null && stackCount > 0 && stack.stackCount != stackCount + itemStackCount ||
+                stackCount == 0 && to.Count != toCount + 1)
+            {
+                Debug.LogError(
+                    $"We lost {item.LongName}:{item.UID}, we were supposed to move {(stackCount > 0 ? stackCount : 1)} items.");
+                DaggerfallUI.AddHUDText($"We lost {item.LongName}:{item.UID}, we were supposed to move {(stackCount > 0 ? stackCount : 1)} items.");
+                from.AddItem(item);
+            }
             if (equip)
                 EquipItem(item);
             Refresh(false);
@@ -1687,6 +1704,33 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 CloseWindow();
                 chooseOneCallback?.Invoke(item);
             }
+        }
+
+        /// <summary>
+        /// Finds existing stack of item.
+        /// </summary>
+        /// <param name ="items">Item collection to search.</param>
+        /// <param name="item">Item to find existing stack for.</param>
+        /// <returns>Existing item stack, or null if no stack or not stackable.</returns>
+        DaggerfallUnityItem FindExistingStack(ItemCollection items, DaggerfallUnityItem item)
+        {
+            if (!item.IsStackable())
+                return null;
+
+            ItemGroups itemGroup = item.ItemGroup;
+            int groupIndex = item.GroupIndex;
+            foreach (DaggerfallUnityItem checkItem in items.items.Values)
+            {
+                if (checkItem != item &&
+                    checkItem.ItemGroup == itemGroup && checkItem.GroupIndex == groupIndex &&
+                    checkItem.message == item.message &&
+                    checkItem.PotionRecipeKey == item.PotionRecipeKey &&
+                    checkItem.TimeForItemToDisappear == item.TimeForItemToDisappear &&
+                    checkItem.IsStackable())
+                    return checkItem;
+            }
+
+            return null;
         }
 
         protected virtual void ShowInfoPopup(DaggerfallUnityItem item)
