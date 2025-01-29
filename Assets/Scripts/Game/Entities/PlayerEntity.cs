@@ -12,6 +12,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Net.Configuration;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Save;
@@ -45,6 +46,7 @@ namespace DaggerfallWorkshop.Game.Entity
         public static byte PickPocket = 1;
         public static byte BuildingBreakIn = 1;
         public static byte Steal = 1;
+        public static byte StealTransport = 1;
         bool godMode = false;
         bool noClipMode = false;
         bool noTargetMode = false;
@@ -95,6 +97,8 @@ namespace DaggerfallWorkshop.Game.Entity
         protected uint timeForDarkBrotherhoodLetter = 0;
         protected int thievesGuildRequirementTally = 0;
         protected int darkBrotherhoodRequirementTally = 0;
+        public static int thievesGuildRequirementTallyNeeded = 10;
+        public static int darkBrotherhoodRequirementTallyNeeded = 15;
         private const int InviteSent = 100;
 
         protected uint timeToBecomeVampireOrWerebeast = 0;
@@ -622,7 +626,12 @@ namespace DaggerfallWorkshop.Game.Entity
         }
 
         // Recreation of guard spawning based on classic
+
         public void SpawnCityGuards(bool immediateSpawn)
+        {
+            FormulaHelper.SpawnCityGuards(immediateSpawn);
+        }
+        public void SpawnTheCityGuards(bool immediateSpawn)
         {
             const int maxActiveGuardSpawns = 5;
 
@@ -1280,7 +1289,7 @@ namespace DaggerfallWorkshop.Game.Entity
                 {
                     // Tally is set to 100 when the Thieves Guild quest line starts
                     thievesGuildRequirementTally += amount;
-                    if (thievesGuildRequirementTally >= 10)
+                    if (thievesGuildRequirementTally >= thievesGuildRequirementTallyNeeded)
                     {
                         uint currentMinutes = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime();
                         timeForThievesGuildLetter = currentMinutes + 4320; // 3 days
@@ -1293,7 +1302,7 @@ namespace DaggerfallWorkshop.Game.Entity
                 {
                     // Tally is set to 100 when the Dark Brotherhood quest line starts
                     darkBrotherhoodRequirementTally += amount;
-                    if (darkBrotherhoodRequirementTally >= 15)
+                    if (darkBrotherhoodRequirementTally >= darkBrotherhoodRequirementTallyNeeded)
                     {
                         uint currentMinutes = DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime();
                         timeForDarkBrotherhoodLetter = currentMinutes + 4320; // 3 days

@@ -267,6 +267,17 @@ namespace DaggerfallWorkshop.Game.Formulas
             return Guild.DefaultNumDaysToCheckForPromotion;
         }
 
+        //Returns number of days between evaluations by guild
+        public static bool SpawnCityGuards(bool immediateSpawn)
+        {
+            Func<bool, bool> del;
+            if (TryGetOverride("SpawnCityGuards", out del))
+                return del(immediateSpawn);
+
+            GameManager.Instance.PlayerEntity.SpawnTheCityGuards(immediateSpawn);
+            return immediateSpawn;
+        }
+
         //Let player know that a quest is in process
         public static bool ReplyFinishTheQuestFirst(QuestResourceBehaviour questResourceBehaviour)
         {
