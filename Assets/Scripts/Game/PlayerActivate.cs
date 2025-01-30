@@ -9,24 +9,23 @@
 // Notes:
 //
 
-using System;
-using UnityEngine;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Banking;
+using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
+using DaggerfallWorkshop.Game.Guilds;
+using DaggerfallWorkshop.Game.Items;
+using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
+using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
-using DaggerfallWorkshop.Game.Entity;
-using DaggerfallWorkshop.Utility;
-using DaggerfallWorkshop.Game.Questing;
-using DaggerfallWorkshop.Game.Items;
-using DaggerfallWorkshop.Game.Banking;
-using DaggerfallWorkshop.Game.Guilds;
-using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
-using System.Collections.Generic;
-using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallWorkshop.Game.Utility;
-using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using DaggerfallWorkshop.Utility;
+using DaggerfallWorkshop.Utility.AssetInjection;
+using System.Collections.Generic;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace DaggerfallWorkshop.Game
@@ -420,26 +419,28 @@ namespace DaggerfallWorkshop.Game
                     DaggerfallStaticDoors doors = GetDoors(hit.transform, out doorOwner);
                     if (doors && playerEnterExit)
                     {
-                        ActivateStaticDoor(doors, hit, hitBuilding, building, buildingType, buildingUnlocked, buildingLockValue, doorOwner);
+                        if (currentMode != PlayerActivateModes.Info)
+                            ActivateStaticDoor(doors, hit, hitBuilding, building, buildingType, buildingUnlocked, buildingLockValue, doorOwner);
                     }
 
                     // Check for an action door hit
                     DaggerfallActionDoor actionDoor;
                     if (ActionDoorCheck(hit, out actionDoor))
                     {
+                        if (currentMode != PlayerActivateModes.Info)
                         ActivateActionDoor(hit, actionDoor);
                     }
 
                     // Check for action record hit
                     DaggerfallAction action;
-                    if (ActionCheck(hit, out action) && hit.distance <= DefaultActivationDistance)
+                    if (currentMode != PlayerActivateModes.Info && ActionCheck(hit, out action) && hit.distance <= DefaultActivationDistance)
                     {
                         action.Receive(this.gameObject, DaggerfallAction.TriggerTypes.Direct);
                     }
 
                     // Check for lootable object hit
                     DaggerfallLoot loot;
-                    if (LootCheck(hit, out loot))
+                    if (currentMode != PlayerActivateModes.Info && LootCheck(hit, out loot))
                     {
                         ActivateLootContainer(hit, loot);
                     }
@@ -448,18 +449,20 @@ namespace DaggerfallWorkshop.Game
                     DaggerfallBulletinBoard bulletinBoard;
                     if (BulletinBoardCheck(hit, out bulletinBoard))
                     {
-                        ActivateBulletinBoard(hit, bulletinBoard);
+                        if (currentMode != PlayerActivateModes.Info)
+                            ActivateBulletinBoard(hit, bulletinBoard);
                     }
 
                     // Check for static NPC hit
                     StaticNPC npc;
                     if (NPCCheck(hit, out npc))
                     {
-                        ActivateStaticNPC(hit, npc);
+                        if (currentMode != PlayerActivateModes.Info)
+                            ActivateStaticNPC(hit, npc);
                     }
 
                     // Avoid non-action interactions while a Touch cast is readied
-                    if (!touchCastPending)
+                    if (!touchCastPending && currentMode != PlayerActivateModes.Info)
                     {
                         // Check for mobile NPC hit
                         MobilePersonNPC mobileNpc;
@@ -477,7 +480,8 @@ namespace DaggerfallWorkshop.Game
                     }
 
                     // Check for functional interior furniture: Ladders, Bookshelves.
-                    ActivateLaddersAndShelves(hit);
+                    if (currentMode != PlayerActivateModes.Info)
+                        ActivateLaddersAndShelves(hit);
 
                     // Invoke any matched custom flat / model activations registered by mods.
                     string flatModelName = hit.transform.gameObject.name;
@@ -488,7 +492,7 @@ namespace DaggerfallWorkshop.Game
                     CustomModActivation customActivation;
                     if (customModActivations.TryGetValue(flatModelName, out customActivation))
                     {
-                        if (hit.distance <= customActivation.ActivationDistance)
+                        if (hit.distance <= customActivation.ActivationDistance && currentMode != PlayerActivateModes.Info)
                         {
                             customActivation.Action(hit);
                         }
@@ -496,7 +500,7 @@ namespace DaggerfallWorkshop.Game
 
                     // Check for custom activation
                     var playerActivable = hit.transform.GetComponent<IPlayerActivable>();
-                    if (playerActivable != null)
+                    if (playerActivable != null && currentMode != PlayerActivateModes.Info)
                         playerActivable.Activate(hit);
 
                     // Debug for identifying interior furniture model ids.
