@@ -272,9 +272,30 @@ namespace DaggerfallWorkshop.Game.Items
                 return null;
             if (numberToPick == stack.stackCount)
                 return stack;
-            DaggerfallUnityItem pickedItems = new DaggerfallUnityItem(stack);
-            pickedItems.stackCount = numberToPick;
-            AddItem(pickedItems, noStack: true);
+
+            DaggerfallUnityItem pickedItems = new DaggerfallUnityItem();
+            var stackData = stack.GetSaveData();
+
+            if (stackData.className != null)
+            {
+                Type itemClassType;
+                customItems.TryGetValue(stackData.className, out itemClassType);
+                if (itemClassType != null)
+                {
+                    pickedItems = (DaggerfallUnityItem)Activator.CreateInstance(itemClassType);
+                    stackData.uid = DaggerfallUnity.NextUID;
+                    pickedItems.FromItemData(stackData);
+                    pickedItems.stackCount = numberToPick;
+                }
+            }
+            else
+            {
+                pickedItems = new DaggerfallUnityItem(stack)
+                {
+                    stackCount = numberToPick
+                };
+            }
+            AddItem(pickedItems, noStack:true);
             stack.stackCount -= numberToPick;
             return pickedItems;
         }
