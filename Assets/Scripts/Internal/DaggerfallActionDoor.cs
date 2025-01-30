@@ -278,6 +278,7 @@ namespace DaggerfallWorkshop
             // Set flag
             //IsMagicallyHeld = false;
             CurrentLockValue = 0;
+            RaiseOnOpenDoorEvent(this);
         }
 
         private void Close(float duration, bool activatedByPlayer = false)
@@ -370,6 +371,34 @@ namespace DaggerfallWorkshop
                 catch (Exception e)
                 {
                     var del = OnDoorBashed;
+                    var str = string.Empty;
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
+                }
+
+        }
+
+        public delegate void OnOpenDoorEventHandler(DaggerfallActionDoor door);
+        public static event OnOpenDoorEventHandler OnOpenDoor;
+
+        protected virtual void RaiseOnOpenDoorEvent(DaggerfallActionDoor door)
+        {
+            if (OnOpenDoor != null)
+                try
+                {
+                    OnOpenDoor(door);
+                }
+                catch (Exception e)
+                {
+                    var del = OnOpenDoor;
                     var str = string.Empty;
                     var currMethod = new StackTrace().GetFrame(0).GetMethod();
                     var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
