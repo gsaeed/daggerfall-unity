@@ -538,7 +538,25 @@ namespace DaggerfallWorkshop.Game.Items
         /// <returns>Cloned item.</returns>
         public DaggerfallUnityItem Clone()
         {
-            return new DaggerfallUnityItem(this);
+            var stackData = GetSaveData();
+
+            var newClone = new DaggerfallUnityItem();
+            if (stackData.className != null)
+            {
+                Type itemClassType;
+                    ItemCollection.customItems.TryGetValue(stackData.className, out itemClassType);
+                if (itemClassType != null)
+                {
+                    newClone = (DaggerfallUnityItem)Activator.CreateInstance(itemClassType);
+                    stackData.uid = DaggerfallUnity.NextUID;
+                    newClone.FromItemData(stackData);
+                }
+            }
+            else
+            {
+                newClone = new DaggerfallUnityItem(this);
+            }
+            return newClone;
         }
 
         /// <summary>
