@@ -364,7 +364,7 @@ namespace DaggerfallWorkshop.Game.Entity
             {
                 guardsArriveCountdown -= Time.deltaTime;
                 if (guardsArriveCountdown <= 0 && guardsArriveCountdownLocation == GameManager.Instance.StreamingWorld.CurrentPlayerLocationObject)
-                    SpawnCityGuards(true);
+                    SpawnTheCityGuards(true);
             }
 
             if (playerMotor == null)
@@ -508,14 +508,14 @@ namespace DaggerfallWorkshop.Game.Entity
                     if (regionData[regionIndex].LegalRep < -10 && Dice100.SuccessRoll(5))
                     {
                         crimeCommitted = Crimes.Criminal_Conspiracy;
-                        SpawnCityGuards(false);
+                        SpawnTheCityGuards(false);
                     }
 
                     // Handle guards appearing for banished player
                     if ((regionData[regionIndex].SeverePunishmentFlags & 1) != 0 && Dice100.SuccessRoll(10))
                     {
                         crimeCommitted = Crimes.Criminal_Conspiracy;
-                        SpawnCityGuards(false);
+                        SpawnTheCityGuards(false);
                     }
 
                     // If enemy guards have been spawned, any new NPC guards should be made into enemyMobiles
