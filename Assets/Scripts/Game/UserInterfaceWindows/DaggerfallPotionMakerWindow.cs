@@ -165,7 +165,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             foreach (DaggerfallUnityItem recipeItem in recipeItems)
             {
                 PotionRecipe potionRecipe = GameManager.Instance.EntityEffectBroker.GetPotionRecipe(recipeItem.PotionRecipeKey);
-                if (!recipes.Contains(potionRecipe))
+                if (potionRecipe != null && !recipes.Contains(potionRecipe))
                     recipes.Add(potionRecipe);
             }
             recipes.Sort((x, y) => (x.DisplayName.CompareTo(y.DisplayName)));
