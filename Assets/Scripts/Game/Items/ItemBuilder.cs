@@ -21,6 +21,7 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Formulas;
+using DaggerfallWorkshop.Game.MagicAndEffects;
 
 namespace DaggerfallWorkshop.Game.Items
 {
@@ -773,7 +774,14 @@ namespace DaggerfallWorkshop.Game.Items
 
         public static DaggerfallUnityItem CreateRandomRecipe(int stackSize = 1)
         {
-            List<int> recipeKeys = GameManager.Instance.EntityEffectBroker.GetPotionRecipeKeys();
+            List<int> allRecipeKeys = GameManager.Instance.EntityEffectBroker.GetPotionRecipeKeys();
+            List<int> recipeKeys = new List<int>();
+            foreach (var recipeKey in allRecipeKeys)
+            {
+                PotionRecipe potionRecipe = GameManager.Instance.EntityEffectBroker.GetPotionRecipe(recipeKey);
+                if (potionRecipe != null)
+                    recipeKeys.Add(recipeKey);
+            }
             int recipeIdx = UnityEngine.Random.Range(0, recipeKeys.Count);
             return new DaggerfallUnityItem(ItemGroups.MiscItems, 4) { PotionRecipeKey = recipeKeys[recipeIdx], stackCount = stackSize };
         }
