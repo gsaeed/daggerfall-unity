@@ -932,6 +932,7 @@ namespace DaggerfallWorkshop.Game
                     {
                         DaggerfallTradeWindow tradeWindow = (DaggerfallTradeWindow)UIWindowFactory.GetInstanceWithArgs(UIWindowType.Trade, new object[] { uiManager, null, DaggerfallTradeWindow.WindowModes.Buy, null });
                         tradeWindow.MerchantItems = loot.Items;
+                        tradeWindow.ShopShelf = loot;
                         uiManager.PushWindow(tradeWindow);
                         return;
                     }
