@@ -170,6 +170,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected List<DaggerfallUnityItem> remoteItemsFiltered = new List<DaggerfallUnityItem>();
 
         protected DaggerfallLoot lootTarget = null;
+        protected DaggerfallLoot shopShelf = null;
         protected bool usingWagon = false;
         protected bool allowDungeonWagonAccess = false;
         protected bool chooseOne = false;
@@ -245,6 +246,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             get { return lootTarget; }
             set { lootTarget = value; }
+        }
+        public DaggerfallLoot ShopShelf
+        {
+            get { return shopShelf; }
+            set { shopShelf = value; }
         }
 
         public ItemCollection TheftBasket
