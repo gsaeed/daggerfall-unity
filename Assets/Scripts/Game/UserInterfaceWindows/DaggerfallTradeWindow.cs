@@ -498,6 +498,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             switch (WindowMode)
             {
                 case WindowModes.Buy:
+                    var tradePrice = FormulaHelper.CalculateTradePrice(cost, buildingDiscoveryData.quality, false);
+                    return FormulaHelper.AdjustForSalePrice(buildingDiscoveryData, ShopShelf, tradePrice);
+
                 case WindowModes.Repair:
                     return FormulaHelper.CalculateTradePrice(cost, buildingDiscoveryData.quality, false);
 
@@ -509,6 +512,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     return cost;
             }
             throw new Exception("Unexpected windowMode");
+        }
+
+        private int AdjustForSalePrice(DaggerfallLoot lootTarget, int cost)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
