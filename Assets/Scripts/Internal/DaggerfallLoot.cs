@@ -107,16 +107,13 @@ namespace DaggerfallWorkshop
 
 
         /// <summary>
-        /// Randomly add a potion
+        /// Randomly add a potion Recipe
         /// </summary>
         public static void RandomlyAddPotionRecipe(int chance, ItemCollection collection)
         {
             if (Dice100.SuccessRoll(chance))
             {
-                List<int> recipeKeys = GameManager.Instance.EntityEffectBroker.GetPotionRecipeKeys();
-                int recipeIdx = UnityEngine.Random.Range(0, recipeKeys.Count);
-                DaggerfallUnityItem potionRecipe = new DaggerfallUnityItem(ItemGroups.MiscItems, 4) { PotionRecipeKey = recipeKeys[recipeIdx] };
-                collection.AddItem(potionRecipe);
+                collection.AddItem(ItemBuilder.CreateRandomRecipe());
             }
         }
 
