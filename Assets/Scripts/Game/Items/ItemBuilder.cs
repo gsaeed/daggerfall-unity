@@ -767,7 +767,15 @@ namespace DaggerfallWorkshop.Game.Items
         /// <returns>Potion DaggerfallUnityItem</returns>
         public static DaggerfallUnityItem CreateRandomPotion(int stackSize = 1)
         {
-            List<int> recipeKeys = GameManager.Instance.EntityEffectBroker.GetPotionRecipeKeys();
+            List<int> allRecipeKeys = GameManager.Instance.EntityEffectBroker.GetPotionRecipeKeys();
+            List<int> recipeKeys = new List<int>();
+            foreach (var recipeKey in allRecipeKeys)
+            {
+                PotionRecipe potionRecipe = GameManager.Instance.EntityEffectBroker.GetPotionRecipe(recipeKey);
+                if (potionRecipe != null)
+                    recipeKeys.Add(recipeKey);
+            }
+
             int recipeIdx = UnityEngine.Random.Range(0, recipeKeys.Count);
             return CreatePotion(recipeKeys[recipeIdx]);
         }
