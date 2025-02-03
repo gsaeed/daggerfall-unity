@@ -10,25 +10,25 @@
 // Notes:
 //
 
-using UnityEngine;
-using System;
 using DaggerfallConnect;
-using DaggerfallWorkshop.Game.Guilds;
+using DaggerfallConnect.Arena2;
+using DaggerfallConnect.Save;
+using DaggerfallWorkshop.Game.Banking;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Guilds;
+using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
-using System.Collections.Generic;
-using DaggerfallConnect.Arena2;
-using DaggerfallWorkshop.Game.Items;
-using DaggerfallWorkshop.Utility;
-using DaggerfallConnect.Save;
+using DaggerfallWorkshop.Game.Questing;
+using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
-using DaggerfallWorkshop.Game.Banking;
-using DaggerfallWorkshop.Game.UserInterface;
+using DaggerfallWorkshop.Utility;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Delegate = System.Delegate;
-using DaggerfallWorkshop.Game.Questing;
 
 namespace DaggerfallWorkshop.Game.Formulas
 {
@@ -2338,6 +2338,15 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return del(daedraRep, bonus);
 
             return 30 + daedraRep + bonus;
+        }
+
+        public static int AdjustForSalePrice(PlayerGPS.DiscoveredBuilding buildingDiscoveryData, DaggerfallLoot lootTarget, int cost)
+        {
+            Func<PlayerGPS.DiscoveredBuilding, DaggerfallLoot, int, int> del;
+            if (TryGetOverride("AdjustForSalePrice", out del))
+                return del(buildingDiscoveryData,lootTarget, cost);
+
+            return cost;
         }
 
         public static int CalculateTradePrice(int cost, int shopQuality, bool selling)
