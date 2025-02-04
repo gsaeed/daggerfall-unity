@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
@@ -913,6 +914,9 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
     private void MoveNextStage()
     {
+        if (DaggerfallUnity.Settings.BinarySearch > 0)
+            currentStage = (Stage)2;
+        
         switch (currentStage = (Stage)((int)currentStage + 1))
         {
             case Stage.Cleanup:
@@ -920,7 +924,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                 break;
             case Stage.CheckDependencies:
                 CheckDependencies();
-
                 break;
             default:
                 SaveAndClose();
