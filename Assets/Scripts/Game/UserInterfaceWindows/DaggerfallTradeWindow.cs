@@ -444,7 +444,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 {
                     DaggerfallUnityItem item = basketItems.GetItem(i);
                     modeActionEnabled = true;
-                    int itemPrice = FormulaHelper.CalculateCost(item.value, buildingDiscoveryData.quality, item.ConditionPercentage) * item.stackCount;
+                    int itemPrice = FormulaHelper.CalculateCost(FormulaHelper.CalculateBaseCost(item), buildingDiscoveryData.quality, item.ConditionPercentage) * item.stackCount;
                     if ((holidayId == (int)DFLocation.Holidays.Merchants_Festival && Guild == null) ||
                         (holidayId == (int)DFLocation.Holidays.Tales_and_Tallow && Guild != null && Guild.GetFactionId() == (int)FactionFile.FactionIDs.The_Mages_Guild) ||
                         (holidayId == (int)DFLocation.Holidays.Warriors_Festival && Guild == null && item.ItemGroup == ItemGroups.Weapons))
@@ -463,17 +463,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     {
                         case WindowModes.Sell:
                             modeActionEnabled = true;
-                            cost += FormulaHelper.CalculateCost(item.value, buildingDiscoveryData.quality, item.ConditionPercentage) * item.stackCount;
+                            cost += FormulaHelper.CalculateCost(FormulaHelper.CalculateBaseCost(item), buildingDiscoveryData.quality, item.ConditionPercentage) * item.stackCount;
                             break;
                         case WindowModes.SellMagic: // TODO: Fencing base price higher and guild rep affects it. Implement new formula or can this be used?
                             modeActionEnabled = true;
-                            cost += FormulaHelper.CalculateCost(item.value, buildingDiscoveryData.quality);
+                            cost += FormulaHelper.CalculateCost(FormulaHelper.CalculateBaseCost(item), buildingDiscoveryData.quality);
                             break;
                         case WindowModes.Repair:
                             if (!item.RepairData.IsBeingRepaired())
                             {
                                 modeActionEnabled = true;
-                                cost += FormulaHelper.CalculateItemRepairCost(item.value, buildingDiscoveryData.quality, item.currentCondition, item.maxCondition, Guild) * item.stackCount;
+                                cost += FormulaHelper.CalculateItemRepairCost(FormulaHelper.CalculateBaseCost(item), buildingDiscoveryData.quality, item.currentCondition, item.maxCondition, Guild) * item.stackCount;
                             }
                             break;
                         case WindowModes.Identify:
@@ -482,7 +482,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                                 modeActionEnabled = true;
                                 // Identify spell remains free
                                 if (!usingIdentifySpell)
-                                    cost += FormulaHelper.CalculateItemIdentifyCost(item.value, Guild);
+                                    cost += FormulaHelper.CalculateItemIdentifyCost(FormulaHelper.CalculateBaseCost(item), Guild);
                             }
                             break;
                     }
