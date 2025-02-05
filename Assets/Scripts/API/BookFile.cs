@@ -40,7 +40,24 @@ namespace DaggerfallConnect.Arena2
         public string Title { get { return header.Title; } }
         public string Author { get { return header.Author; } }
         public bool IsNaughty { get { return header.IsNaughty; } }
-        public int Price { get { return (int)header.Price; } }
+
+        public int Price
+        {
+            get
+            {
+                BinaryReader reader = bookFile.GetReader();
+
+                // Overwrite price field using random seeded with first 4 bytes.
+                // (See https://forums.dfworkshop.net/viewtopic.php?f=23&t=1576)
+                reader.BaseStream.Position = 0;
+
+                var seed = reader.ReadUInt32(); // first 4 bytes of book file as a uint
+                header.Price = FormulaHelper.CalculateBookCost(seed);
+
+                return (int)header.Price;
+            }
+        }
+
         public int PageCount { get { return header.PageCount; } }
 
         #endregion
