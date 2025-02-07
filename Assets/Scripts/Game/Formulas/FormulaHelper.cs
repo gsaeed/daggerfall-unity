@@ -2510,6 +2510,25 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return (item.ItemGroup == ItemGroups.Armor || item.ItemGroup == ItemGroups.Weapons);
         }
+        
+        public static string WeaponHealthMessage(int messageType, DaggerfallUnityItem weapon)
+        {
+            Func<int, DaggerfallUnityItem, string> del;
+            if (TryGetOverride("WeaponHealthMessage", out del))
+                return del(messageType, weapon);
+
+            return $"";
+        }
+        
+        public static Color WeaponHealthColor(int messageType, DaggerfallUnityItem weapon)
+        {
+            Func<int, DaggerfallUnityItem, Color> del;
+            if (TryGetOverride("WeaponHealthColor", out del))
+                return del(messageType, weapon);
+
+            return Color.yellow;
+        }
+        
         public static bool CheckIdentifyItem(DaggerfallUnityItem item)
         {
             Func<DaggerfallUnityItem, bool> del;
