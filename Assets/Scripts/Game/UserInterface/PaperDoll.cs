@@ -15,6 +15,7 @@ using DaggerfallConnect.Utility;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 
 namespace DaggerfallWorkshop.Game.UserInterface
@@ -162,7 +163,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
                 sbyte av = playerEntity.ArmorValues[bpIdx];
                 int bpAv = (100 - av) / 5 + armorMod;
-                armourLabels[bpIdx].Text = (!suppress) ? bpAv.ToString() : string.Empty;
+                armourLabels[bpIdx].Text = (!suppress) ? FormulaHelper.PaperDollArmorValues(bpIdx, bpAv) : string.Empty;
 
                 if (armorMod < 0)
                     armourLabels[bpIdx].TextColor = DaggerfallUI.DaggerfallUnityStatDrainedTextColor;
