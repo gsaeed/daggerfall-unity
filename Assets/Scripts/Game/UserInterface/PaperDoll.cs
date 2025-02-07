@@ -15,6 +15,7 @@ using DaggerfallConnect.Utility;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 
 namespace DaggerfallWorkshop.Game.UserInterface
@@ -164,7 +165,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             // We show bonuses as bigger numbers and maluses as small numbers
             // Also, 1 AC = 5 hit modifier
             // Therefore, a -5 "Increase" armor value gives +1 AC
-            // and a +5 "Decrease" armopr values gives -1 AC
+            // and a +5 "Decrease" armor values gives -1 AC
 
             int avMod = playerEntity.IncreasedArmorValueModifier + playerEntity.DecreasedArmorValueModifier;
             Color textColor = DaggerfallUI.DaggerfallDefaultTextColor;
@@ -175,10 +176,18 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
             for (int bpIdx = 0; bpIdx < DaggerfallEntity.NumberBodyParts; bpIdx++)
             {
+                int armorMod = playerEntity.DecreasedArmorValueModifier - playerEntity.IncreasedArmorValueModifier;
+
                 sbyte av = playerEntity.ArmorValues[bpIdx];
-                int ac = (100 - (av + avMod)) / 5;
-                armourLabels[bpIdx].Text = (!suppress) ? ac.ToString() : string.Empty;
-                armourLabels[bpIdx].TextColor = textColor;
+                int bpAv = (100 - av) / 5 + armorMod;
+                armourLabels[bpIdx].Text = (!suppress) ? FormulaHelper.PaperDollArmorValues(bpIdx, bpAv) : string.Empty;
+
+                if (armorMod < 0)
+                    armourLabels[bpIdx].TextColor = DaggerfallUI.DaggerfallUnityStatDrainedTextColor;
+                else if (armorMod > 0)
+                    armourLabels[bpIdx].TextColor = DaggerfallUI.DaggerfallUnityStatIncreasedTextColor;
+                else
+                    armourLabels[bpIdx].TextColor = DaggerfallUI.DaggerfallDefaultTextColor;
             }
         }
 
