@@ -2493,6 +2493,14 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return equippedItems.OrderBy(o => o.drawOrder).ToList();
         }
+        public static string PaperDollArmorValues(int bpIdx, int bpAv)
+        {
+            Func<int, int, string> del;
+            if (TryGetOverride("PaperDollArmorValues", out del))
+                return del(bpIdx, bpAv);
+
+            return bpAv.ToString();
+        }
 
         public static bool IsWeaponArmor(DaggerfallUnityItem item)
         {
