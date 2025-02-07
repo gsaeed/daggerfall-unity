@@ -39,6 +39,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         TextLabel midScreenTextLabel = new TextLabel();
         TextLabel arrowCountTextLabel = new TextLabel();
         private TextLabel poisonTextLabel = new TextLabel();
+        private TextLabel WeaponHealthTextLabel = new TextLabel();
         private TextLabel SelectedSpellLabel = new TextLabel();
         HUDCrosshair crosshair = new HUDCrosshair();
         public HUDVitals vitals = new HUDVitals();
@@ -205,6 +206,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             poisonTextLabel.Text = "Poison";
             parentPanel.Components.Add(poisonTextLabel);
 
+            WeaponHealthTextLabel.TextColor = Color.green;
+            WeaponHealthTextLabel.ShadowPosition = Vector2.zero;
+            WeaponHealthTextLabel.Text = "XX";
+            parentPanel.Components.Add(WeaponHealthTextLabel);
+
             SelectedSpellLabel.TextColor = Color.green;
             SelectedSpellLabel.ShadowPosition = Vector2.zero;
             SelectedSpellLabel.Text = "Spell:";
@@ -233,6 +239,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             poisonTextLabel.Enabled = true;
             SelectedSpellLabel.Enabled = true;
+            WeaponHealthTextLabel.Enabled = true;
 
             // Large HUD will force certain other HUD elements off as they conflict in space or utility
             bool largeHUDwasEnabled = largeHUD.Enabled;
@@ -277,6 +284,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             interactionModeIcon.Scale = NativePanel.LocalScale;
             arrowCountTextLabel.Scale = new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
             poisonTextLabel.Scale =  new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
+            WeaponHealthTextLabel.Scale =  new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
             SelectedSpellLabel.Scale =  new Vector2(NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust, NativePanel.LocalScale.y * DaggerfallUnity.Settings.DisplayHUDScaleAdjust);
 
             interactionModeIcon.displayScaleAdjust = DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
@@ -341,7 +349,17 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 poisonTextLabel.Enabled = true;
                 poisonTextLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
                 poisonTextLabel.Text = GameManager.Instance.WeaponManager.GetWeapon().poisonType.ToString();
-                poisonTextLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - compass.Size.y);
+                poisonTextLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - 20);
+            }
+
+            WeaponHealthTextLabel.Enabled = false;
+            if (GameManager.Instance.WeaponManager.GetWeapon() != null)
+            {
+                WeaponHealthTextLabel.Enabled = true;
+                WeaponHealthTextLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
+                WeaponHealthTextLabel.Text = $"{GameManager.Instance.WeaponManager.GetWeapon().shortName} {GameManager.Instance.WeaponManager.GetWeapon().ConditionPercentage.ToString()}%";
+                WeaponHealthTextLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - 40);
+
             }
 
             SelectedSpellLabel.Enabled = false;
@@ -354,7 +372,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 SelectedSpellLabel.TextColor =
                     GetSpellCost(playerEffectManager.lastSpell) < GameManager.Instance.PlayerEntity.CurrentMagicka ? Color.green : Color.gray;
                 SelectedSpellLabel.Text = playerEffectManager.lastSpell.Settings.Name;
-                SelectedSpellLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - compass.Size.y - 20);
+                SelectedSpellLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - 60);
             }
 
             HotkeySequence.KeyModifiers keyModifiers = HotkeySequence.GetKeyboardKeyModifiers();
