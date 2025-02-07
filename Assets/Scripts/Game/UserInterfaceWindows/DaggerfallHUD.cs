@@ -341,37 +341,34 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
             }
 
-            poisonTextLabel.Enabled = false;
+            poisonTextLabel.Enabled = true;
+            var weapon = GameManager.Instance.WeaponManager.GetWeapon();
 
-            if (!FormulaHelper.PlayerWeaponSheathed() && GameManager.Instance.WeaponManager.GetWeapon() != null
-                                                      && GameManager.Instance.WeaponManager.GetWeapon().poisonType != Poisons.None)
             {
                 poisonTextLabel.Enabled = true;
                 poisonTextLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
-                poisonTextLabel.Text = GameManager.Instance.WeaponManager.GetWeapon().poisonType.ToString();
+                poisonTextLabel.TextColor = FormulaHelper.WeaponHealthColor(1, weapon);
+                poisonTextLabel.Text = FormulaHelper.WeaponHealthMessage(1, weapon );
                 poisonTextLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - 20);
             }
 
-            WeaponHealthTextLabel.Enabled = false;
-            if (GameManager.Instance.WeaponManager.GetWeapon() != null)
+            WeaponHealthTextLabel.Enabled = true;
+            
             {
                 WeaponHealthTextLabel.Enabled = true;
                 WeaponHealthTextLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
-                WeaponHealthTextLabel.Text = $"{GameManager.Instance.WeaponManager.GetWeapon().shortName} {GameManager.Instance.WeaponManager.GetWeapon().ConditionPercentage.ToString()}%";
+                WeaponHealthTextLabel.TextColor = FormulaHelper.WeaponHealthColor(2, weapon);
+                WeaponHealthTextLabel.Text = $"{FormulaHelper.WeaponHealthMessage(2, weapon)}";
                 WeaponHealthTextLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - 40);
 
             }
 
-            SelectedSpellLabel.Enabled = false;
-            var playerEffectManager =
-                GameManager.Instance.PlayerEntity.EntityBehaviour.GetComponent<EntityEffectManager>();
-            if (playerEffectManager != null && playerEffectManager.lastSpell != null)
+            SelectedSpellLabel.Enabled = true;
             {
                 SelectedSpellLabel.Enabled = true;
                 SelectedSpellLabel.TextScale = NativePanel.LocalScale.x * DaggerfallUnity.Settings.DisplayHUDScaleAdjust;
-                SelectedSpellLabel.TextColor =
-                    GetSpellCost(playerEffectManager.lastSpell) < GameManager.Instance.PlayerEntity.CurrentMagicka ? Color.green : Color.gray;
-                SelectedSpellLabel.Text = playerEffectManager.lastSpell.Settings.Name;
+                SelectedSpellLabel.TextColor = FormulaHelper.WeaponHealthColor(3, weapon);
+                SelectedSpellLabel.Text = FormulaHelper.WeaponHealthMessage(3, weapon);
                 SelectedSpellLabel.Position = new Vector2(HUDVitals.Size.x + 20, screenRect.height - 60);
             }
 
@@ -427,19 +424,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             base.Update();
         }
 
-        int GetSpellCost(EntityEffectBundle activeSpell)
-        {
-            var spell = activeSpell.Settings;
-            // Get spell costs
-            // Costs can change based on player skills and stats so must be calculated each time
-            (int _, int spellPointCost) = FormulaHelper.CalculateTotalEffectCosts(spell.Effects, spell.TargetType, null, spell.MinimumCastingCost);
-
-            // Lycanthropy is a free spell, even though it shows a cost in classic
-            // Setting cost to 0 so it displays correctly in spellbook
-            if (spell.Tag == PlayerEntity.lycanthropySpellTag)
-                spellPointCost = 0;
-            return spellPointCost;
-        }
         public override void Draw()
         {
             if (renderHUD)
