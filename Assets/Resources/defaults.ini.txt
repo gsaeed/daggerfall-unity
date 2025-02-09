@@ -190,6 +190,7 @@ FreePointsMinBonusRoll=6
 FreePointsMaxBonusRoll=14
 LypyL_ModSystem=True
 AssetInjection=True
+NumberOfDecimalPlacesInModSettings=1
 CompressModdedTextures=True
 NearDeathWarning=True
 AdvancedClimbing=False
