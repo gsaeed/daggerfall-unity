@@ -9,6 +9,8 @@
 // Notes: Reused code from VerticalScrollBar
 //
 
+using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace DaggerfallWorkshop.Game.UserInterface
@@ -210,10 +212,11 @@ namespace DaggerfallWorkshop.Game.UserInterface
         {
             this.mode = Mode.FloatSlider;
             this.items = null;
+            var places = (int)Math.Pow(10, DaggerfallUnity.Settings.NumberOfDecimalPlacesInModSettings);
             SetupIndicator(
-                Mathf.RoundToInt(min * 10),
-                Mathf.RoundToInt(max * 10),
-                Mathf.RoundToInt(start * 10));
+                Mathf.RoundToInt(min * places),
+                Mathf.RoundToInt(max * places),
+                Mathf.RoundToInt(start * places));
         }
 
         /// <summary>
@@ -241,7 +244,8 @@ namespace DaggerfallWorkshop.Game.UserInterface
         /// </summary>
         public float GetValue()
         {
-            return mode == Mode.FloatSlider ? (float)Value / 10 : Value;
+            var places = (int)Math.Pow(10, DaggerfallUnity.Settings.NumberOfDecimalPlacesInModSettings);
+            return mode == Mode.FloatSlider ? (float)Value / places : Value;
         }
 
         /// <summary>
@@ -249,8 +253,10 @@ namespace DaggerfallWorkshop.Game.UserInterface
         /// </summary>
         public void SetValue(float value)
         {
+            var places = (int)Math.Pow(10, DaggerfallUnity.Settings.NumberOfDecimalPlacesInModSettings);
+
             if (mode == Mode.FloatSlider)
-                value *= 10;
+                value *= places;
             Value = Mathf.RoundToInt(value);
         }
 
@@ -346,14 +352,15 @@ namespace DaggerfallWorkshop.Game.UserInterface
         string GetIndicatorText()
         {
             int selected = scrollIndex + minValue;
-
-            switch(mode)
+            var places = (int)Math.Pow(10, DaggerfallUnity.Settings.NumberOfDecimalPlacesInModSettings);
+            var formatString = $"n{DaggerfallUnity.Settings.NumberOfDecimalPlacesInModSettings}";
+            switch (mode)
             {
                 case Mode.IntSlider:
                     return selected.ToString();
 
                 case Mode.FloatSlider:
-                    return ((float)selected / 10).ToString("n1");
+                    return ((float)selected / places).ToString(formatString);
 
                 case Mode.MultipleChoices:
                     return selected < items.Length ? items[selected] : string.Empty;

@@ -376,6 +376,7 @@ namespace DaggerfallWorkshop
         public int FreePointsMaxBonusRoll { get; set; } = 14;
         public bool LypyL_ModSystem { get; set; }
         public bool AssetInjection { get; set; }
+        public int NumberOfDecimalPlacesInModSettings { get; set; }
         public bool CompressModdedTextures { get; set; }
         public bool NearDeathWarning { get; set; }
         public bool AlternateRandomEnemySelection { get; set; }
@@ -634,6 +635,7 @@ namespace DaggerfallWorkshop
             FreePointsMaxBonusRoll = GetInt(sectionEnhancements, "FreePointsMaxBonusRoll");
             LypyL_ModSystem = GetBool(sectionEnhancements, "LypyL_ModSystem");
             AssetInjection = GetBool(sectionEnhancements, "AssetInjection");
+            NumberOfDecimalPlacesInModSettings = GetInt(sectionEnhancements, "NumberOfDecimalPlacesInModSettings", 1, 4);
             CompressModdedTextures = GetBool(sectionEnhancements, "CompressModdedTextures");
             NearDeathWarning = GetBool(sectionEnhancements, "NearDeathWarning");
             AlternateRandomEnemySelection = GetBool(sectionEnhancements, "AlternateRandomEnemySelection");
@@ -844,6 +846,7 @@ namespace DaggerfallWorkshop
             SetInt(sectionEnhancements, "FreePointsMaxBonusRoll", FreePointsMaxBonusRoll);
             SetBool(sectionEnhancements, "LypyL_ModSystem", LypyL_ModSystem);
             SetBool(sectionEnhancements, "AssetInjection", AssetInjection);
+            SetInt(sectionEnhancements, "NumberOfDecimalPlacesInModSettings", NumberOfDecimalPlacesInModSettings);
             SetBool(sectionEnhancements, "CompressModdedTextures", CompressModdedTextures);
             SetBool(sectionEnhancements, "NearDeathWarning", NearDeathWarning);
             SetBool(sectionEnhancements, "AlternateRandomEnemySelection", AlternateRandomEnemySelection);
