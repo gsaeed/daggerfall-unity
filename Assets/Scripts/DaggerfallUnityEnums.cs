@@ -563,7 +563,8 @@ namespace DaggerfallWorkshop
         DroppedLoot,
         ShopShelves,
         HouseContainers,
-        CustomLoot
+        CustomLoot,
+        LooseItems
     }
 
     /// <summary>
