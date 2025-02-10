@@ -796,7 +796,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 }
 
                 lootTarget.OnInventoryClose();
-                lootTarget = null;
+
             }
 
             // Add equip delay if weapon was changed
@@ -2427,6 +2427,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 AttemptPrivatePropertyTheft();
             }
             OnClose -= OnCloseWindow;
+            if (lootTarget != null && lootTarget.gameObject != null && lootTarget.Items != null &&
+                lootTarget.ContainerType == LootContainerTypes.LooseItems && lootTarget.Items.Count == 0)
+                lootTarget.gameObject.SetActive(false);
+
+            lootTarget = null;
         }
 
         #endregion
