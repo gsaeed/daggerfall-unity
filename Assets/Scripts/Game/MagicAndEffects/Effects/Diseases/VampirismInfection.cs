@@ -128,7 +128,7 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
                 vidPlayerWindow.OnClose += WarningDreamVideoCompleted;
                 warningDreamVideoScheduled = true;
             }
-            else if (daysPast > 3 && warningDreamVideoPlayed && !fakeDeathVideoPlayed)
+            else if (daysPast > DaysBeforeFullBlownVampirism && warningDreamVideoPlayed && !fakeDeathVideoPlayed)
             {
                 // Play "death" video ahead of final stage of infection
                 DaggerfallVidPlayerWindow vidPlayerWindow = (DaggerfallVidPlayerWindow)
