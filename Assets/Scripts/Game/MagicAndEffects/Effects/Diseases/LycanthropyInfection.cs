@@ -116,7 +116,7 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
                 vidPlayerWindow.OnClose += WarningDreamVideoCompleted;
                 warningDreamVideoScheduled = true;
             }
-            else if (daysPast > 3 && warningDreamVideoPlayed && !deployedFullBlownLycanthropy)
+            else if (daysPast > DaysBeforeFullBlownLycanthropy && warningDreamVideoPlayed && !deployedFullBlownLycanthropy)
             {
                 // Assign Lycanthropy spell to spellbook
                 GameManager.Instance.PlayerEntity.AssignPlayerLycanthropySpell();
