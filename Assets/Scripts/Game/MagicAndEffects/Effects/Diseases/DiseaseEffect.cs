@@ -28,7 +28,8 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
 
         protected const int permanentDiseaseValue = 0xff;
         protected const int completedDiseaseValue = 0xfe;
-
+        public static int DaysBeforeFullBlownVampirism = 3;
+        public static int DaysBeforeFullBlownLycanthropy = 3;
         protected int forcedRoundsRemaining = 1;
         protected Diseases classicDiseaseType = Diseases.None;
         protected DiseaseData diseaseData;
