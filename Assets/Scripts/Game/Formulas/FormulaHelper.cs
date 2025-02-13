@@ -266,6 +266,16 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return Guild.DefaultNumDaysToCheckForPromotion;
         }
+        
+        //Returns the rank required in the guild for the given service
+        public static int GuildServiceRequirement(int factionId, int service, int currentRank, int defaultRank)
+        {
+            Func<int, int, int, int, int> del;
+            if (TryGetOverride("GuildServiceRequirement", out del))
+                return del(factionId, service, currentRank, defaultRank);
+
+            return defaultRank ;
+        }
 
         //Returns number of days between evaluations by guild
         public static bool SpawnCityGuards(bool immediateSpawn)
