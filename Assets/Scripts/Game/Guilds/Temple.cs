@@ -59,7 +59,7 @@ namespace DaggerfallWorkshop.Game.Guilds
             Zenithar = 22
         }
 
-        struct RankData
+        public struct RankData
         {
             public readonly int library;
             public readonly int healing;
@@ -130,7 +130,7 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         #region Static Data
 
-        static Dictionary<Divines, RankData> templeData = new Dictionary<Divines, RankData>()
+        public static Dictionary<Divines, RankData> templeData = new Dictionary<Divines, RankData>()
         {
             { Divines.Akatosh,  new RankData(2, 1, 4, 5,-1,-1,-1,-1,-1, 7, 5290, 5245, 4058, 709, TextManager.Instance.GetLocalizedText("akatoshDesc")) },
             { Divines.Arkay,    new RankData(3, 0, 1, 4,-1,-1,-1,-1, 4, 7, 5287, 5242, 4055, 0, TextManager.Instance.GetLocalizedText("arkayDesc")) },
