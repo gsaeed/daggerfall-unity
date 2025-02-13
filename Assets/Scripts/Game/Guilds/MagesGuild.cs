@@ -30,6 +30,12 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int PromotionEnchantId = 5232;
         protected const int PromotionSummonId = 5233;
         protected const int PromotionTeleportId = 5234;
+        public static int RankBuyMagicItems = 3;
+        public static int RankMakeMagicItems = 5;
+        public static int RankTeleport = 8;
+        public static int RankDaedraSummoning = 6;
+        public static int RankBuySoulgems = 4;
+
 
         private const int factionId = (int)FactionFile.FactionIDs.The_Mages_Guild;
         public new static int NumDaysToCheckForPromotion { get; set; } = -1;
@@ -155,15 +161,15 @@ namespace DaggerfallWorkshop.Game.Guilds
                 case GuildServices.MakeSpells:
                     return IsMember();
                 case GuildServices.BuyMagicItems:
-                    return (rank >= 3);
+                    return (rank >= RankBuyMagicItems);
                 case GuildServices.MakeMagicItems:
-                    return (rank >= 5);
+                    return (rank >= RankMakeMagicItems);
                 case GuildServices.Teleport:
-                    return (rank >= 8);
+                    return (rank >= RankTeleport);
                 case GuildServices.DaedraSummoning:
-                    return (rank >= 6);
+                    return (rank >= RankDaedraSummoning);
                 case GuildServices.BuySoulgems:
-                    return (rank >= 4);
+                    return (rank >= RankBuySoulgems);
 
                 default:
                     return false;
