@@ -204,7 +204,7 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         public virtual bool FreeHealing()
         {
-            return false;
+            return FormulaHelper.FreeHealing();
         }
 
         public virtual bool FreeMagickaRecharge()
