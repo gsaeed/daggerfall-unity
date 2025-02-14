@@ -266,6 +266,16 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return Guild.DefaultNumDaysToCheckForPromotion;
         }
+
+        //Returns default temple free healing
+        public static bool FreeHealing()
+        {
+            Func<bool> del;
+            if (TryGetOverride("FreeHealing", out del))
+                return del();
+
+            return false;
+        }
         
         //Returns the rank required in the guild for the given service
         public static int GuildServiceRequirement(int factionId, int service, int currentRank, int defaultRank)
