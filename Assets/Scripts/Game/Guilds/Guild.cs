@@ -301,7 +301,7 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         public virtual int GetTrainingMax(DFCareer.Skills skill)
         {
-            return defaultTrainingMax;
+            return FormulaHelper.GetTrainingMax(GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.quality, skill, rank);
         }
 
         public virtual int GetTrainingPrice()

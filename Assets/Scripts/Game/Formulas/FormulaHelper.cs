@@ -277,6 +277,16 @@ namespace DaggerfallWorkshop.Game.Formulas
             return false;
         }
         
+        //Returns maximum training for skill
+        public static int GetTrainingMax(int buildingQuality, DFCareer.Skills skill, int currentRank)
+        {
+            Func<int, DFCareer.Skills, int, int> del;
+            if (TryGetOverride("GetTrainingMax", out del))
+                return del(buildingQuality, skill, currentRank);
+
+            return Guild.defaultTrainingMax;
+        }
+        
         //Returns the rank required in the guild for the given service
         public static int GuildServiceRequirement(int factionId, int service, int currentRank, int defaultRank)
         {
