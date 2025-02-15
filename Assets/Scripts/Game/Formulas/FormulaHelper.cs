@@ -276,11 +276,11 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         //Returns default temple free healing
-        public static bool FreeHealing()
+        public static bool FreeHealing(int factionId)
         {
-            Func<bool> del;
+            Func<int, bool> del;
             if (TryGetOverride("FreeHealing", out del))
-                return del();
+                return del(factionId);
 
             return false;
         }
