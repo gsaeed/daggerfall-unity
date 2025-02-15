@@ -1398,14 +1398,14 @@ namespace DaggerfallWorkshop.Game.Entity
                 {
                     skillUses[i] = 0;
 
-                    if (skills.GetPermanentSkillValue(i) < 100 && (skills.GetPermanentSkillValue(i) < 95 || !AlreadyMasteredASkill()))
+                    if (skills.GetPermanentSkillValue(i) < FormulaHelper.MaxStatValue() && (skills.GetPermanentSkillValue(i) < FormulaHelper.MaxStatValue() * 0.95f || !AlreadyMasteredASkill()))
                     {
                         skills.SetPermanentSkillValue(i, (short)(skills.GetPermanentSkillValue(i) + 1));
                         SetSkillRecentlyIncreased(i);
                         SetCurrentLevelUpSkillSum();
                         if (!DaggerfallUnity.Settings.HideSkillImprovedMessage)
                             DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("skillImprove").Replace("%s", DaggerfallUnity.Instance.TextProvider.GetSkillName((DFCareer.Skills)i)));
-                        if (skills.GetPermanentSkillValue(i) == 100)
+                        if (skills.GetPermanentSkillValue(i) == FormulaHelper.MaxStatValue())
                         {
                             List<DFCareer.Skills> primarySkills = GetPrimarySkills();
                             if (primarySkills.Contains((DFCareer.Skills)i))
@@ -1441,7 +1441,7 @@ namespace DaggerfallWorkshop.Game.Entity
             List<DFCareer.Skills> primarySkills = GetPrimarySkills();
             foreach (DFCareer.Skills skill in primarySkills)
             {
-                if (skills.GetPermanentSkillValue(skill) == 100)
+                if (skills.GetPermanentSkillValue(skill) == FormulaHelper.MaxStatValue())
                 {
                     mastered = true;
                     break;
