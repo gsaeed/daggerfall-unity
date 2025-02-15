@@ -6,16 +6,15 @@
 // Original Author: Hazelnut
 // Contributors:    
 
-using UnityEngine;
-using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Formulas;
-using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Serialization;
-using static FullSerializer.fsAotVersionInfo;
-using DaggerfallWorkshop.Utility.AssetInjection;
+using DaggerfallWorkshop.Utility;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace DaggerfallWorkshop.Game.Guilds
 {
@@ -82,8 +81,16 @@ namespace DaggerfallWorkshop.Game.Guilds
             lastRankChange = CalculateDaySinceZero(classicTime);
         }
 
+        public static bool IsDivine(int factionId)
+        {
+            return Enum.IsDefined(typeof(Temple.Divines), factionId);
+        }
 
-        
+        public static bool IsOrder(int factionId)
+        {
+            return Enum.IsDefined(typeof(KnightlyOrder.Orders), factionId);
+        }
+
         public virtual TextFile.Token[] UpdateRank(PlayerEntity playerEntity)
         {
             TextFile.Token[] tokens = null;
@@ -204,7 +211,7 @@ namespace DaggerfallWorkshop.Game.Guilds
 
         public virtual bool FreeHealing()
         {
-            return FormulaHelper.FreeHealing();
+            return FormulaHelper.FreeHealing(GetFactionId());
         }
 
         public virtual bool FreeMagickaRecharge()
