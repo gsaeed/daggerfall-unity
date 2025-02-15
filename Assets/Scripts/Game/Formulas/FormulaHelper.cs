@@ -189,7 +189,15 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return 720;
         }
+        public static short RemainingSkillUses(int calculatedSkillUses, int usesNeededForAdvancement)
+        {
+            Func<int, int, short> del;
+            if (TryGetOverride("RemainingSkillUses", out del))
+                return del(calculatedSkillUses, usesNeededForAdvancement);
 
+            return 0;
+        }
+        
         public static int GetMinutesBetweenSkillCheck()
         {
             Func<int> del;
