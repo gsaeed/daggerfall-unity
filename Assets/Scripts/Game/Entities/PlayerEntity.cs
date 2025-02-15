@@ -1396,7 +1396,7 @@ namespace DaggerfallWorkshop.Game.Entity
 
                 if (calculatedSkillUses >= usesNeededForAdvancement)
                 {
-                    skillUses[i] = 0;
+                    skillUses[i] = FormulaHelper.RemainingSkillUses(calculatedSkillUses, usesNeededForAdvancement);
 
                     if (skills.GetPermanentSkillValue(i) < FormulaHelper.MaxStatValue() && (skills.GetPermanentSkillValue(i) < FormulaHelper.MaxStatValue() * 0.95f || !AlreadyMasteredASkill()))
                     {
