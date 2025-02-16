@@ -2294,6 +2294,15 @@ namespace DaggerfallWorkshop.Game.Formulas
             return cost;
         }
 
+        public static ItemCollection AddCustomItems(PlayerGPS.DiscoveredBuilding buildingData, ItemCollection items)
+        {
+            Func<PlayerGPS.DiscoveredBuilding, ItemCollection, ItemCollection> del;
+            if (TryGetOverride("AddCustomItems", out del))
+                return del(buildingData, items);
+
+            return items;
+        }
+        
         public static int CalculateItemRepairCost(int baseItemValue, int shopQuality, int condition, int max, IGuild guild)
         {
             Func<int, int, int, int, IGuild, int> del;
@@ -3755,5 +3764,7 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         #endregion
+
+
     }
 }
