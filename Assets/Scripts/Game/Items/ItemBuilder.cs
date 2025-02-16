@@ -780,6 +780,15 @@ namespace DaggerfallWorkshop.Game.Items
             return CreatePotion(recipeKeys[recipeIdx]);
         }
 
+        public static DaggerfallUnityItem CreateRecipe(int recipeKey, int stackSize = 1)
+        {
+            PotionRecipe potionRecipe = GameManager.Instance.EntityEffectBroker.GetPotionRecipe(recipeKey);
+            if (potionRecipe != null)
+                return new DaggerfallUnityItem(ItemGroups.MiscItems, 4) { PotionRecipeKey = recipeKey, stackCount = stackSize };
+
+            return CreateRandomRecipe(stackSize);
+        }
+
         public static DaggerfallUnityItem CreateRandomRecipe(int stackSize = 1)
         {
             List<int> allRecipeKeys = GameManager.Instance.EntityEffectBroker.GetPotionRecipeKeys();
