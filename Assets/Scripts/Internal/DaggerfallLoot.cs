@@ -165,7 +165,8 @@ namespace DaggerfallWorkshop
             Game.Entity.PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
             ItemHelper itemHelper = DaggerfallUnity.Instance.ItemHelper;
             byte[] itemGroups = { 0 };
-
+            items = FormulaHelper.AddCustomItems(buildingData, items);
+            
             switch (buildingType)
             {
                 case DFLocation.BuildingTypes.Alchemist:
