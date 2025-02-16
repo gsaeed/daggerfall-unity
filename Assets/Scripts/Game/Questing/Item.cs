@@ -338,6 +338,11 @@ namespace DaggerfallWorkshop.Game.Questing
             {
                 result = (itemKey != -1) ? ItemBuilder.CreatePotion(itemKey) : ItemBuilder.CreateRandomPotion();
             }
+            //Handle Random Recipe
+            else if (itemClass == (int)ItemGroups.MiscItems && itemSubClass == 4)
+            {
+                result = (itemKey != -1) ? ItemBuilder.CreateRecipe(itemKey) : ItemBuilder.CreateRandomRecipe();
+            }
             else
             {
                 // Handle random subclass
