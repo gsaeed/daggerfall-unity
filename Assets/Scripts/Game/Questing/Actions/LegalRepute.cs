@@ -51,10 +51,8 @@ namespace DaggerfallWorkshop.Game.Questing
             // Perform action changes
             if (DaggerfallUnity.Settings.LogReputationChanges && amount != 0)
             {
-                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
-                DaggerfallUI.MessageBox(
-                    $"in {ParentQuest.DisplayName}:{ParentQuest.QuestName},]rLegalRep adjusted by {amount} for region {GameManager.Instance.PlayerGPS.CurrentRegion}:{GameManager.Instance.PlayerGPS.CurrentRegionIndex}");
-                Debug.LogError($"in {ParentQuest.QuestName}, Update Task LegalRep adjusted legalrep by {amount} for region {GameManager.Instance.PlayerGPS.CurrentRegion}:{GameManager.Instance.PlayerGPS.CurrentRegionIndex}\nStackTrace: {t}");
+                Debug.LogError(
+                    $"in {ParentQuest.DisplayName}:{ParentQuest.QuestName},LegalRep adjusted by {amount} for region {GameManager.Instance.PlayerGPS.CurrentRegion}:{GameManager.Instance.PlayerGPS.CurrentRegionIndex}");
 
             }
 
