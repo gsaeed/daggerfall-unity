@@ -10,7 +10,9 @@
 //
 
 using System.Text.RegularExpressions;
+using DaggerfallConnect.Arena2;
 using FullSerializer;
+using UnityEngine;
 
 namespace DaggerfallWorkshop.Game.Questing
 {
@@ -70,6 +72,7 @@ namespace DaggerfallWorkshop.Game.Questing
             }
 
             // Change reputation with target
+            UnityEngine.Debug.Log($"Quest {ParentQuest.QuestName} {(amount < 0 ? "lowered" : "raised")} reputation for faction {(FactionFile.FactionIDs)person.FactionData.id} by {Mathf.Abs(amount)}");
             GameManager.Instance.PlayerEntity.FactionData.ChangeReputation(person.FactionData.id, amount, true);
 
             SetComplete();
