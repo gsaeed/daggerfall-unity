@@ -1856,7 +1856,8 @@ namespace Wenzil.Console
             public static readonly string description = "Adds n inventory items to the character, based on the given keyword. n = 1 by default";
 
             public static readonly string usage =
-                "add (book|weapon|armor|cloth|ingr|relig|soul|gold|magic|magicArmor|magicWeapon|drug|map|torch|transport|potion|recipe|painting) [n] [level] [condition] [material]" +
+                "add (book|weapon|armor|cloth|ingr|relig|soul|gem|gold|magic|magicArmor|magicWeapon|drug|map|torch|transport|potion|recipe|painting) [n] [level] [condition] [material]" +
+
                 "\nMaterials = None, Leather, Chain, Chain2, Iron, Steel, Silver, Elven, Dwarven, Mithril, Adamantium, Ebony, Orcish, Daedric" +
                 "\n condition = 1 or 0; 1 means random wear, 0 means keep new";
 
@@ -1990,6 +1991,9 @@ namespace Wenzil.Console
                             break;
                         case "ingr":
                             newItem = ItemBuilder.CreateRandomIngredient();
+                            break;
+                        case "gem":
+                            newItem = ItemBuilder.CreateRandomGem();
                             break;
                         case "relig":
                             newItem = ItemBuilder.CreateRandomReligiousItem();
