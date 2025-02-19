@@ -72,7 +72,12 @@ namespace DaggerfallWorkshop.Game.Questing
             }
 
             // Change reputation with target
-            UnityEngine.Debug.Log($"Quest {ParentQuest.QuestName} {(amount < 0 ? "lowered" : "raised")} reputation for faction {(FactionFile.FactionIDs)person.FactionData.id} by {Mathf.Abs(amount)}");
+            if (DaggerfallUnity.Settings.LogReputationChanges && amount != 0)
+            {
+                UnityEngine.Debug.LogError(
+                    $"Quest {ParentQuest.QuestName} {(amount < 0 ? "lowered" : "raised")} reputation for person {person.DisplayName} faction {(FactionFile.FactionIDs)person.FactionData.id} by {Mathf.Abs(amount)}");
+            }
+
             GameManager.Instance.PlayerEntity.FactionData.ChangeReputation(person.FactionData.id, amount, true);
 
             SetComplete();
