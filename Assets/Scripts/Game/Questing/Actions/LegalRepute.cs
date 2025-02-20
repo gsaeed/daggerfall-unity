@@ -49,14 +49,15 @@ namespace DaggerfallWorkshop.Game.Questing
         public override void Update(Task caller)
         {
             // Perform action changes
+            int region = GameManager.Instance.PlayerGPS.CurrentRegionIndex;
+
             if (DaggerfallUnity.Settings.LogReputationChanges && amount != 0)
             {
                 Debug.LogError(
-                    $"in {ParentQuest.DisplayName}:{ParentQuest.QuestName},LegalRep adjusted by {amount} for region {GameManager.Instance.PlayerGPS.CurrentRegion}:{GameManager.Instance.PlayerGPS.CurrentRegionIndex}");
+                    $"in {ParentQuest.DisplayName}:{ParentQuest.QuestName},LegalRep adjusted by {amount} to {GameManager.Instance.PlayerEntity.RegionData[region].LegalRep + (short)amount}for region {GameManager.Instance.PlayerGPS.CurrentRegion}:{GameManager.Instance.PlayerGPS.CurrentRegionIndex}");
 
             }
 
-            int region = GameManager.Instance.PlayerGPS.CurrentRegionIndex;
             GameManager.Instance.PlayerEntity.RegionData[region].LegalRep += (short)amount;
             GameManager.Instance.PlayerEntity.ClampLegalReputations();
 
