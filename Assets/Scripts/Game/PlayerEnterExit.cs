@@ -409,10 +409,20 @@ namespace DaggerfallWorkshop.Game
                 // Check if player is submerged and needs to start holding breath
                 if (blockWaterLevel == 10000 || (player.transform.position.y + (76 * MeshReader.GlobalScale) - 0.95f) >= (blockWaterLevel * -1 * MeshReader.GlobalScale))
                 {
+                    var curSubmerged = isPlayerSubmerged;
                     isPlayerSubmerged = false;
+                    if (curSubmerged != isPlayerSubmerged)
+                        RaiseOnOnPlayerSubmergedChangedEvent();
+
                 }
                 else
+                {
+                    var curSubmerged = isPlayerSubmerged;
                     isPlayerSubmerged = true;
+                    if (curSubmerged != isPlayerSubmerged)
+                        RaiseOnOnPlayerSubmergedChangedEvent();
+
+                }
             }
             else
             {
@@ -420,7 +430,11 @@ namespace DaggerfallWorkshop.Game
                 // don't clear swimming if we're outside on a water tile - MeteoricDragon
                 if (GameManager.Instance.StreamingWorld.PlayerTileMapIndex != 0)
                     isPlayerSwimming = false;
+                var curSubmerged = isPlayerSubmerged;
                 isPlayerSubmerged = false;
+                if (curSubmerged != isPlayerSubmerged)
+                    RaiseOnOnPlayerSubmergedChangedEvent();
+
                 levitateMotor.IsSwimming = false;
             }
         }
@@ -1688,6 +1702,35 @@ namespace DaggerfallWorkshop.Game
                     UnityEngine.Debug.LogError(str);
                 }
         }
+
+        public delegate void PlayerSubmergedEventHandler();
+
+        public static event PlayerSubmergedEventHandler OnPlayerSubmergedChanged;
+
+        protected virtual void RaiseOnOnPlayerSubmergedChangedEvent()
+        {
+            if (OnPlayerSubmergedChanged != null)
+                try
+                {
+                    OnPlayerSubmergedChanged();
+                }
+                catch (Exception e)
+                {
+                    var del = OnPlayerSubmergedChanged;
+                    var str = string.Empty;
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
+                }
+        }
+
 
         #endregion
     }
