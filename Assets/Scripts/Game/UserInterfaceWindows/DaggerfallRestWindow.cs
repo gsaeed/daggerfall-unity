@@ -89,7 +89,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         protected KeyCode toggleClosedBinding;
         protected int enemyOverride = 0;
-
+        public enum restTypes { RestForAWhile, RestUntilHealed, Loiter };
+        public static restTypes RestType;
         #endregion
 
         #region Properties
@@ -147,7 +148,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             LoadTextures();
 
             // Hide world while resting
-            ParentPanel.BackgroundColor = Color.black;
+            ParentPanel.BackgroundColor = Color.clear;
 
             // Create interface panel
             mainPanel.HorizontalAlignment = HorizontalAlignment.Center;
@@ -677,6 +678,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         private void WhileButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
+            RestType = restTypes.RestForAWhile;
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             if (DaggerfallUnity.Settings.IllegalRestWarning && GameManager.Instance.PlayerGPS.IsPlayerInTown(true, true))
             {
@@ -688,6 +690,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else
             {
+                ParentPanel.BackgroundColor = Color.black;
                 DoRestForAWhile(false);
             }
         }
@@ -697,12 +700,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             sender.CloseWindow();
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
+                ParentPanel.BackgroundColor = Color.black;
                 DoRestForAWhile(true);
             }
         }
 
         private void HealedButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
+            RestType = restTypes.RestUntilHealed;
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             if (DaggerfallUnity.Settings.IllegalRestWarning && GameManager.Instance.PlayerGPS.IsPlayerInTown(true, true))
             {
@@ -713,6 +718,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             else
             {
+                ParentPanel.BackgroundColor = Color.black;
                 DoRestUntilHealed(false);
             }
         }
@@ -722,12 +728,14 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             sender.CloseWindow();
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
+                ParentPanel.BackgroundColor = Color.black;
                 DoRestUntilHealed(true);
             }
         }
 
         private void LoiterButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
+            RestType = restTypes.Loiter;
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             DaggerfallInputMessageBox mb = new DaggerfallInputMessageBox(uiManager, this);
             mb.SetTextBoxLabel(TextManager.Instance.GetLocalizedText("loiterHowManyHours"));

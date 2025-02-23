@@ -274,6 +274,15 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return Guild.DefaultNumDaysToCheckForPromotion;
         }
+        //Returns background color
+        public static Color GetBackgroundColor()
+        {
+            Func<Color> del;
+            if (TryGetOverride("GetBackgroundColor", out del))
+                return del();
+
+            return Color.black;
+        }
 
         //Returns default temple free healing
         public static bool FreeHealing(int factionId)

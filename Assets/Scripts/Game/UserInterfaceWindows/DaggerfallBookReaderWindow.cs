@@ -18,6 +18,7 @@ using DaggerfallWorkshop.Game.Items;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Localization;
 using System.Globalization;
+using DaggerfallWorkshop.Game.Formulas;
 
 namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 {
@@ -99,6 +100,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             NativePanel.OnMouseScrollDown += Panel_OnMouseScrollDown;
             NativePanel.OnMouseScrollUp += Panel_OnMouseScrollUp;
+            parentPanel.BackgroundColor = FormulaHelper.GetBackgroundColor();
 
             LayoutBookLabels();
             DaggerfallUI.Instance.PlayOneShot(openBook);
