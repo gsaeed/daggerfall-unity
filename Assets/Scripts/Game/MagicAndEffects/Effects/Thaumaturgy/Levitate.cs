@@ -68,7 +68,13 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
                 End();
 
             base.Start(manager, caster);
-            DaggerfallUI.AddHUDText("Press [END] to cancel Levitation.", 5);
+            DaggerfallEntityBehaviour entityBehaviour = GetPeeredEntityBehaviour(manager);
+            if (!entityBehaviour)
+                End();
+
+            // Enable levitation for player or enemies
+            if (entityBehaviour.EntityType == EntityTypes.Player)
+                DaggerfallUI.AddHUDText("Press [END] to cancel Levitation.", 5);
             StartLevitating();
             levitateMotor.levitateEffect = this;
         }
