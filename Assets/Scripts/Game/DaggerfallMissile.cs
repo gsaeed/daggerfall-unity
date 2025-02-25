@@ -361,7 +361,14 @@ namespace DaggerfallWorkshop.Game
             if (collision != null && other == null)
                 entityBehaviour = collision.gameObject.transform.GetComponent<DaggerfallEntityBehaviour>();
             else if (collision == null && other != null)
+            {
                 entityBehaviour = other.gameObject.transform.GetComponent<DaggerfallEntityBehaviour>();
+                if (entityBehaviour == null)
+                {
+                    GameManager.Instance.WeaponManager.CheckHitCustomActivator();
+                    return;
+                }
+            }
             else
                 return;
 

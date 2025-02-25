@@ -84,6 +84,8 @@ namespace DaggerfallWorkshop.Game
 
         public DaggerfallUnityItem LastBowUsed { get { return lastBowUsed; } }
         public bool UsingRightHand { get { return usingRightHand; } set { usingRightHand = value; } }
+        public DaggerfallUnityItem CurrentRightHandWeapon => currentRightHandWeapon;
+        public DaggerfallUnityItem CurrentLeftHandWeapon => currentLeftHandWeapon;
 
         #endregion
 
@@ -495,6 +497,39 @@ namespace DaggerfallWorkshop.Game
             return false;
         }
 
+        public bool CheckHitCustomActivator()
+        {
+            var ray = new Ray();
+            ray = ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
+            RaycastHit hit;
+            bool hitSomething = Physics.Raycast(ray, out hit, PlayerActivate.RayDistance, playerLayerMask);
+            if (hitSomething && hit.transform != null && hit.transform.gameObject != null)
+            {
+                // Check if hit a custom object
+                // Invoke any matched custom flat / model activations registered by mods.
+                string flatModelName = hit.transform.gameObject.name;
+                int pos = flatModelName.IndexOf(']');
+                if (pos > 0 && pos < flatModelName.Length - 1)
+                    flatModelName = flatModelName.Remove(pos + 1);
+                PlayerActivate.CustomModActivation customActivation;
+                if (PlayerActivate.customModActivations.TryGetValue(flatModelName, out customActivation))
+                {
+
+                    if (customActivation.StrikeActivation &&
+                        GameManager.Instance.PlayerActivate.CurrentMode != PlayerActivateModes.Info)
+                    {
+                        hit.transform.gameObject.tag = "Striked";
+                        customActivation.Action(hit);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+
+
+        }
+
         // Returns true if hit an enemy entity
         public bool WeaponDamage(DaggerfallUnityItem strikingWeapon, bool arrowHit, bool arrowSummoned, Transform hitTransform, Vector3 impactPosition, Vector3 direction)
         {
@@ -648,6 +683,7 @@ namespace DaggerfallWorkshop.Game
                 }
             }
 
+            return CheckHitCustomActivator();
             return false;
         }
 
