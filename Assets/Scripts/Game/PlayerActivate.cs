@@ -73,7 +73,7 @@ namespace DaggerfallWorkshop.Game
         float clickDelay = 0;
         float clickDelayStartTime = 0;
 
-        const float RayDistance = 3072 * MeshReader.GlobalScale;    // Classic's farthest view distance (outside, clear weather).
+        public const float RayDistance = 3072 * MeshReader.GlobalScale;    // Classic's farthest view distance (outside, clear weather).
                                                                     // This is needed for using "Info" mode and clicking on buildings, which can
                                                                     // be done in classic for as far as the view distance.
 
@@ -115,12 +115,13 @@ namespace DaggerfallWorkshop.Game
 
             public readonly float ActivationDistance;
             public readonly Mod Provider;
-
-            public  CustomModActivation(CustomActivation action, float activationDistance, Mod provider)
+            public readonly bool StrikeActivation;
+            public  CustomModActivation(CustomActivation action, float activationDistance, Mod provider, bool strikeActivation = false)
             {
                 Action = action;
                 ActivationDistance = activationDistance;
                 Provider = provider;
+                StrikeActivation = strikeActivation;
             }
         }
 
@@ -134,7 +135,7 @@ namespace DaggerfallWorkshop.Game
         /// <param name="provider">The mod that provides this override; used to enforce load order.</param>
         /// <param name="modelID">The model ID of the object that will trigger the custom action upon activation.</param>
         /// <param name="customActivation">A callback that implements the custom action.</param>
-        public static void RegisterCustomActivation(Mod provider, uint modelID, CustomActivation customActivation, float activationDistance = DefaultActivationDistance)
+        public static void RegisterCustomActivation(Mod provider, uint modelID, CustomActivation customActivation, float activationDistance = DefaultActivationDistance, bool strikeActivation = false)
         {
             string goModelName = GameObjectHelper.GetGoModelName(modelID);
             HandleRegisterCustomActivation(provider, goModelName, customActivation, activationDistance);
@@ -147,10 +148,10 @@ namespace DaggerfallWorkshop.Game
         /// <param name="textureArchive">The texture archive of the flat object that will trigger the custom action upon activation.</param>
         /// <param name="textureRecord">The texture record of the flat object that will trigger the custom action upon activation.</param>
         /// <param name="customActivation">A callback that implements the custom action.</param>
-        public static void RegisterCustomActivation(Mod provider, int textureArchive, int textureRecord, CustomActivation customActivation, float activationDistance = DefaultActivationDistance)
+        public static void RegisterCustomActivation(Mod provider, int textureArchive, int textureRecord, CustomActivation customActivation, float activationDistance = DefaultActivationDistance, bool strikeActivation = false)
         {
             string goFlatName = GameObjectHelper.GetGoFlatName(textureArchive, textureRecord);
-            HandleRegisterCustomActivation(provider, goFlatName, customActivation, activationDistance);
+            HandleRegisterCustomActivation(provider, goFlatName, customActivation, activationDistance, strikeActivation);
         }
 
         /// <summary>
@@ -160,7 +161,7 @@ namespace DaggerfallWorkshop.Game
         /// <param name="textureArchive">The texture archive of the flat object that will trigger the custom action upon activation.</param>
         /// <param name="textureRecord">The texture record of the flat object that will trigger the custom action upon activation.</param>
         /// <param name="customActivation">A callback that implements the custom action.</param>
-        private static void HandleRegisterCustomActivation(Mod provider, string goFlatModelName, CustomActivation customActivation, float activationDistance)
+        private static void HandleRegisterCustomActivation(Mod provider, string goFlatModelName, CustomActivation customActivation, float activationDistance, bool strikeActivation = false)
         {
             string withoutRep, withRep;
             bool sentWithRep = false;
@@ -189,12 +190,12 @@ namespace DaggerfallWorkshop.Game
                 {
                     Debug.LogWarning(
                         $"Custom Activation: Replaced custom activation registration from {existingActivation.Provider.Title} for {withRep} with custom activation from {provider.Title} because it has a higher load priority.");
-                    customModActivations[withRep] = new CustomModActivation(customActivation, activationDistance, provider);
+                    customModActivations[withRep] = new CustomModActivation(customActivation, activationDistance, provider, strikeActivation);
                 }
             }
             else
             {
-                customModActivations[withRep] = new CustomModActivation(customActivation, activationDistance, provider);
+                customModActivations[withRep] = new CustomModActivation(customActivation, activationDistance, provider, strikeActivation);
                 Debug.Log(sentWithRep
                     ? $"Custom Activation: custom activation registered for {withRep} from {provider.Title}"
                     : $"Custom Activation: custom activation registered for {withRep} auto added in support of {provider.Title}");
@@ -214,12 +215,12 @@ namespace DaggerfallWorkshop.Game
                 {
                     Debug.LogWarning(
                         $"Custom Activation: Replaced custom activation registration from {existingActivation.Provider.Title} for {withoutRep} with custom activation from {provider.Title} because it has a higher load priority.");
-                    customModActivations[withoutRep] = new CustomModActivation(customActivation, activationDistance, provider);
+                    customModActivations[withoutRep] = new CustomModActivation(customActivation, activationDistance, provider, strikeActivation);
                 }
             }
             else
             {
-                customModActivations[withoutRep] = new CustomModActivation(customActivation, activationDistance, provider);
+                customModActivations[withoutRep] = new CustomModActivation(customActivation, activationDistance, provider, strikeActivation);
                 Debug.Log(sentWithRep
                     ? $"Custom Activation: custom activation registered for {withoutRep} auto added in support of {provider.Title}"
                     : $"Custom Activation: custom activation registered for {withoutRep} from {provider.Title}");
@@ -364,7 +365,7 @@ namespace DaggerfallWorkshop.Game
 
                 // Test ray against scene
                 RaycastHit hit;
-                bool hitSomething = Physics.Raycast(ray, out hit, RayDistance, playerLayerMask);
+                bool hitSomething = Physics.Raycast(ray, out hit, PlayerActivate.RayDistance, playerLayerMask);
                 if (hitSomething)
                 {
                     bool hitBuilding = false;
@@ -428,7 +429,7 @@ namespace DaggerfallWorkshop.Game
                     if (ActionDoorCheck(hit, out actionDoor))
                     {
                         if (currentMode != PlayerActivateModes.Info)
-                        ActivateActionDoor(hit, actionDoor);
+                            ActivateActionDoor(hit, actionDoor);
                     }
 
                     // Check for action record hit
