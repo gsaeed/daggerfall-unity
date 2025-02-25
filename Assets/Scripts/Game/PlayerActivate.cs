@@ -26,6 +26,7 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking.Types;
 using Random = UnityEngine.Random;
 
 namespace DaggerfallWorkshop.Game
@@ -135,7 +136,18 @@ namespace DaggerfallWorkshop.Game
         /// <param name="provider">The mod that provides this override; used to enforce load order.</param>
         /// <param name="modelID">The model ID of the object that will trigger the custom action upon activation.</param>
         /// <param name="customActivation">A callback that implements the custom action.</param>
-        public static void RegisterCustomActivation(Mod provider, uint modelID, CustomActivation customActivation, float activationDistance = DefaultActivationDistance, bool strikeActivation = false)
+        public static void RegisterCustomActivation(Mod provider, uint modelID, CustomActivation customActivation, float activationDistance = DefaultActivationDistance)
+        {
+            RegisterCustomActivation(provider, modelID, customActivation, activationDistance, false);
+        }
+        /// <summary>
+        /// Registers a custom activation for a model object. Uses the modelID parameter to retrieve the correct object name
+        /// </summary>
+        /// <param name="provider">The mod that provides this override; used to enforce load order.</param>
+        /// <param name="modelID">The model ID of the object that will trigger the custom action upon activation.</param>
+        /// <param name="customActivation">A callback that implements the custom action.</param>
+        /// 
+        public static void RegisterCustomActivation(Mod provider, uint modelID, CustomActivation customActivation, float activationDistance, bool strikeActivation)
         {
             string goModelName = GameObjectHelper.GetGoModelName(modelID);
             HandleRegisterCustomActivation(provider, goModelName, customActivation, activationDistance);
@@ -148,7 +160,19 @@ namespace DaggerfallWorkshop.Game
         /// <param name="textureArchive">The texture archive of the flat object that will trigger the custom action upon activation.</param>
         /// <param name="textureRecord">The texture record of the flat object that will trigger the custom action upon activation.</param>
         /// <param name="customActivation">A callback that implements the custom action.</param>
-        public static void RegisterCustomActivation(Mod provider, int textureArchive, int textureRecord, CustomActivation customActivation, float activationDistance = DefaultActivationDistance, bool strikeActivation = false)
+        public static void RegisterCustomActivation(Mod provider, int textureArchive, int textureRecord, CustomActivation customActivation, float activationDistance = DefaultActivationDistance)
+        {
+            RegisterCustomActivation(provider, textureArchive, textureRecord, customActivation, activationDistance, false);
+        }
+
+        /// <summary>
+        /// Registers a custom activation for a flat object. Uses the textureArchive and textureRecord parameters to retrieve the correct object name
+        /// </summary>
+        /// <param name="provider">The mod that provides this override; used to enforce load order.</param>
+        /// <param name="textureArchive">The texture archive of the flat object that will trigger the custom action upon activation.</param>
+        /// <param name="textureRecord">The texture record of the flat object that will trigger the custom action upon activation.</param>
+        /// <param name="customActivation">A callback that implements the custom action.</param>
+        public static void RegisterCustomActivation(Mod provider, int textureArchive, int textureRecord, CustomActivation customActivation, float activationDistance, bool strikeActivation)
         {
             string goFlatName = GameObjectHelper.GetGoFlatName(textureArchive, textureRecord);
             HandleRegisterCustomActivation(provider, goFlatName, customActivation, activationDistance, strikeActivation);
