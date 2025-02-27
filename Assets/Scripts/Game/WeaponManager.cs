@@ -68,8 +68,8 @@ namespace DaggerfallWorkshop.Game
         bool isDamageFinished = false;
         bool isBowSoundFinished = false;
         Hand lastAttackHand = Hand.None;
-        float cooldownTime = 0.0f;                  // Wait for weapon cooldown
-        int swingWeaponFatigueLoss = 11;            // According to DF Chronicles and verified in classic
+        float cooldownTime = 0.0f;                     // Wait for weapon cooldown
+        public static int SwingWeaponFatigueLoss = 11; // According to DF Chronicles and verified in classic
 
         bool usingRightHand = true;
         bool holdingShield = false;
@@ -427,7 +427,7 @@ namespace DaggerfallWorkshop.Game
                 }
 
                 // Fatigue loss
-                playerEntity.DecreaseFatigue(swingWeaponFatigueLoss);
+                playerEntity.DecreaseFatigue(SwingWeaponFatigueLoss);
 
                 // Play swing sound if attack didn't hit an enemy.
                 if (!hitEnemy && ScreenWeapon.WeaponType != WeaponTypes.Bow)
