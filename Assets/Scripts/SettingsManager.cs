@@ -247,7 +247,7 @@ namespace DaggerfallWorkshop
         // [GUI]
         public bool LogReputationChanges { get; set; }
         public float DisplayHUDScaleAdjust { get; set; }
-
+        public bool ShowVitalsWhenFatigueBelowMaximum { get; set; }
         public bool DisplayMobileEnemyHealthStatus { get; set; }
 
         public bool ShowOptionsAtStart { get; set; }
@@ -540,6 +540,7 @@ namespace DaggerfallWorkshop
             AccelerateUICopyTexture = GetBool(sectionGUI, "AccelerateUICopyTexture");
             EnableVitalsIndicators = GetBool(sectionGUI, "EnableVitalsIndicators");
             DisplayHUDScaleAdjust = GetFloat(sectionGUI, "DisplayHUDScaleAdjust");
+            ShowVitalsWhenFatigueBelowMaximum = GetBool(sectionGUI, "ShowVitalsWhenFatigueBelowMaximum");
             LogReputationChanges = GetBool(sectionGUI, "LogReputationChanges");
             LogHudMessages = GetBool(sectionGUI, "LogHudMessages");
             DoorBashEaseMultiplier = GetFloat(sectionGUI, "DoorBashEaseMultiplier");
@@ -779,6 +780,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "HideLoginName", HideLoginName);
             SetBool(sectionGUI, "HideSkillImprovedMessage", HideSkillImprovedMessage);
             SetFloat(sectionGUI, "DisplayHUDScaleAdjust", DisplayHUDScaleAdjust);
+            SetBool(sectionGUI, "ShowVitalsWhenFatigueBelowMaximum", ShowVitalsWhenFatigueBelowMaximum);
             SetBool(sectionGUI, "LogReputationChanges", LogReputationChanges);
             SetBool(sectionGUI, "LogHudMessages", LogHudMessages);
             SetFloat(sectionGUI, "DoorBashEaseMultiplier", DoorBashEaseMultiplier);
