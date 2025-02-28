@@ -1385,47 +1385,64 @@ namespace DaggerfallWorkshop.Game.Entity
                 return;
 
             timeOfLastSkillIncreaseCheck = now.ToClassicDaggerfallTime();
-
-            for (short i = 0; i < skillUses.Length; i++)
+            var checkAgain = true;
+            int count = 0;
+            while (checkAgain)
             {
-                int skillAdvancementMultiplier = DaggerfallSkills.GetAdvancementMultiplier((DFCareer.Skills)i);
-                float careerAdvancementMultiplier = Career.AdvancementMultiplier;
-                int usesNeededForAdvancement = FormulaHelper.CalculateSkillUsesForAdvancement(skills.GetPermanentSkillValue(i), skillAdvancementMultiplier, careerAdvancementMultiplier, level);
-                int reflexesMod = 0x10000 - (((int)reflexes - 2) << 13);
-                int calculatedSkillUses = (skillUses[i] * reflexesMod) >> 16;
-
-                if (calculatedSkillUses >= usesNeededForAdvancement)
+                count++;
+                checkAgain = false;
+                for (short i = 0; i < skillUses.Length; i++)
                 {
-                    skillUses[i] = FormulaHelper.RemainingSkillUses(calculatedSkillUses, usesNeededForAdvancement);
+                    int skillAdvancementMultiplier = DaggerfallSkills.GetAdvancementMultiplier((DFCareer.Skills)i);
+                    float careerAdvancementMultiplier = Career.AdvancementMultiplier;
+                    int usesNeededForAdvancement = FormulaHelper.CalculateSkillUsesForAdvancement(
+                        skills.GetPermanentSkillValue(i), skillAdvancementMultiplier, careerAdvancementMultiplier,
+                        level);
+                    int reflexesMod = 0x10000 - (((int)reflexes - 2) << 13);
+                    int calculatedSkillUses = (skillUses[i] * reflexesMod) >> 16;
 
-                    if (skills.GetPermanentSkillValue(i) < FormulaHelper.MaxStatValue() && (skills.GetPermanentSkillValue(i) < FormulaHelper.MaxStatValue() * 0.95f || !AlreadyMasteredASkill()))
+                    if (calculatedSkillUses >= usesNeededForAdvancement)
                     {
-                        skills.SetPermanentSkillValue(i, (short)(skills.GetPermanentSkillValue(i) + 1));
-                        SetSkillRecentlyIncreased(i);
-                        SetCurrentLevelUpSkillSum();
-                        if (!DaggerfallUnity.Settings.HideSkillImprovedMessage)
-                            DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("skillImprove").Replace("%s", DaggerfallUnity.Instance.TextProvider.GetSkillName((DFCareer.Skills)i)));
-                        if (skills.GetPermanentSkillValue(i) == FormulaHelper.MaxStatValue())
+                        skillUses[i] = FormulaHelper.RemainingSkillUses(calculatedSkillUses, usesNeededForAdvancement);
+                        checkAgain = skillUses[i] > 0;
+
+                        if (skills.GetPermanentSkillValue(i) < FormulaHelper.MaxStatValue() &&
+                            (skills.GetPermanentSkillValue(i) < FormulaHelper.MaxStatValue() * 0.95f ||
+                             !AlreadyMasteredASkill()))
                         {
-                            List<DFCareer.Skills> primarySkills = GetPrimarySkills();
-                            if (primarySkills.Contains((DFCareer.Skills)i))
+                            skills.SetPermanentSkillValue(i, (short)(skills.GetPermanentSkillValue(i) + 1));
+                            SetSkillRecentlyIncreased(i);
+                            SetCurrentLevelUpSkillSum();
+                            if (!DaggerfallUnity.Settings.HideSkillImprovedMessage)
+                                DaggerfallUI.Instance.PopupMessage(TextManager.Instance.GetLocalizedText("skillImprove")
+                                    .Replace("%s",
+                                        DaggerfallUnity.Instance.TextProvider.GetSkillName((DFCareer.Skills)i)));
+                            if (skills.GetPermanentSkillValue(i) == FormulaHelper.MaxStatValue())
                             {
-                                ITextProvider textProvider = DaggerfallUnity.Instance.TextProvider;
-                                TextFile.Token[] tokens;
-                                tokens = textProvider.GetRSCTokens(youAreNowAMasterOfTextID);
-                                if (tokens != null && tokens.Length > 0)
+                                List<DFCareer.Skills> primarySkills = GetPrimarySkills();
+                                if (primarySkills.Contains((DFCareer.Skills)i))
                                 {
-                                    DaggerfallMessageBox messageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager);
-                                    messageBox.SetTextTokens(tokens);
-                                    messageBox.ClickAnywhereToClose = true;
-                                    messageBox.ParentPanel.BackgroundColor = Color.clear;
-                                    messageBox.Show();
+                                    ITextProvider textProvider = DaggerfallUnity.Instance.TextProvider;
+                                    TextFile.Token[] tokens;
+                                    tokens = textProvider.GetRSCTokens(youAreNowAMasterOfTextID);
+                                    if (tokens != null && tokens.Length > 0)
+                                    {
+                                        DaggerfallMessageBox messageBox =
+                                            new DaggerfallMessageBox(DaggerfallUI.UIManager);
+                                        messageBox.SetTextTokens(tokens);
+                                        messageBox.ClickAnywhereToClose = true;
+                                        messageBox.ParentPanel.BackgroundColor = Color.clear;
+                                        messageBox.Show();
+                                    }
+
+                                    DaggerfallUI.Instance.PlayOneShot(SoundClips.ArenaFanfareLevelUp);
                                 }
-                                DaggerfallUI.Instance.PlayOneShot(SoundClips.ArenaFanfareLevelUp);
                             }
                         }
                     }
+
                 }
+                checkAgain = (count < 10 && FormulaHelper.IsSkillCheckDue(checkAgain));
             }
 
             if (CheckForLevelUp())

@@ -76,6 +76,16 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return false;
         }
+
+        public static bool IsSkillCheckDue(bool checkAgain)
+        {
+            Func<bool, bool> del;
+            if (TryGetOverride("IsSkillCheckDue", out del))
+                return del(checkAgain);
+
+            return false;
+        }
+
         public static int DamageModifier(int strength)
         {
             Func<int, int> del;
@@ -3773,7 +3783,5 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         #endregion
-
-
     }
 }
