@@ -120,6 +120,7 @@ QuestRumorWeight = 50
 HideLoginName=False
 DisableEnemyDeathAlert=True
 DisplayHUDScaleAdjust=0.5
+ShowVitalsWhenFatigueBelowMaximum=True
 DisplayMobileEnemyHealthStatus=False
 IgnoreCombiner=True
 LogHudMessages=False
