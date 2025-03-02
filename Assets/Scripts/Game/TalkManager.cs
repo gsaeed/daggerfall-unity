@@ -9,26 +9,24 @@
 // Notes:
 //
 
-using UnityEngine;
-using System;
-using System.Collections.Generic;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallConnect.Utility;
-using DaggerfallWorkshop.Utility;
-using DaggerfallWorkshop.Game.UserInterface;
-using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Entity;
-using DaggerfallWorkshop.Game.Questing;
-using System.Linq;
-using DaggerfallWorkshop.Game.UserInterfaceWindows;
-using DaggerfallWorkshop.Game.Player;
-using DaggerfallWorkshop.Game.Guilds;
-using Wenzil.Console;
-using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Formulas;
-using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
-using DaggerfallWorkshop.Game.Addons.RmbBlockEditor;
+using DaggerfallWorkshop.Game.Guilds;
+using DaggerfallWorkshop.Game.Player;
+using DaggerfallWorkshop.Game.Questing;
+using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.UserInterface;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
+using DaggerfallWorkshop.Game.Utility;
+using DaggerfallWorkshop.Utility;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using Wenzil.Console;
 using static DaggerfallConnect.Arena2.FactionFile;
 
 namespace DaggerfallWorkshop.Game
@@ -273,7 +271,7 @@ namespace DaggerfallWorkshop.Game
         DaggerfallTalkWindow.TalkTone currentTalkTone = DaggerfallTalkWindow.TalkTone.Normal;
 
         // meta data for buildings used in location topic list
-        struct BuildingInfo
+        public struct BuildingInfo
         {
             public string name;
             public DFLocation.BuildingTypes buildingType;
@@ -1310,6 +1308,7 @@ namespace DaggerfallWorkshop.Game
             {
                 if (dictQuestInfo.ContainsKey(currentQuestionListItem.questID) && dictQuestInfo[currentQuestionListItem.questID].resourceInfo.ContainsKey(currentQuestionListItem.key))
                     dictQuestInfo[currentQuestionListItem.questID].resourceInfo[currentQuestionListItem.key].questPlaceResourceHintTypeReceived = QuestResourceInfo.BuildingLocationHintTypeGiven.LocationWasMarkedOnMap;
+                FormulaHelper.ShareInfoAboutLocation(buildingInfo);
                 GameManager.Instance.PlayerGPS.DiscoverBuilding(buildingInfo.buildingKey);
 
                 // above line could also be done with these statements:
