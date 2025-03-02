@@ -1384,6 +1384,9 @@ namespace DaggerfallWorkshop.Game.Entity
             if (now.ToClassicDaggerfallTime() - timeOfLastSkillIncreaseCheck <= FormulaHelper.GetMinutesBetweenSkillCheck())
                 return;
 
+            if (CurrentHealthPercent <= 5)
+                return;
+            
             timeOfLastSkillIncreaseCheck = now.ToClassicDaggerfallTime();
             var checkAgain = true;
             int count = 0;
