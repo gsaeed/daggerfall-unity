@@ -294,6 +294,16 @@ namespace DaggerfallWorkshop.Game.Formulas
             return Color.black;
         }
 
+        //Returns background color
+        public static bool ShareInfoAboutLocation(TalkManager.BuildingInfo buildingInfo)
+        {
+            Func<TalkManager.BuildingInfo, bool> del;
+            if (TryGetOverride("ShareInfoAboutLocation", out del))
+                return del(buildingInfo);
+
+            return true;
+        }
+
         //Returns default temple free healing
         public static bool FreeHealing(int factionId)
         {
