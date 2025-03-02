@@ -1739,7 +1739,8 @@ namespace DaggerfallWorkshop.Game
 
             // Decide if npc gives directional hints or marks building on map, always only give directional hints if player is inside
             float randomFloat = UnityEngine.Random.Range(0.0f, 1.0f);
-            if (randomFloat > ChanceToRevealLocationOnMap || GameManager.Instance.IsPlayerInside)
+            //if (randomFloat > ChanceToRevealLocationOnMap || GameManager.Instance.IsPlayerInside)
+            if (randomFloat > ChanceToRevealLocationOnMap)
             {
                 answer = GetKeySubjectBuildingDirection();
             }
