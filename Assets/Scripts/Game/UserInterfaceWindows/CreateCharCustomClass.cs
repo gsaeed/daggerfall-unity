@@ -514,44 +514,80 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Speed, cd.career.Speed);
                     statsRollout.WorkingStats.SetPermanentStatValue(DFCareer.Stats.Luck, cd.career.Luck);
 
+                    // Setup skills dictionary
+                    skillsDict = new Dictionary<string, DFCareer.Skills>();
+                    foreach (DFCareer.Skills potentialSkill in Enum.GetValues(typeof(DFCareer.Skills)))
+                    {
+                        string name = DaggerfallUnity.Instance.TextProvider.GetSkillName(potentialSkill);
+                        if (!string.IsNullOrEmpty(name))
+                            skillsDict.Add(name, potentialSkill);
+                    }
+                    skillsList = new List<string>(skillsDict.Keys);
+                    skillsList.Sort(); // Sort skills alphabetically a la classic.
+
+
                     //primary skills
                     createdClass.PrimarySkill1 = cd.career.PrimarySkill1;
-                    skillLabels[0].Text = createdClass.PrimarySkill1.ToString();
-
+                    var skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.PrimarySkill1);
+                    skillLabels[0].Text = skill;
+                    skillsList.Remove(skill);
+                    
                     createdClass.PrimarySkill2 = cd.career.PrimarySkill2;
-                    skillLabels[1].Text = createdClass.PrimarySkill2.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.PrimarySkill2);
+                    skillLabels[1].Text = skill;
+                    skillsList.Remove(skill);
 
                     createdClass.PrimarySkill3 = cd.career.PrimarySkill3;
-                    skillLabels[2].Text = createdClass.PrimarySkill3.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.PrimarySkill3);
+                    skillLabels[2].Text = skill;
+                    skillsList.Remove(skill);
 
                     //major skills
                     createdClass.MajorSkill1 = cd.career.MajorSkill1;
-                    skillLabels[3].Text = createdClass.MajorSkill1.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MajorSkill1);
+                    skillLabels[3].Text = skill;
+                    skillsList.Remove(skill);
 
                     createdClass.MajorSkill2 = cd.career.MajorSkill2;
-                    skillLabels[4].Text = createdClass.MajorSkill2.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MajorSkill2);
+                    skillLabels[4].Text = skill;
+                    skillsList.Remove(skill);
 
                     createdClass.MajorSkill3 = cd.career.MajorSkill3;
-                    skillLabels[5].Text = createdClass.MajorSkill3.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MajorSkill3);
+                    skillLabels[5].Text = skill;
+                    skillsList.Remove(skill);
 
                     //minor skills
                     createdClass.MinorSkill1 = cd.career.MinorSkill1;
-                    skillLabels[6].Text = createdClass.MinorSkill1.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MinorSkill1);
+                    skillLabels[6].Text = skill;
+                    skillsList.Remove(skill);
 
                     createdClass.MinorSkill2 = cd.career.MinorSkill2;
-                    skillLabels[7].Text = createdClass.MinorSkill2.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MinorSkill2);
+                    skillLabels[7].Text = skill;
+                    skillsList.Remove(skill);
 
                     createdClass.MinorSkill3 = cd.career.MinorSkill3;
-                    skillLabels[8].Text = createdClass.MinorSkill3.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MinorSkill3);
+                    skillLabels[8].Text = skill;
+                    skillsList.Remove(skill);
 
                     createdClass.MinorSkill4 = cd.career.MinorSkill4;
-                    skillLabels[9].Text = createdClass.MinorSkill4.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MinorSkill4);
+                    skillLabels[9].Text = skill;
+                    skillsList.Remove(skill);
 
                     createdClass.MinorSkill5 = cd.career.MinorSkill5;
-                    skillLabels[10].Text = createdClass.MinorSkill5.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MinorSkill5);
+                    skillLabels[10].Text = skill;
+                    skillsList.Remove(skill);
 
                     createdClass.MinorSkill6 = cd.career.MinorSkill6;
-                    skillLabels[11].Text = createdClass.MinorSkill6.ToString();
+                    skill = DaggerfallUnity.Instance.TextProvider.GetSkillName(createdClass.MinorSkill6);
+                    skillLabels[11].Text = skill;
+                    skillsList.Remove(skill);
 
                     //special advantages
                     PopulateSpecialAdvantages(cd);
