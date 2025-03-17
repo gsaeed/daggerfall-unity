@@ -18,6 +18,7 @@ using System.Linq;
 using DaggerfallWorkshop.Game;
 using IniParser;
 using IniParser.Model;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 
 namespace DaggerfallWorkshop
 {
@@ -241,6 +242,7 @@ namespace DaggerfallWorkshop
         // [Audio]
         public string SoundFont { get; set; }
         public bool AlternateMusic { get; set; }
+        public bool PlayDaggerfallUnitySetupGameWizardMusic { get; set; }
 
         // [ChildGuard]
         public bool PlayerNudity { get; set; }
@@ -519,6 +521,7 @@ namespace DaggerfallWorkshop
 
             SoundFont = GetString(sectionAudio, "SoundFont");
             AlternateMusic = GetBool(sectionAudio, "AlternateMusic");
+            PlayDaggerfallUnitySetupGameWizardMusic = GetBool(sectionAudio, "PlayDaggerfallUnitySetupGameWizardMusic");
 
             PlayerNudity = GetBool(sectionChildGuard, "PlayerNudity");
 
@@ -743,6 +746,7 @@ namespace DaggerfallWorkshop
 
             SetString(sectionAudio, "SoundFont", SoundFont);
             SetBool(sectionAudio, "AlternateMusic", AlternateMusic);
+            SetBool(sectionAudio, "PlayDaggerfallUnitySetupGameWizardMusic", PlayDaggerfallUnitySetupGameWizardMusic);
 
             SetBool(sectionChildGuard, "PlayerNudity", PlayerNudity);
 
