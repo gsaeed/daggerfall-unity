@@ -233,7 +233,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             base.Update();
 
             // Loop title song
-            if (!DaggerfallUI.Instance.DaggerfallSongPlayer.IsPlaying)
+            if (!DaggerfallUI.Instance.DaggerfallSongPlayer.IsPlaying && DaggerfallUnity.Settings.PlayDaggerfallUnitySetupGameWizardMusic)
             {
                 DaggerfallUI.Instance.DaggerfallSongPlayer.Play(titleSongFile);
             }
