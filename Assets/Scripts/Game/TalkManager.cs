@@ -123,7 +123,7 @@ namespace DaggerfallWorkshop.Game
 
         readonly ushort[] allowedBulletinTextIds = { 1475, 1476, 1477, 1478, 1479, 1482, 1483 };
 
-        const float ChanceToRevealLocationOnMap = 0.35f; // Chances unknown
+        public static float ChanceToRevealLocationOnMap = 0.35f; // Chances unknown
 
         const int maxNumAnswersNpcGivesTellMeAboutOrRumors = 1; // Maximum number of answers npc gives about "tell me about" questions or rumors
 
@@ -1308,7 +1308,6 @@ namespace DaggerfallWorkshop.Game
             {
                 if (dictQuestInfo.ContainsKey(currentQuestionListItem.questID) && dictQuestInfo[currentQuestionListItem.questID].resourceInfo.ContainsKey(currentQuestionListItem.key))
                     dictQuestInfo[currentQuestionListItem.questID].resourceInfo[currentQuestionListItem.key].questPlaceResourceHintTypeReceived = QuestResourceInfo.BuildingLocationHintTypeGiven.LocationWasMarkedOnMap;
-                FormulaHelper.ShareInfoAboutLocation(buildingInfo);
                 GameManager.Instance.PlayerGPS.DiscoverBuilding(buildingInfo.buildingKey);
 
                 // above line could also be done with these statements:
