@@ -2003,6 +2003,7 @@ namespace Wenzil.Console
                             break;
                         case "magic":
                             newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender, playerEntity.Race);
+                            newItem.IdentifyItem();
                             if (newItem.ItemGroup == ItemGroups.Weapons || newItem.ItemGroup == ItemGroups.Armor)
                             {
                                 if (newItem.ItemGroup == ItemGroups.Weapons && weaponType != WeaponMaterialTypes.None)
@@ -2016,13 +2017,14 @@ namespace Wenzil.Console
                                     newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
                             }
                             break;
-                        case "magicArmor":
+                        case "magicarmor":
                             newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender,
                                 playerEntity.Race, ItemGroups.Armor);
                             while (newItem.ItemGroup != ItemGroups.Armor)
                             {
                                 newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender,
                                     playerEntity.Race, ItemGroups.Armor);
+                                newItem.IdentifyItem();
 
                             }
                             if (armorType != ArmorMaterialTypes.None)
@@ -2030,8 +2032,9 @@ namespace Wenzil.Console
                             if (condition > 0)
                                 newItem.currentCondition = UnityEngine.Random.Range(30, 100) * newItem.maxCondition / 100;
                             break;
-                        case "magicWeapon":
+                        case "magicweapon":
                             newItem = ItemBuilder.CreateRandomMagicItem(level, playerEntity.Gender, playerEntity.Race, ItemGroups.Weapons);
+                            newItem.IdentifyItem();
                             if (weaponType != WeaponMaterialTypes.None)
                                 ItemBuilder.ApplyWeaponMaterial(newItem, weaponType);
                             if (condition > 0)
