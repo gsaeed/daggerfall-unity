@@ -212,13 +212,16 @@ namespace DaggerfallWorkshop.Game.Items
                         return itemTemplates[i];
             }
 
-            if (templateIndex < 0 || templateIndex >= itemTemplates.Count)
+//            if (templateIndex < 0 || templateIndex >= itemTemplates.Count)
+            if (templateIndex < 0 || itemTemplates.All(x => x.index != templateIndex))
             {
-                System.Diagnostics.StackTrace t = new System.Diagnostics.StackTrace();
                 string message = string.Format("Item template index out of range: TemplateIndex={0}", templateIndex);
-                Debug.LogError(message);
-                Debug.LogError($"message: {message}, stackTrace: {t}");
-                return new ItemTemplate();
+                Debug.LogWarning(message);
+                var itemTemplate = new ItemTemplate
+                {
+                    index = templateIndex
+                };
+                return itemTemplate;
             }
 
             return itemTemplates[templateIndex];
