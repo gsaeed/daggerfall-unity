@@ -956,7 +956,15 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 mod.LoadPriority = i;
                 int index = GetModIndex(mod.Title);
                 if (index < 0)
+                {
+                    if (DaggerfallUnity.Settings.AllowModsWithSharedGuid && mods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
+                    {
+                        var oldMod = mods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
+                        Debug.LogErrorFormat(" mod {0} has same GUID as mod {1}, changing GUID of Mod {0}", mod.Title, oldMod.Title);
+                        mod.ModInfo.GUID = Guid.NewGuid().ToString();
+                    }
                     mods.Add(mod);
+                }
             }
 
             if (refresh)
