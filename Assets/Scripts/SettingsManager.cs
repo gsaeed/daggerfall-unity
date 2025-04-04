@@ -381,6 +381,7 @@ namespace DaggerfallWorkshop
         public bool PlayerTorchFromItems { get; set; }
         public bool CombatVoices { get; set; }
         public bool EnemyInfighting { get; set; }
+        public bool AllowModsWithSharedGuid { get; set; }
         public bool EnhancedCombatAI { get; set; }
         public bool GuildQuestListBox { get; set; }
         public bool BowLeftHandWithSwitching { get; set; }
@@ -637,6 +638,7 @@ namespace DaggerfallWorkshop
             PlayerTorchFromItems = GetBool(sectionEnhancements, "PlayerTorchFromItems");
             CombatVoices = GetBool(sectionEnhancements, "CombatVoices");
             EnemyInfighting = GetBool(sectionEnhancements, "EnemyInfighting");
+            AllowModsWithSharedGuid = GetBool(sectionEnhancements, "AllowModsWithSharedGuid");
             EnhancedCombatAI = GetBool(sectionEnhancements, "EnhancedCombatAI");
             GuildQuestListBox = GetBool(sectionEnhancements, "GuildQuestListBox");
             BowLeftHandWithSwitching = GetBool(sectionEnhancements, "BowLeftHandWithSwitching");
@@ -845,6 +847,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionEnhancements, "PlayerTorchFromItems", PlayerTorchFromItems);
             SetBool(sectionEnhancements, "CombatVoices", CombatVoices);
             SetBool(sectionEnhancements, "EnemyInfighting", EnemyInfighting);
+            SetBool(sectionEnhancements, "AllowModsWithSharedGuid", AllowModsWithSharedGuid);
             SetBool(sectionEnhancements, "EnhancedCombatAI", EnhancedCombatAI);
             SetBool(sectionEnhancements, "GuildQuestListBox", GuildQuestListBox);
             SetBool(sectionEnhancements, "BowLeftHandWithSwitching", BowLeftHandWithSwitching);
