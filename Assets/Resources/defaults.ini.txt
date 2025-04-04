@@ -212,4 +212,4 @@ GuildQuestListBox=False
 BowLeftHandWithSwitching=False
 LoiterLimitInHours=3
 NumberOfNearestTownsForRegionalSearches=3
-
+AllowModsWithSharedGuid = False
