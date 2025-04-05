@@ -34,6 +34,12 @@ namespace DaggerfallWorkshop.Game
 
         bool performDeath = false;
 
+        public bool PerformDeath
+        {
+            get => performDeath;
+            set => performDeath = value;
+        }
+
         #endregion
 
         #region Unity
