@@ -36,6 +36,12 @@ namespace DaggerfallWorkshop.Game
         private Rigidbody rb;
         private BoxCollider bc;
 
+        public bool PerformDeath
+        {
+            get => performDeath;
+            set => performDeath = value;
+        }
+
         #endregion
 
         #region Unity
