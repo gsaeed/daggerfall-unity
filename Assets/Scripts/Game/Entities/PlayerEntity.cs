@@ -47,6 +47,7 @@ namespace DaggerfallWorkshop.Game.Entity
         public static byte BuildingBreakIn = 1;
         public static byte Steal = 1;
         public static byte StealTransport = 1;
+        public static int MaxNumberOfSkillPromotionsPerCheck = 10;
         bool godMode = false;
         bool noClipMode = false;
         bool noTargetMode = false;
@@ -1445,7 +1446,7 @@ namespace DaggerfallWorkshop.Game.Entity
                     }
 
                 }
-                checkAgain = (count < 10 && FormulaHelper.IsSkillCheckDue(checkAgain));
+                checkAgain = (count < MaxNumberOfSkillPromotionsPerCheck && FormulaHelper.IsSkillCheckDue(checkAgain));
             }
 
             if (CheckForLevelUp())
