@@ -96,6 +96,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
                 foreach (KeyValuePair<string, CharacterDocument> c in careers.DfCareers)
                 {
+                    if (myDFCareers.DfCareers.ContainsKey(c.Key))
+                        continue;
                     myDFCareers.DfCareers.Add(c.Key, c.Value);
                     if (CreateCharCustomClass.fullDFCareers == null)
                         CreateCharCustomClass.fullDFCareers = new DFCareerArray();
