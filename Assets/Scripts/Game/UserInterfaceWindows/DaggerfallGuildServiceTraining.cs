@@ -14,6 +14,7 @@ using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Guilds;
 using DaggerfallWorkshop.Game.UserInterface;
 
@@ -123,7 +124,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             now.RaiseTime(DaggerfallDateTime.SecondsPerHour * 3);
             playerEntity.DecreaseFatigue(PlayerEntity.DefaultFatigueLoss * 180);
             int skillAdvancementMultiplier = DaggerfallSkills.GetAdvancementMultiplier(skillToTrain);
-            short tallyAmount = (short)(UnityEngine.Random.Range(10, 20 + 1) * skillAdvancementMultiplier);
+            short tallyAmount = (short)(UnityEngine.Random.Range(10, 20 + 1) *
+                                        skillAdvancementMultiplier *
+                                        FormulaHelper.GetSkillTallyMultiplier(skillToTrain) *
+                                        FormulaHelper.GetTrainingIntensityMultiplier(skillToTrain));
             playerEntity.TallySkill(skillToTrain, tallyAmount);
             DaggerfallUI.MessageBox(TrainSkillId);
         }
