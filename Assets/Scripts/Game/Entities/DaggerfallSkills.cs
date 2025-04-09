@@ -12,6 +12,7 @@
 using UnityEngine;
 using System;
 using DaggerfallConnect;
+using DaggerfallWorkshop.Game.Formulas;
 
 namespace DaggerfallWorkshop.Game.Entity
 {
