@@ -284,6 +284,7 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return Guild.DefaultNumDaysToCheckForPromotion;
         }
+
         //Returns background color
         public static Color GetBackgroundColor()
         {
@@ -292,6 +293,25 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return del();
 
             return Color.black;
+        }
+
+        //Returns Skill Tally Multiplier to use in TallySkill
+        public static int GetSkillTallyMultiplier(DFCareer.Skills skillToTrain)
+        {
+            Func<DFCareer.Skills, int> del;
+            if (TryGetOverride("GetSkillTallyMultiplier", out del))
+                return del(skillToTrain);
+
+            return 1;
+        }
+
+        public static int GetTrainingIntensityMultiplier(DFCareer.Skills skillToTrain)
+        {
+            Func<DFCareer.Skills, int> del;
+            if (TryGetOverride("GetTrainingIntensityMultiplier", out del))
+                return del(skillToTrain);
+
+            return 1;
         }
 
         //Returns default temple free healing
