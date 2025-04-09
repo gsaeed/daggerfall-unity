@@ -1260,7 +1260,7 @@ namespace DaggerfallWorkshop.Game.Entity
 
             try
             {
-                skillUses[skillId] += amount;
+                skillUses[skillId] += (short)(amount * FormulaHelper.GetSkillTallyMultiplier(skill));
                 if (skillUses[skillId] > 20000)
                     skillUses[skillId] = 20000;
                 else if (skillUses[skillId] < 0)
