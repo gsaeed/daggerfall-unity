@@ -212,7 +212,7 @@ namespace DaggerfallWorkshop.Game
         GameObject gameobjectBeacons = null; // collector GameObject to hold beacons
         GameObject gameobjectPlayerMarkerArrow = null; // GameObject which will hold player marker arrow
         GameObject gameobjectBeaconPlayerPosition = null; // GameObject which will hold player marker ray (red ray)
-        GameObject gameobjectBeaconEntrancePosition = null; // GameObject which will hold (dungeon) entrance marker ray (green ray)
+        public GameObject gameobjectBeaconEntrancePosition = null; // GameObject which will hold (dungeon) entrance marker ray (green ray)
         GameObject gameobjectBeaconRotationPivotAxis = null; // GameObject which will hold rotation pivot axis ray (blue ray)
         GameObject gameobjectRotationArrow1 = null; // GameObject which will hold rotation arrow1 (blue arrow)
         GameObject gameobjectRotationArrow2 = null; // GameObject which will hold rotation arrow2 (blue arrow)
