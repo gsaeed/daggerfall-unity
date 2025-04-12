@@ -445,7 +445,10 @@ namespace DaggerfallWorkshop.Game
                     playerEntity.TallySkill(DFCareer.Skills.CriticalStrike, 1);
                 }
                 isDamageFinished = true;
+                CheckHitCustomActivator();
             }
+
+
         }
 
         public void SheathWeapons()
@@ -682,8 +685,6 @@ namespace DaggerfallWorkshop.Game
                     return true;
                 }
             }
-
-            return CheckHitCustomActivator();
             return false;
         }
 
