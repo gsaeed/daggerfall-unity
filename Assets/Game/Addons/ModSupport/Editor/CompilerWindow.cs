@@ -76,6 +76,38 @@ namespace DaggerfallWorkshop.Game.Utility
 
             }
 
+            if (GUILayout.Button("Add Folder"))
+            {
+                string folderPath = EditorUtility.OpenFolderPanel("Select Folder", Application.dataPath, "");
+                if (!string.IsNullOrEmpty(folderPath))
+                {
+                    // Get all .cs files in the selected folder (non-recursively)
+                    string[] csFiles = Directory.GetFiles(folderPath, "*.cs", SearchOption.TopDirectoryOnly);
+
+                    foreach (string file in csFiles)
+                    {
+                        if (!filesToCompile.Contains(file))
+                        {
+                            filesToCompile.Add(file);
+                        }
+                        else
+                        {
+                            Debug.Log($"File {file} is already selected.");
+                        }
+                    }
+
+                    if (csFiles.Length == 0)
+                    {
+                        Debug.Log("No .cs files found in the selected folder.");
+                    }
+                }
+                else
+                {
+                    Debug.Log("No folder selected.");
+                }
+            }
+
+
             EditorGUILayout.Space();
 
             if (selectedCompiler == 1)
