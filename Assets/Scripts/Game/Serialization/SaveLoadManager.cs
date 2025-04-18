@@ -390,6 +390,21 @@ namespace DaggerfallWorkshop.Game.Serialization
             StartCoroutine(SaveGame(characterName, saveName, instantReload));
         }
 
+        private string QuickSaveName()
+        {
+            var saveName = "QuickSave";
+
+            var level = GameManager.Instance.PlayerEntity.Level.ToString();
+            saveName += " Level " + level + " -";
+
+            string locationName = GameManager.Instance.PlayerGPS.CurrentLocation.Name == " " ? GameManager.Instance.PlayerGPS.CurrentRegion.Name : GameManager.Instance.PlayerGPS.CurrentLocation.Name;
+            saveName += " " + locationName;
+
+            saveName += " " + System.DateTime.Now.ToString("yy/MM/dd - HH:mm:ss");
+
+            return saveName;
+        }
+
         public void QuickSave(bool instantReload = false)
         {
             if (!LoadInProgress)
@@ -397,7 +412,7 @@ namespace DaggerfallWorkshop.Game.Serialization
                 if (GameManager.Instance.SaveLoadManager.IsSavingPrevented)
                     DaggerfallUI.MessageBox(TextManager.Instance.GetLocalizedText("cannotSaveNow"));
                 else
-                    Save(GameManager.Instance.PlayerEntity.Name, quickSaveName, instantReload);
+                    Save(GameManager.Instance.PlayerEntity.Name, QuickSaveName(), instantReload);
             }
         }
 
