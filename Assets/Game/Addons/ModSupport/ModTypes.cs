@@ -52,6 +52,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public string GUID = "invalid";
         public List<string> Files;      //list of assets to add to mod (only used during creation)
         public bool ModPreCompile = false;
+        public bool ModPatch = false;
 
 #pragma warning disable 649
         /// <summary>
