@@ -27,7 +27,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
     {
         #region Fields
 
-        const string settingsFileName = "modsettings.json";
+        public const string settingsFileName = "modsettings.json";
         const string presetsFileName = "modpresets.json";
 
         readonly Mod mod;
@@ -99,6 +99,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         private ModSettingsData(Mod mod)
             :this()
         {
+            if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
+            {
+                var patchMod = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
+                if (patchMod.HasAsset(settingsFileName))
+                    mod = patchMod;
+            }
             this.mod = mod;
         }
 
@@ -415,6 +421,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         /// </summary>
         public static bool HasSettings(Mod mod)
         {
+            if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
+            {
+                var patchMod = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
+                if (patchMod.HasAsset(settingsFileName))
+                    mod = patchMod;
+            }
             return mod.HasAsset(settingsFileName);
         }
 
@@ -423,6 +435,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         /// </summary>
         public static ModSettingsData Make(Mod mod)
         {
+            if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
+            {
+                var patchMod = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
+                if (patchMod.HasAsset(settingsFileName))
+                    mod = patchMod;
+            }
             ModSettingsData instance = new ModSettingsData(mod);
             if (HasSettings(mod) && TryDeserialize(mod, settingsFileName, ref instance))
                 return instance;
