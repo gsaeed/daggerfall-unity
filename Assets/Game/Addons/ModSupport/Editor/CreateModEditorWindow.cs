@@ -47,6 +47,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         ModInfo modInfo;
 
         bool precompiledMod;
+        bool patchMod;
 
         //asset bundles will be created for any targets here
         readonly BuildTarget[] buildTargets = new BuildTarget[]
@@ -142,6 +143,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             fileOpen = true;
             precompiledMod = info.ModPreCompile;
+            patchMod = info.ModPatch;
             return info;
         }
 
@@ -420,6 +422,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             EditorGUILayout.Space();
             precompiledMod = EditorGUILayout.ToggleLeft(new GUIContent("Precompiled (experimental)", "Compile C# files into a .dll."), precompiledMod);
+            patchMod = EditorGUILayout.ToggleLeft(new GUIContent("Patch Existing Mod", "Replace Files in Existing Mod"), patchMod);
 
             GUILayoutHelper.Horizontal(() =>
             {
@@ -456,6 +459,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         bool SaveModFile(bool supressWindow = false)
         {
             modInfo.ModPreCompile = precompiledMod;
+            modInfo.ModPatch = patchMod;
             ModManager.SeekModContributes(modInfo, automaticallyRegisterQuestLists);
 
             string path = currentFilePath;
