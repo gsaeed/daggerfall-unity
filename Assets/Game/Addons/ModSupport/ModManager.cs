@@ -14,20 +14,15 @@ using UnityEngine;
 using UnityEditor;
 #endif
 using System;
-using System.CodeDom;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using FullSerializer;
-using Mono.CSharp;
-using Unity.Mathematics;
-using UnityEngine.Windows.WebCam;
 
 namespace DaggerfallWorkshop.Game.Utility.ModSupport
 {
@@ -55,6 +50,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         bool alreadyAtStartMenuState = false;
         static bool alreadyStartedInit = false;
         [SerializeField] public List<Mod> mods;
+        [SerializeField] public List<Mod> patchMods;
         List<Mod> preSortedMods;
         public static readonly fsSerializer _serializer = new fsSerializer();
 
@@ -445,6 +441,24 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             return asset;
         }
 
+        public bool TryGetAssetPatch<T>(string guid, string name, bool? clone, out T asset) where T : UnityEngine.Object
+        {
+            if (patchMods.All(x => x.ModInfo.GUID != guid))
+            {
+                asset = null;
+                return false;
+            }
+
+            var query = from mod in patchMods
+                where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
+                select clone.HasValue ? mod.GetAssetPatch<T>(name, out _) : mod.LoadAssetPatch<T>(name);
+
+            asset = query.FirstOrDefault(x => x != null);
+
+            return asset != null;
+
+        }
+
         /// <summary>
         /// Seek asset in all mods with load order.
         /// </summary>
@@ -457,16 +471,34 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <returns>True if asset is found and loaded sucessfully.</returns>
         public bool TryGetAsset<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
         {
+            Mod realMod = null;
+            T patchAsset;
             var query = from mod in EnumerateEnabledModsReverse()
 #if UNITY_EDITOR
-                where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
-                      (mod.IsVirtual && mod.HasAsset(name))
+                    where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
+                          (mod.IsVirtual && mod.HasAsset(name))
 #else
                         where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
 #endif
-                select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name);
+                    //select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name),
+                select new { Mod = mod, Asset = clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name) };
 
-            return (asset = query.FirstOrDefault(x => x != null)) != null;
+            var result = query.FirstOrDefault(x => x.Asset != null);
+            if (result != null)
+            {
+                asset = result.Asset;
+                realMod = result.Mod;
+            }
+            else
+            {
+                asset = null;
+            }
+
+            if (TryGetAssetPatch(realMod?.ModInfo.GUID, name, clone, out patchAsset))
+            {
+                asset = patchAsset;
+            }
+            return asset != null;
         }
 
         /// <summary>
@@ -483,6 +515,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <returns>True if asset is found and loaded sucessfully.</returns>
         public bool TryGetAsset<T>(string[] names, bool? clone, out T asset) where T : UnityEngine.Object
         {
+            // place logic here to find patch
+
             var query = from mod in EnumerateEnabledModsReverse()
 #if UNITY_EDITOR
                 where mod.AssetBundle != null || mod.IsVirtual
@@ -492,9 +526,28 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                         where mod.AssetBundle != null
                         from name in names where mod.AssetBundle.Contains(name)
 #endif
-                select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name);
+            //    select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name);
+            select new { Mod = mod, Asset = clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name) };
+            Mod realMod = null;
+            T patchAsset = null;
 
-            return (asset = query.FirstOrDefault(x => x != null)) != null;
+            var result = query.FirstOrDefault(x => x.Asset != null);
+            if (result != null)
+            {
+                asset = result.Asset;
+                realMod = result.Mod;
+            }
+            else
+            {
+                asset = null;
+            }
+
+            if (TryGetAssetPatch(realMod?.ModInfo.GUID, name, clone, out patchAsset))
+            {
+                asset = patchAsset;
+            }
+            return asset != null;
+
         }
 
         /// <summary>
@@ -507,6 +560,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <returns>True if asset is found and loaded sucessfully.</returns>
         public ModAsset TryGetModAsset<T>(string name) where T : UnityEngine.Object
         {
+            // place logic here to find patch
+
             // Define the regular expression pattern for N_N-N
             string pattern = @"^(\d{1,4})_(\d{1,4})-(\d{1,4})$";
             string prefabName = string.Empty;
@@ -957,13 +1012,21 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 int index = GetModIndex(mod.Title);
                 if (index < 0)
                 {
-                    if (DaggerfallUnity.Settings.AllowModsWithSharedGuid && mods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
+                    if(mod.ModInfo.ModPatch)
+                    {
+                        if (patchMods == null)
+                            patchMods = new List<Mod>();
+                        if (patchMods.All(x => x.ModInfo.GUID != mod.ModInfo.GUID))
+                            patchMods.Add(mod);
+                    }
+                    else if (DaggerfallUnity.Settings.AllowModsWithSharedGuid && mods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
                     {
                         var oldMod = mods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
                         Debug.LogErrorFormat(" mod {0} has same GUID as mod {1}, changing GUID of Mod {0}", mod.Title, oldMod.Title);
                         mod.ModInfo.GUID = Guid.NewGuid().ToString();
                     }
-                    mods.Add(mod);
+                    if (!mod.ModInfo.ModPatch)
+                        mods.Add(mod);
                 }
             }
 
@@ -978,6 +1041,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     }
                 }
             }
+
+
 
 #if UNITY_EDITOR
             if (LoadVirtualMods)
@@ -999,14 +1064,33 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                     if (mods.Any(x => x.ModInfo.GUID == modInfo.GUID))
                     {
-                        Debug.LogErrorFormat("Ignoring virtual mod {0} because release mod is already loaded.", modInfo.ModTitle);
+                        if (modInfo.ModPatch && patchMods.All(x => x.ModInfo.GUID != modInfo.GUID))
+                        {
+                            var patchMod = new Mod(manifestPath, modInfo);
+                            if (patchMods == null)
+                                patchMods = new List<Mod>();
+                            patchMods.Add(patchMod);
+                        }
+                        else
+                        {
+                            int index = mods.FindIndex(x => x.ModInfo.GUID == modInfo.GUID);
+                            Debug.LogError($"Ignoring virtual mod {modInfo.ModTitle} because release mod is already loaded at index {index}");
+                        }
                         continue;
                     }
-
-                    mods.Add(new Mod(manifestPath, modInfo));
+                    if (modInfo.ModPatch)
+                    {
+                        if (patchMods == null)
+                            patchMods = new List<Mod>();
+                        patchMods.Add(new Mod(manifestPath, modInfo));
+                    }
+                    else
+                        mods.Add(new Mod(manifestPath, modInfo));
                 }
             }
 #endif
+            foreach (var sourceMod in mods.Where(x => x.AssetBundle != null))
+                sourceMod.LoadSourceCodeFromModBundle();
         }
 
         // Loads Asset bundle and adds to ModLookUp dictionary
@@ -2113,6 +2197,69 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 OnUnloadModEvent(ModTitle);
         }
 
+        public bool LoadSourceCodeFromModBundle(string guid, out List<Source> sources)
+        {
+            try
+            {
+                sources = new List<Source>();
+
+                if (patchMods.All(x => x.ModInfo.GUID != guid))
+                {
+                    sources = null;
+                    return false;
+                }
+
+                var query = from mod in patchMods
+                    where mod.ModInfo.GUID == guid
+                            select mod;
+
+                var sourceMod = query.FirstOrDefault(x => x != null);
+                if (sourceMod == null)
+                {
+                    sources = null;
+                    return false;
+                }
+
+                var list = sourceMod.AssetBundle.GetAllAssetNames();
+                foreach (string assetName in sourceMod.AssetBundle.GetAllAssetNames())
+                {
+                    bool isSource = false;
+                    bool isPrecompiled = false;
+
+                    if (assetName.EndsWith(".cs.txt", StringComparison.Ordinal))
+                    {
+                        isSource = true;
+                        isPrecompiled = false;
+                    }
+                    else if (assetName.EndsWith(".dll.bytes", StringComparison.Ordinal))
+                    {
+                        isSource = true;
+                        isPrecompiled = true;
+                    }
+
+                    if (isSource)
+                    {
+                        var newSource = sourceMod.GetAsset<TextAsset>(assetName);
+                        if (newSource)
+                        {
+                            sources.Add(new Source()
+                            {
+                                sourceTxt = newSource,
+                                isPreCompiled = isPrecompiled
+                            });
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+                sources = null;
+                return false;
+            }
+        }
         internal static void OnLoadAsset(string ModTitle, string assetName, Type assetType)
         {
             if (OnLoadAssetEvent != null)
