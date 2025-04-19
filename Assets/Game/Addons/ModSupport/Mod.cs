@@ -217,7 +217,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             this.FileName = name;
             this.DirPath = dirPath;
-            this.LoadSourceCodeFromModBundle();
+            //this.LoadSourceCodeFromModBundle();
             this.HasSettings = ModSettings.ModSettingsData.HasSettings(this);
 #if DEBUG
             Debug.Log(string.Format("Finished Mod setup: {0}", this.Title));
@@ -303,12 +303,47 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <param name="loadedBundle">True if assetbundle had to be loaded.</param>
         /// <param name="clone">Instantiate a cloned instance if true.</param>
         /// <returns>A reference to the loaded asset or a cloned instance.</returns>
-        public T GetAsset<T>(string assetName, out bool loadedBundle, bool clone = false) where T : UnityEngine.Object
+        public T GetAsset<T>(string assetName, out bool loadedBundle, bool clone = false ) where T : UnityEngine.Object
         {
             loadedBundle = false;
 
             T asset = LoadAssetFromBundle<T>(assetName, out loadedBundle);
+            T patchAsset = null;
+            if (asset == null)
+            {
+                Debug.LogError(string.Format("Failed to load asset: {0} from {1}", assetName, Title));
+                return null;
+            }
+            else if (clone)
+            {
+                
+                if (ModManager.Instance.TryGetAssetPatch<T>(ModInfo.GUID, assetName, clone, out patchAsset))
+                    asset = patchAsset;
+                return UnityEngine.Object.Instantiate(asset) as T;
+            }
+            else
+            {
+                if (ModManager.Instance.TryGetAssetPatch<T>(ModInfo.GUID, assetName, clone, out patchAsset))
+                    asset = patchAsset;
+                return asset as T;
+            }
+        }
 
+        /// <summary>
+        /// Loads an asset from the assetbundle of this mod and cache it.
+        /// If required, the assetbundle will be automatically loaded.
+        /// </summary>
+        /// <typeparam name="T">The asset type.</typeparam>
+        /// <param name="assetname">The name of the asset with or without extension.</param>
+        /// <param name="loadedBundle">True if assetbundle had to be loaded.</param>
+        /// <param name="clone">Instantiate a cloned instance if true.</param>
+        /// <returns>A reference to the loaded asset or a cloned instance.</returns>
+        public T GetAssetPatch<T>(string assetName, out bool loadedBundle, bool clone = false ) where T : UnityEngine.Object
+        {
+            loadedBundle = false;
+
+            T asset = LoadAssetFromBundle<T>(assetName, out loadedBundle);
+            T patchAsset = null;
             if (asset == null)
             {
                 Debug.LogError(string.Format("Failed to load asset: {0} from {1}", assetName, Title));
@@ -319,7 +354,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 return UnityEngine.Object.Instantiate(asset) as T;
             }
             else
+            {
                 return asset as T;
+            }
         }
 
         /// <summary>
@@ -492,6 +529,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// </summary>
         public ModSettings.ModSettings GetSettings()
         {
+            if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == ModInfo.GUID))
+            {
+                var patchMod = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == ModInfo.GUID);
+                if (patchMod.HasAsset(ModSettingsData.settingsFileName))
+                    return new ModSettings.ModSettings(patchMod);
+            }
             return new ModSettings.ModSettings(this);
         }
 
@@ -547,7 +590,47 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             where T : UnityEngine.Object
         {
             assetName = ModManager.GetAssetName(assetName);
+            T patchAsset = null;
+            T asset = null;
+            bool isVirtual = false;
 
+#if UNITY_EDITOR
+            if (isVirtual = IsVirtual)
+                asset = LoadAssetFromResources<T>(assetName);
+#endif
+
+            if (!isVirtual)
+            {
+                if (!AssetBundle)
+                    LoadAssetBundle();
+
+                asset = AssetBundle.LoadAsset<T>(assetName);
+                if(ModManager.Instance.TryGetAssetPatch<T>(ModInfo.GUID, assetName, null, out patchAsset))
+                    asset = patchAsset;
+            }
+            if (ModManager.Instance.TryGetAssetPatch<T>(ModInfo.GUID, assetName, null, out patchAsset))
+                asset = patchAsset;
+
+            return asset;
+        }
+
+        /// <summary>
+        /// Loads an asset without cache. In most cases <see cref="GetAsset{T}(string, bool)"/> should be used instead.
+        /// </summary>
+        /// <typeparam name="T">The asset must be assignable to this type to be accepted.</typeparam>
+        /// <param name="assetName">The name of the asset with or without extension.</param>
+        /// <remarks>
+        /// This method allows to load directly from bundle without mod cache to avoid references that would prevent
+        /// garbage collection to be performed. For example is used internally when the game seeks assets from all mods
+        /// and handles a global cache.
+        /// Shouldn't be used for prefabs because <see cref="ImportedComponentAttribute"/> is currently unsupported.
+        /// </remarks>
+        /// <returns>Returns the loaded asset if found; otherwise returns null without logging errors.</returns>
+        internal T LoadAssetPatch<T>(string assetName)
+            where T : UnityEngine.Object
+        {
+            assetName = ModManager.GetAssetName(assetName);
+            T patchAsset = null;
             T asset = null;
             bool isVirtual = false;
 
@@ -563,7 +646,6 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 asset = AssetBundle.LoadAsset<T>(assetName);
             }
-
             return asset;
         }
 
@@ -631,6 +713,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <returns>A reference to the loaded asset or null if not found.</returns>
         private T LoadAssetFromBundle<T>(string assetName, out bool loadedBundle) where T : UnityEngine.Object
         {
+            // place logic here to find patch
+
             LoadedAsset la = new LoadedAsset();
             loadedBundle = false;
 
@@ -897,7 +981,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         }
 
         // Loads all the source code found in bundle as Text Assets & adds to Sources list
-        private bool LoadSourceCodeFromModBundle()
+        public bool LoadSourceCodeFromModBundle()
         {
             try
             {
@@ -933,6 +1017,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                         }
                     }  
                 }
+
+                List<Source> patchSources = new List<Source>();
+                if (ModManager.Instance.LoadSourceCodeFromModBundle(ModInfo.GUID, out patchSources))
+                    sources = patchSources;
 
                 return true;
             }
