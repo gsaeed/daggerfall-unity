@@ -1182,7 +1182,14 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 for (int i = 0; i < mods.Length; i++)
                 {
-                    List<SetupOptions> setupOptions = mods[i].FindModLoaders(state);
+                    var curMod = mods[i];
+#if UNITY_EDITOR
+                    if (patchMods.Any(x => x.ModInfo.GUID == mods[i].ModInfo.GUID && x.IsVirtual))
+                    {
+                        curMod = patchMods.First(x => x.ModInfo.GUID == mods[i].ModInfo.GUID);
+                    }
+#endif
+                    List<SetupOptions> setupOptions = curMod.FindModLoaders(state);
 
                     if (setupOptions == null)
                     {
@@ -2209,12 +2216,18 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     return false;
                 }
 
+
                 var query = from mod in patchMods
                     where mod.ModInfo.GUID == guid
                             select mod;
 
                 var sourceMod = query.FirstOrDefault(x => x != null);
+#if UNITY_EDITOR
+                if (sourceMod == null || sourceMod.IsVirtual)
+#endif
+#if !UNITY_EDITOR
                 if (sourceMod == null)
+#endif
                 {
                     sources = null;
                     return false;
@@ -2282,6 +2295,6 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             }
         }
 
-        #endregion
+#endregion
     }
 }
