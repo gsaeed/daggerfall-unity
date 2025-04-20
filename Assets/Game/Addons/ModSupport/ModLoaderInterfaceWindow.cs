@@ -476,8 +476,13 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             //disableAllButton.Enabled = false;
             foreach (var m in ModManager.Instance.GetAllMods())
             {
-                if ((modFilterText.Length == 0 && modsettingCheckbox.IsChecked && m.HasSettings) ||
-                    (modFilterText.Length > 0 && modsettingCheckbox.IsChecked && m.HasSettings &&
+                Mod pM;
+                Mod cM = m;
+                pM = ModManager.Instance.patchMods.FirstOrDefault(x => x.ModInfo.GUID == m.ModInfo.GUID && x.HasSettings);
+                if (pM != null)
+                    cM = pM;
+                if ((modFilterText.Length == 0 && modsettingCheckbox.IsChecked && cM.HasSettings) ||
+                    (modFilterText.Length > 0 && modsettingCheckbox.IsChecked && cM.HasSettings &&
                      m.ModInfo.ModTitle.ToUpper().Contains(modFilterText.ToUpper())) ||
                     (modFilterText.Length > 0 && !modsettingCheckbox.IsChecked &&
                      m.ModInfo.ModTitle.ToUpper().Contains(modFilterText.ToUpper())))
@@ -557,7 +562,12 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         showModDescriptionButton.BackgroundColor = hasDescription ? textColor : disabledButtonBackground;
 
         // Update buttons
-        if (mod.HasSettings)
+        var cM = mod;
+        Mod pM;
+        pM = ModManager.Instance.patchMods.FirstOrDefault(x => x.ModInfo.GUID == mod.ModInfo.GUID);
+        if (pM != null)
+            cM = pM;
+        if (cM.HasSettings)
         {
             modSettingsButton.Enabled = true;
             showModDescriptionButton.Position = new Vector2(5, 83);
@@ -1396,6 +1406,8 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
     void ModSettingsButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
     {
         Mod mod = ModManager.Instance.GetMod(modSettings[modList.SelectedIndex].modInfo.ModTitle);
+        if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
+            mod = ModManager.Instance.patchMods.FirstOrDefault(x => x.ModInfo.GUID == mod.ModInfo.GUID);
         ModSettingsWindow modSettingsWindow = new ModSettingsWindow(DaggerfallUI.UIManager, mod);
         DaggerfallUI.UIManager.PushWindow(modSettingsWindow);
     }

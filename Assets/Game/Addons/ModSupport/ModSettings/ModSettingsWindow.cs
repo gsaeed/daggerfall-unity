@@ -10,6 +10,7 @@
 //
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
@@ -436,12 +437,17 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         /// </summary>
         private void SaveButton_OnMouseClick(BaseScreenComponent sender, Vector2 position)
         {
+            var saveMod = mod;
+#if UNITY_EDITOR
+            if (ModManager.Instance.patchMods.Any(x=>x.ModInfo.GUID == mod.ModInfo.GUID && x.HasSettings && x.IsVirtual))
+                saveMod = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID && x.HasSettings);
+#endif
             if (liveChange)
             {
                 if (hasChangesFromPresets)
                 {
                     SaveSettings(true);
-                    mod.LoadSettingsCallback(new ModSettings(mod, settings), new ModSettingsChange());
+                    saveMod.LoadSettingsCallback(new ModSettings(saveMod, settings), new ModSettingsChange());
                 }
                 else
                 {
@@ -449,7 +455,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
                     SaveSettings(true, changedSettings);
 
                     if (changedSettings.Count > 0)
-                        mod.LoadSettingsCallback(new ModSettings(mod, settings), new ModSettingsChange(changedSettings));
+                        saveMod.LoadSettingsCallback(new ModSettings(saveMod, settings), new ModSettingsChange(changedSettings));
                 }
             }
             else
