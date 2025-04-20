@@ -156,7 +156,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <summary>
         /// If not null, this callback is invoked when settings are changed or when raised with <see cref="LoadSettings()"/>.
         /// </summary>
-        public Action<ModSettings.ModSettings, ModSettingsChange> LoadSettingsCallback { internal get; set; }
+        public Action<ModSettings.ModSettings, ModSettingsChange> LoadSettingsCallback { get; set; }
 
         /// <summary>
         /// Cached list of all asset names (not the relative paths).
@@ -529,7 +529,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// </summary>
         public ModSettings.ModSettings GetSettings()
         {
-            if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == ModInfo.GUID))
+            if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == ModInfo.GUID && x.HasAsset(ModSettingsData.settingsFileName)))
             {
                 var patchMod = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == ModInfo.GUID);
                 if (patchMod.HasAsset(ModSettingsData.settingsFileName))

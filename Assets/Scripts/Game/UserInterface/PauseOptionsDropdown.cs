@@ -169,7 +169,13 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
             foreach (var m in ModManager.Instance.Mods)
             {
-                if (m.HasSettings && m.LoadSettingsCallback != null)
+                Mod cm = m;
+                Mod pm;
+#if UNITY_EDITOR
+                if (ModManager.Instance.patchMods.Any(x=>x.ModInfo.GUID == m.ModInfo.GUID && x.HasSettings && x.IsVirtual))
+                   cm = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == m.ModInfo.GUID);
+#endif
+                if (cm.HasSettings && cm.LoadSettingsCallback != null)
                     return true;
             }
 
@@ -256,9 +262,20 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
         private void ModSettingsWindowOption_OnClick()
         {
-            var modTitles = ModManager.Instance.Mods
-                .Where(x => x.HasSettings && x.LoadSettingsCallback != null)
-                .Select(x => x.Title)
+            var modList = new List<string>();
+            foreach (var m in ModManager.Instance.Mods)
+            {
+                var cm = m;
+#if UNITY_EDITOR
+                if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == m.ModInfo.GUID && x.HasSettings && x.IsVirtual))
+                     cm = ModManager.Instance.patchMods.FirstOrDefault(x => x.ModInfo.GUID == m.ModInfo.GUID);
+#endif
+                if (cm != null && cm.HasSettings && cm.LoadSettingsCallback != null)
+                    modList.Add(m.Title);
+            }
+
+            var modTitles = modList
+                .Where(x => !string.IsNullOrEmpty(x))
                 .OrderBy(x => x.ToUpper())
                 .ToArray();
 
