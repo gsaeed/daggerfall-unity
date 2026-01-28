@@ -1820,47 +1820,80 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         {
             var sorted = new List<T>();
             var visited = new HashSet<T>();
-            var beingVisited = new HashSet<T>(); // New set to track nodes currently being visited
+            var beingVisited = new HashSet<T>();
+            var visitPath = new Stack<T>(); // Track the current path
             cyclicError = false;
+
             foreach (var item in source)
             {
-                VisitCnt = 0;
-                Visit(item, visited, beingVisited, sorted, dependencies);
+                if (!visited.Contains(item))
+                {
+                    Visit(item, visited, beingVisited, sorted, dependencies, visitPath);
+                }
             }
 
             return sorted;
         }
 
-        private static void Visit<T>(T item, HashSet<T> visited, HashSet<T> beingVisited, List<T> sorted, Func<T, IEnumerable<T>> dependencies)
+        private static void Visit<T>(T item, HashSet<T> visited, HashSet<T> beingVisited, List<T> sorted,
+            Func<T, IEnumerable<T>> dependencies, Stack<T> visitPath)
         {
-            if (cyclicError || VisitCnt > 100)
+            if (cyclicError)
                 return;
 
             if (!visited.Contains(item))
             {
-                beingVisited.Add(item); // Mark the node as being visited
+                beingVisited.Add(item);
+                visitPath.Push(item);
 
                 foreach (var dependency in dependencies(item))
                 {
                     if (beingVisited.Contains(dependency))
                     {
                         SuccessfulSort = false;
-                        if (VisitCnt > 10)
+
+                        // Build the cycle path for reporting
+                        var cycle = new List<T>();
+                        var foundStart = false;
+                        foreach (var pathItem in visitPath.Reverse())
                         {
-                            throw new Exception(
-                                $"Error Cnt {ErrorsEncountered} Cyclic dependency found between item {(item as Mod)?.ModInfo.ModTitle} and dependency {(dependency as Mod)?.ModInfo.ModTitle}");
+                            if (pathItem.Equals(dependency))
+                                foundStart = true;
+
+                            if (foundStart)
+                                cycle.Add(pathItem);
                         }
+                        cycle.Add(dependency); // Complete the cycle
+
+                        // Create detailed error message
+                        var cycleString = string.Join(" >> ",
+                            cycle.Select(x => (x as Mod)?.ModInfo.ModTitle ?? x?.ToString() ?? "Unknown"));
+
                         cyclicError = true;
-                        return;
+                        visitPath.Pop();
+                        beingVisited.Remove(item);
+
+                        Debug.Log(
+                            $"Sort Error Cnt {ErrorsEncountered} - Cyclic dependency detected:\n{cycleString}");
                     }
 
-                    VisitCnt++;
-                    Visit(dependency, visited, beingVisited, sorted, dependencies);
+                    if (!visited.Contains(dependency))
+                    {
+                        Visit(dependency, visited, beingVisited, sorted, dependencies, visitPath);
+
+                        if (cyclicError)
+                        {
+                            visitPath.Pop();
+                            beingVisited.Remove(item);
+                            return;
+                        }
+                    }
                 }
 
-                visited.Add(item); // Mark the node as visited
+                visited.Add(item);
                 sorted.Add(item);
-                beingVisited.Remove(item); // Remove the node from the beingVisited set
+                beingVisited.Remove(item);
+                visitPath.Pop();
             }
         }
 
