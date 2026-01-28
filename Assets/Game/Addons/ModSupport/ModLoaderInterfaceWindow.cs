@@ -863,7 +863,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                     errorMessages.Add(string.Empty);
                 }
 
-                errorMessages.Add(string.Format("- {0}", mod.Title));
+                errorMessages.Add(string.Format("Error {0}", mod.Title));
                 errorMessages.AddRange(modErrorMessages);
                 errorMessages.Add(string.Empty);
                 modErrorMessages.Clear();
