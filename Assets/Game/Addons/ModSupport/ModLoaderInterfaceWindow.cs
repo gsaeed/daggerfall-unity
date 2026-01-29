@@ -730,7 +730,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                 }
 
                 bool found = false;
-                if (target.ModInfo.Dependencies != null)
+                if (target.ModInfo.Dependencies != null && target.ModInfo.Dependencies.Length > 0)
                 {
                     for (var n = 0; n < target.ModInfo.Dependencies.Length; n++)
                     {
