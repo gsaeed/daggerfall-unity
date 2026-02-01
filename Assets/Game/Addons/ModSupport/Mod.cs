@@ -306,11 +306,11 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public T GetAsset<T>(string assetName, out bool loadedBundle, bool clone = false ) where T : UnityEngine.Object
         {
             loadedBundle = false;
-
             T asset = LoadAssetFromBundle<T>(assetName, out loadedBundle);
             T patchAsset = null;
             if (asset == null)
             {
+                
                 Debug.LogError(string.Format("Failed to load asset: {0} from {1}", assetName, Title));
                 return null;
             }
