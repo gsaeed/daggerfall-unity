@@ -187,6 +187,8 @@ namespace DaggerfallWorkshop
         public bool ExteriorLightShadows { get; set; }
         public bool AmbientLitInteriors { get; set; }
         public bool MobileNPCShadows { get; set; }
+        public bool BundleTexture2DFrames { get; set; } // if true, always look in location housing 0 frame for all other frames.
+    
         public bool GeneralBillboardShadows { get; set; }
         public bool NatureBillboardShadows { get; set; }
         public float DungeonShadowDistance { get; set; }
@@ -466,6 +468,7 @@ namespace DaggerfallWorkshop
             ExteriorLightShadows = GetBool(sectionVideo, "ExteriorLightShadows");
             AmbientLitInteriors = GetBool(sectionVideo, "AmbientLitInteriors");
             MobileNPCShadows = GetBool(sectionVideo, "MobileNPCShadows");
+            BundleTexture2DFrames = GetBool(sectionVideo, "BundleTexture2DFrames");
             GeneralBillboardShadows = GetBool(sectionVideo, "GeneralBillboardShadows");
             NatureBillboardShadows = GetBool(sectionVideo, "NatureBillboardShadows");
             DungeonShadowDistance = GetFloat(sectionVideo, "DungeonShadowDistance", 0.1f, 50.0f);
@@ -687,6 +690,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionVideo, "ExteriorLightShadows", ExteriorLightShadows);
             SetBool(sectionVideo, "AmbientLitInteriors", AmbientLitInteriors);
             SetBool(sectionVideo, "MobileNPCShadows", MobileNPCShadows);
+            SetBool(sectionVideo, "BundleTexture2DFrames", BundleTexture2DFrames);
             SetBool(sectionVideo, "GeneralBillboardShadows", GeneralBillboardShadows);
             SetBool(sectionVideo, "NatureBillboardShadows", NatureBillboardShadows);
             SetFloat(sectionVideo, "DungeonShadowDistance", DungeonShadowDistance);
