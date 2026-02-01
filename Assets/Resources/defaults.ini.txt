@@ -25,6 +25,7 @@ InteriorLightShadows=True
 ExteriorLightShadows=True
 AmbientLitInteriors=False
 MobileNPCShadows=False
+BundleTexture2DFrames=True
 GeneralBillboardShadows=False
 NatureBillboardShadows=False
 DungeonShadowDistance=20.0
