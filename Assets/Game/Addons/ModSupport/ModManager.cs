@@ -468,19 +468,84 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <remarks>
         /// If multiple mods contain an asset with given name, priority is defined by load order.
         /// </remarks>
-        /// <returns>True if asset is found and loaded sucessfully.</returns>
+        /// <returns>True if asset is found and loaded successfully.</returns>
         public bool TryGetAsset<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
+        {
+            int archive = 0, record = 0, frame = 0;
+
+            if (!DaggerfallUnity.Settings.BundleTexture2DFrames || name.ToLower().EndsWith(".xml"))
+                return TryGetAssetFullSearch(name, clone, out asset);
+
+            string pattern = @"^(\d{1,8})_(\d{1,8})-(\d{1,8})(?:_.*)?$";
+            Match match = Regex.Match(name, pattern);
+
+            if (!match.Success)
+                return TryGetAssetFullSearch(name, clone, out asset);
+
+            // Extract the integers as archive, record, and frame
+            archive = int.Parse(match.Groups[1].Value);
+            record = int.Parse(match.Groups[2].Value);
+            frame = int.Parse(match.Groups[3].Value);
+            if (frame == 0)
+                return TryGetAssetFullSearch(name, clone, out asset);
+            
+
+            Mod realMod = null;
+            T patchAsset;
+            if (match.Success)
+            {
+                var newName = $"{archive}_{record}-0";
+                var foundMod = TryGetModAsset<Texture2D>(newName);
+                if (foundMod.found)
+                {
+                    if (!foundMod.isLoose)
+                    {
+                        var cherryPickResult = clone.HasValue
+                            ? foundMod.mod.GetAsset<T>(name, clone.Value)
+                            : foundMod.mod.LoadAsset<T>(name);
+                        if (cherryPickResult != null)
+                        {
+                            asset = cherryPickResult;
+                            realMod = foundMod.mod;
+                        }
+                        else
+                        {
+                            asset = null;
+                        }
+                    }
+                    else
+                    {
+                        asset = null;
+                    }
+
+                    if (TryGetAssetPatch(realMod?.ModInfo.GUID, name, clone, out patchAsset))
+                    {
+                        asset = patchAsset;
+                    }
+                    return asset != null;
+                }
+                else
+                {
+                    asset = null;
+                    return asset != null;
+                }
+            }
+
+            return TryGetAssetFullSearch(name, clone, out asset);
+        }
+
+        public bool TryGetAssetFullSearch<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
         {
             Mod realMod = null;
             T patchAsset;
             var query = from mod in EnumerateEnabledModsReverse()
 #if UNITY_EDITOR
-                    where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
-                          (mod.IsVirtual && mod.HasAsset(name))
+                where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
+                      (mod.IsVirtual && mod.HasAsset(name))
 #else
                         where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
 #endif
-                    //select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name),
+                //select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name),
                 select new { Mod = mod, Asset = clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name) };
 
             var result = query.FirstOrDefault(x => x.Asset != null);
@@ -500,6 +565,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             }
             return asset != null;
         }
+
 
         /// <summary>
         /// Seek asset in all mods with load order.
@@ -563,7 +629,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             // place logic here to find patch
 
             // Define the regular expression pattern for N_N-N
-            string pattern = @"^(\d{1,4})_(\d{1,4})-(\d{1,4})$";
+            string pattern = @"^(\d{1,8})_(\d{1,8})-(\d{1,8})(?:_.*)?$";
             string prefabName = string.Empty;
             int archive = 0, record = 0, frame = 0;
 
