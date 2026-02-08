@@ -430,14 +430,13 @@ namespace DaggerfallWorkshop.Game
 
                         // Get detailed building data from directory
                         BuildingSummary buildingSummary;
-                        if (!buildingDirectory.GetBuildingSummary(building.buildingKey, out buildingSummary))
-                            return;
-
-                        buildingUnlocked = BuildingIsUnlocked(buildingSummary);
-                        buildingLockValue = GetBuildingLockValue(buildingSummary);
-                        buildingType = buildingSummary.BuildingType;
-                        ActivateBuilding(building, buildingType, buildingUnlocked);
-                    }
+                        if (buildingDirectory.GetBuildingSummary(building.buildingKey, out buildingSummary))
+                        {
+                            buildingUnlocked = BuildingIsUnlocked(buildingSummary);
+                            buildingLockValue = GetBuildingLockValue(buildingSummary);
+                            buildingType = buildingSummary.BuildingType;
+                            ActivateBuilding(building, buildingType, buildingUnlocked);
+                        }                    }
 
                     // Check for a static door hit
                     Transform doorOwner;
