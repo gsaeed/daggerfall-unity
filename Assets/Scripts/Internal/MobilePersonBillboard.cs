@@ -21,6 +21,7 @@ using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using System.Diagnostics;
 
 namespace DaggerfallWorkshop
 {
@@ -270,6 +271,31 @@ namespace DaggerfallWorkshop
             currentAnimState = AnimStates.Move;
             lastOrientation = -1;
             UpdateOrientation();
+        }
+
+        /// <summary>
+        /// Gets billboard size.
+        /// </summary>
+        /// <returns>Vector2 of billboard width and height.</returns>
+        public  int[] GetTextureArchive(Races race, Genders gender, bool isGuard)
+        {
+            if (isGuard)
+            {
+                return guardTextures;
+            }
+            else
+            {
+                switch (race)
+                {
+                    case Races.Redguard:
+                        return (gender == Genders.Male) ? maleRedguardTextures : femaleRedguardTextures;
+                    case Races.Nord:
+                        return (gender == Genders.Male) ? maleNordTextures : femaleNordTextures;
+                    case Races.Breton:
+                    default:
+                        return (gender == Genders.Male) ? maleBretonTextures : femaleBretonTextures;
+                }
+            }
         }
 
         /// <summary>
