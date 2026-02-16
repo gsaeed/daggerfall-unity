@@ -1967,9 +1967,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         #region Bisect
         public static void RunBisect(IUserInterfaceManager uiManager, bool startOfFirstBisect = false)
         {
+            ReadAlwaysIncludeModList();
             if (startOfFirstBisect)
             {
-                ReadAlwaysIncludeModList();
                 //create bisect.txt file
                 //in mod order list modname, tab, X for active and O for inactive
                 var activeModList = ModManager.Instance.mods.Where(x => x.Enabled).ToList();
@@ -2004,6 +2004,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                             mod.Enabled = false;
                     }
                 }
+
+                SetAlwaysIncludeModToActive();
+
                 File.WriteAllText(Application.persistentDataPath + @"/bisect.txt", str);
                 File.WriteAllText(Application.persistentDataPath + @"/bisectOriginal.txt", str);
                 File.WriteAllText(Application.persistentDataPath + @"/bisectLastFail.txt", str);
@@ -2083,7 +2086,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             {
                 _alwaysIncludeModList = File.ReadAllLines(filePath)
                     .Select(line => line.Trim().ToLower())
-                    .Where(line => !line.StartsWith("#"))
+                    .Where(line => line.Trim().Length > 0 && !line.StartsWith("#"))
                     .ToList();
             }
             else
@@ -2133,8 +2136,20 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 if (mod != null)
                     mod.Enabled = activeModListComponents.EnableIndicator == "X";
             }
+
+            SetAlwaysIncludeModToActive();
             CreateBisectFile(firstIndex, lastIndex);
 
+        }
+
+        private static void SetAlwaysIncludeModToActive()
+        {
+            foreach (var fileName in _alwaysIncludeModList)
+            {
+                var mod = ModLoaderInterfaceWindow.GetModFromName(fileName);
+                if (mod != null)
+                    mod.Enabled = true;
+            }
         }
 
         private static void CreateBisectFile(int firstIndex, int lastIndex)
@@ -2207,6 +2222,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     mod.Enabled = activeModListComponents.EnableIndicator == "X";
 
             }
+
+            SetAlwaysIncludeModToActive();
             CreateBisectFile(firstIndex, lastIndex);
         }
         
@@ -2226,6 +2243,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     mod.Enabled = activeModListComponents.EnableIndicator == "X";
 
             }
+
+            SetAlwaysIncludeModToActive();
             CreateBisectFile(firstIndex, lastIndex);
         }
 
