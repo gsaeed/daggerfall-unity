@@ -289,7 +289,9 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     DaggerfallUnity.Settings.SaveSettings();
 
                 if (GameManager.Instance.PlayerEntity.CurrentHealth > 0)
-                    SaveLoadManager.Instance.QuickSave();
+                {
+                    SaveLoadManager.Instance.QuickSave(finalSave:true);
+                }
 
                 DaggerfallUI.PostMessage(DaggerfallUIMessages.dfuiExitGame);
                 CancelWindow();

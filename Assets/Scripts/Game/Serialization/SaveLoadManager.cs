@@ -390,10 +390,13 @@ namespace DaggerfallWorkshop.Game.Serialization
             StartCoroutine(SaveGame(characterName, saveName, instantReload));
         }
 
-        private string QuickSaveName()
+        private string QuickSaveName(bool finalSave = false)
         {
             var saveName = "QuickSave";
 
+            if (finalSave)
+                return "QuitGameSave";
+            
             var level = GameManager.Instance.PlayerEntity.Level.ToString();
             saveName += " Level " + level + " -";
 
@@ -405,14 +408,14 @@ namespace DaggerfallWorkshop.Game.Serialization
             return saveName;
         }
 
-        public void QuickSave(bool instantReload = false)
+        public void QuickSave(bool instantReload = false, bool finalSave = false)
         {
             if (!LoadInProgress)
             {
                 if (GameManager.Instance.SaveLoadManager.IsSavingPrevented)
                     DaggerfallUI.MessageBox(TextManager.Instance.GetLocalizedText("cannotSaveNow"));
                 else
-                    Save(GameManager.Instance.PlayerEntity.Name, QuickSaveName(), instantReload);
+                    Save(GameManager.Instance.PlayerEntity.Name, QuickSaveName(finalSave), instantReload);
             }
         }
 
