@@ -278,6 +278,7 @@ namespace DaggerfallWorkshop.Game.Serialization
         public int hits2;
         public int hits3;
         public int stackCount;
+        public bool protectedItem;
         public int enchantmentPoints;
         public int message;
         public int[] legacyMagic;

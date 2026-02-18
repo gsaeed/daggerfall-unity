@@ -149,8 +149,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         protected const float coinsAnimationDelay = 0.08f;
         protected const float magicAnimationDelay = 0.15f;
 
-        protected const int accessoryCount = 12;                                  // Number of accessory slots
-        protected const int accessoryButtonMarginSize = 1;                        // Margin of accessory buttons
+        protected const int accessoryCount = 12; // Number of accessory slots
+        protected const int accessoryButtonMarginSize = 1; // Margin of accessory buttons
 
         protected Color questItemBackgroundColor = new Color(0f, 0.25f, 0f, 0.5f);
         protected Color lightSourceBackgroundColor = new Color(0.6f, 0.5f, 0f, 0.5f);
@@ -227,9 +227,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             Remove,
             Use,
             Select,
+            Lock,
         }
+    
 
-        #endregion
+    #endregion
 
         #region Properties
 
@@ -1646,7 +1648,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             DaggerfallUnityItem item = stackFrom.SplitStack(stackItem, count);
             if (item != null)
+            {
+                item.protectedItem = stackItem.protectedItem;
                 DoTransferItem(item, stackFrom, stackTo, stackEquip);
+            }
             else
                 Refresh(false);
         }
@@ -1657,7 +1662,10 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
             DaggerfallUnityItem item = stackFrom.SplitStack(stackItem, count);
             if (item != null)
+            {
+                item.protectedItem = stackItem.protectedItem;
                 DoTransferItem(item, stackFrom, stackTo, stackEquip);
+            }
             else
                 Refresh(false);
         }
@@ -2063,7 +2071,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             AccessoryItemsButton_OnMouseClick(sender, position, GetActionModeRightClick());
         }
 
-        private DaggerfallUnityItem PaperDoll_GetItem(BaseScreenComponent sender, Vector2 position)
+        protected DaggerfallUnityItem PaperDoll_GetItem(BaseScreenComponent sender, Vector2 position)
         {
             DaggerfallUI.Instance.PlayOneShot(SoundClips.ButtonClick);
             // Get equip value
