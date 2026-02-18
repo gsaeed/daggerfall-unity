@@ -42,6 +42,7 @@ namespace DaggerfallWorkshop.Game.Items
         public int currentCondition;
         public int maxCondition;
         public byte unknown2;
+        public bool protectedItem = false;
         public byte typeDependentData;
         public int enchantmentPoints;
         public int message;
@@ -803,6 +804,7 @@ namespace DaggerfallWorkshop.Game.Items
             data.nativeMaterialValue = nativeMaterialValue;
             data.dyeColor = dyeColor;
             data.weightInKg = weightInKg;
+            data.protectedItem = protectedItem;
             data.drawOrder = drawOrder;
             data.value1 = value;
             data.value2 = (unknown & 0xffff) | (flags << 16);
@@ -1662,6 +1664,7 @@ namespace DaggerfallWorkshop.Game.Items
         {
             uid = data.uid;
             shortName = data.shortName;
+            protectedItem = data.protectedItem;
             nativeMaterialValue = data.nativeMaterialValue;
             dyeColor = data.dyeColor;
             weightInKg = data.weightInKg;
