@@ -25,6 +25,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
@@ -154,7 +155,8 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
         /// <returns>True if material imported.</returns>
         public static bool TryImportMaterial(int archive, int record, int frame, out Material material)
         {
-            return TryImportMaterial(GetName(archive, record, frame), out material);
+            var ret = TryImportMaterial(GetName(archive, record, frame), out material);
+            return ret;
         }
 
         /// <summary>
