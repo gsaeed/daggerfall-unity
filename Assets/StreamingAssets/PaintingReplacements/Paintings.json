@@ -1,0 +1,22 @@
+{
+    "archiveWorst": -1,
+    "recordWorstStart": -1,
+    "recordWorstEnd": -1,
+    "archivePoor": 1348,
+    "recordPoorStart": 0,
+    "recordPoorEnd": 10,
+    "archiveAverage": -1,
+    "recordAverageStart": -1,
+    "recordAverageEnd": -1,
+    "archiveGood": -1,
+    "recordGoodStart": -1,
+    "recordGoodEnd": -1,
+    "archiveBest": -1,
+    "recordBestStart": -1,
+    "recordBestEnd": -1,
+	"paintingNames": [
+		"348_3",
+		"348_4",
+		"348_5"
+	]
+}
