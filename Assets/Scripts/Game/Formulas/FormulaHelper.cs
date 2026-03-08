@@ -86,6 +86,15 @@ namespace DaggerfallWorkshop.Game.Formulas
             return false;
         }
 
+        public static (int, int)  GetTextureAssetReplacement(int archive, int record)
+        {
+            Func<int, int, (int, int)> del;
+            if (TryGetOverride("GetTextureAssetReplacement", out del))
+                return del(archive, record);
+
+            return (archive, record);
+        }
+ 
         public static int DamageModifier(int strength)
         {
             Func<int, int> del;

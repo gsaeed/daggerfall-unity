@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Utility.AssetInjection;
@@ -472,7 +473,6 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public bool TryGetAsset<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
         {
             int archive = 0, record = 0, frame = 0;
-
             if (!DaggerfallUnity.Settings.BundleTexture2DFrames || name.ToLower().EndsWith(".xml"))
                 return TryGetAssetFullSearch(name, clone, out asset);
 

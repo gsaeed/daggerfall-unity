@@ -21,6 +21,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 
 namespace DaggerfallWorkshop.Utility.AssetInjection
@@ -348,6 +349,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
         ///</summary>
         private static bool TryImportGameObject(uint modelID, bool clone, out GameObject go)
         {
+
             if (DaggerfallUnity.Settings.AssetInjection)
             {
                 if (ModManager.Instance != null)
@@ -372,6 +374,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
         ///</summary>
         private static bool TryImportGameObject(int archive, int record, bool clone, out GameObject go)
         {
+            (archive, record) = FormulaHelper.GetTextureAssetReplacement(archive, record);
             if (DaggerfallUnity.Settings.AssetInjection)
             {
                 if (ModManager.Instance != null)

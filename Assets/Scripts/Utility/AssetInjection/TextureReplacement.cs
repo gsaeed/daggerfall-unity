@@ -25,6 +25,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
@@ -860,6 +861,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
         /// <returns>True if texture is found.</returns>
         public static bool TextureExistsAmongLooseFiles(int archive, int record, int frame = 0, TextureMap textureMap = TextureMap.Albedo)
         {
+            (archive, record) = FormulaHelper.GetTextureAssetReplacement(archive, record);
             return DaggerfallUnity.Settings.AssetInjection
                 && File.Exists(Path.Combine(texturesPath, GetName(archive, record, frame, textureMap) + extension));
         }
