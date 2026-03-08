@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Utility.AssetInjection;
@@ -472,11 +473,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public bool TryGetAsset<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
         {
             int archive = 0, record = 0, frame = 0;
-
             if (!DaggerfallUnity.Settings.BundleTexture2DFrames || name.ToLower().EndsWith(".xml"))
                 return TryGetAssetFullSearch(name, clone, out asset);
 
-            string pattern = @"^(\d{1,8})_(\d{1,8})-(\d{1,8})(?:_.*)?$";
+            string pattern = @"^(\d{1,8})_(\d{1,8})-(\d{1,8})(.*)$";
             Match match = Regex.Match(name, pattern);
 
             if (!match.Success)
@@ -486,6 +486,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             archive = int.Parse(match.Groups[1].Value);
             record = int.Parse(match.Groups[2].Value);
             frame = int.Parse(match.Groups[3].Value);
+            string suffix = match.Groups[4].Value;
             if (frame == 0)
                 return TryGetAssetFullSearch(name, clone, out asset);
             
@@ -2154,7 +2155,6 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         private static void CreateBisectFile(int firstIndex, int lastIndex)
         {
-            string sep = "\t";
 
             string str = string.Empty;
             
