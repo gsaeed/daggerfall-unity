@@ -21,6 +21,7 @@ using System.Linq;
 using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
 
@@ -382,7 +383,6 @@ namespace DaggerfallWorkshop
                 rectOut = new Rect();
                 return null;
             }
-
             // Try to retrieve from cache
             int key = MakeTextureKey((short)archive, (byte)record, (byte)frame);
             if (materialDict.ContainsKey(key))
@@ -397,6 +397,7 @@ namespace DaggerfallWorkshop
 
             // Try to import a material from mods, otherwise create a standard material
             // and import textures from Daggerfall files and loose files.
+            (archive, record) = FormulaHelper.GetTextureAssetReplacement(archive, record);
             if (!TextureReplacement.TextureExistsAmongLooseFiles(archive, record, frame) &&
                 TextureReplacement.TryImportMaterial(archive, record, frame, out material))
             {
