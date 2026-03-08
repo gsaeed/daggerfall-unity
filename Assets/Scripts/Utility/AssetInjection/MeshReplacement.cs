@@ -21,6 +21,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 
 namespace DaggerfallWorkshop.Utility.AssetInjection
@@ -149,6 +150,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                     TraverseChildren(child);
                 }
             }
+
 
             GameObject go;
             if (!TryImportGameObject(archive, record, true, out go))
@@ -348,6 +350,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
         ///</summary>
         private static bool TryImportGameObject(uint modelID, bool clone, out GameObject go)
         {
+
             if (DaggerfallUnity.Settings.AssetInjection)
             {
                 if (ModManager.Instance != null)
