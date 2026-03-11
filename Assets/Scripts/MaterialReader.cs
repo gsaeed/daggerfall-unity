@@ -383,6 +383,18 @@ namespace DaggerfallWorkshop
                 rectOut = new Rect();
                 return null;
             }
+
+            // Try to import a material from mods, otherwise create a standard material
+            // and import textures from Daggerfall files and loose files.
+            var oldarchive = archive;
+            var oldrecord = record;
+
+            (archive, record) = FormulaHelper.GetTextureAssetReplacement(archive, record);
+            if (oldarchive != archive || oldrecord != record)
+            {
+                Debug.LogError($"ObjectReplacer - MaterialReader: Texture asset replacement for archive {oldarchive} record {oldrecord} to archive {archive} record {record}");
+            }
+
             // Try to retrieve from cache
             int key = MakeTextureKey((short)archive, (byte)record, (byte)frame);
             if (materialDict.ContainsKey(key))
@@ -395,9 +407,7 @@ namespace DaggerfallWorkshop
             Material material;
             GetTextureResults results;
 
-            // Try to import a material from mods, otherwise create a standard material
-            // and import textures from Daggerfall files and loose files.
-            (archive, record) = FormulaHelper.GetTextureAssetReplacement(archive, record);
+
             if (!TextureReplacement.TextureExistsAmongLooseFiles(archive, record, frame) &&
                 TextureReplacement.TryImportMaterial(archive, record, frame, out material))
             {
@@ -1011,6 +1021,7 @@ namespace DaggerfallWorkshop
 
         private CachedMaterial GetMaterialFromCache(int archive, int record, out Material materialOut)
         {
+            (archive, record) = FormulaHelper.GetTextureAssetReplacement(archive, record);
             materialOut = GetMaterial(archive, record);
             int key = MakeTextureKey((short)archive, (byte)record);
 
@@ -1019,6 +1030,8 @@ namespace DaggerfallWorkshop
 
         private CachedMaterial GetMaterialFromCache(int key)
         {
+            if (!materialDict.ContainsKey(key))
+                Debug.Log($"key {key} not found.");
             CachedMaterial cachedMaterial = materialDict[key];
 
             // Update timestamp of last access, but only if difference is
