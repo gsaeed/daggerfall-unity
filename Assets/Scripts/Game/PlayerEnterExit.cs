@@ -355,7 +355,7 @@ namespace DaggerfallWorkshop.Game
                 }
             }
 
-            if (holidayTextPrimed && holidayTextLocation != GameManager.Instance.StreamingWorld.CurrentPlayerLocationObject)
+            if (holidayTextPrimed && holidayTextLocation != null && holidayTextLocation != GameManager.Instance.StreamingWorld.CurrentPlayerLocationObject)
             {
                 holidayTextTimer = 0;
                 holidayTextPrimed = false;
@@ -590,7 +590,7 @@ namespace DaggerfallWorkshop.Game
             {
                 DaggerfallMessageBox messageBox = new DaggerfallMessageBox(DaggerfallUI.UIManager);
                 messageBox.SetTextTokens(holidaysStartID + holidayId);
-                messageBox.ClickAnywhereToClose = true;
+                //messageBox.ClickAnywhereToClose = true;
                 messageBox.ParentPanel.BackgroundColor = Color.clear;
                 messageBox.ScreenDimColor = new Color32(0, 0, 0, 0);
                 messageBox.Show();
