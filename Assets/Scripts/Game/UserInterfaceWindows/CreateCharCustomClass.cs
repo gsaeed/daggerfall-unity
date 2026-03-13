@@ -44,11 +44,11 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         const string nativeImgName = "CUST00I0.IMG";
         const string nativeDaggerImgName = "CUST08I0.IMG";
         public static readonly fsSerializer _serializer = new fsSerializer();
-        const int maxHpPerLevel = 30;
-        const int minHpPerLevel = 4;
-        const int defaultHpPerLevel = 8;
-        const int minDifficultyPoints = -12;
-        const int maxDifficultyPoints = 40;
+        public static int maxHpPerLevel = 30;
+        public static int minHpPerLevel = 4;
+        public static int defaultHpPerLevel = 8;
+        public static int minDifficultyPoints = -12;
+        public static int maxDifficultyPoints = 40;
 
         const float daggerTrailLingerTime = 1.0f;
 
@@ -441,7 +441,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         public void HitPointsUpButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
         {
-            if (createdClass.HitPointsPerLevel != maxHpPerLevel)
+            if (createdClass.HitPointsPerLevel <= maxHpPerLevel -1)
             {
                 createdClass.HitPointsPerLevel++;
                 hpLabel.Text = createdClass.HitPointsPerLevel.ToString();
@@ -451,7 +451,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
 
         public void HitPointsDownButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
         {
-            if (createdClass.HitPointsPerLevel != minHpPerLevel)
+            if (createdClass.HitPointsPerLevel >= minHpPerLevel + 1)
             {
                 createdClass.HitPointsPerLevel--;
                 hpLabel.Text = createdClass.HitPointsPerLevel.ToString();
