@@ -455,6 +455,13 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             if (expandMacros)
                 MacroHelper.ExpandMacros(ref tokens, mcp);
             label.SetText(tokens);
+            if (DaggerfallUnity.Settings.LogHudMessages)
+            {
+                for (int n = 0; n < tokens.Length; n++)
+                {
+                    Debug.Log($"{tokens[n].text}");
+                }
+            }
             UpdatePanelSizes();
         }
 
