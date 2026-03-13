@@ -1,4 +1,4 @@
-﻿// Project:         Daggerfall Unity
+// Project:         Daggerfall Unity
 // Copyright:       Copyright (C) 2009-2023 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -9,10 +9,11 @@
 // Notes:
 //
 
-using UnityEngine;
-using System;
-using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.Utility;
+using System;
+using System.Diagnostics;
+using UnityEngine;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -150,7 +151,26 @@ namespace DaggerfallWorkshop.Game
         private void TriggerStateChange(StateTypes state)
         {
             if (OnStateChange != null)
-                OnStateChange(state);
+                try
+                {
+                    OnStateChange(state);
+                }
+                catch (Exception e)
+                {
+                    var del = OnStateChange;
+                    var str = string.Empty;
+                    var currMethod = new StackTrace().GetFrame(0).GetMethod();
+                    var className = currMethod.ReflectedType != null ? currMethod.ReflectedType.FullName : string.Empty;
+                    if (del != null && del.Method != null && del.Method.DeclaringType != null)
+                    {
+                        className = del.Method.DeclaringType.FullName;
+                        currMethod = del.Method;
+                    }
+
+                    str += $"Exception running {className}.{currMethod.Name}\n{e.Message}\n{e}";
+                    UnityEngine.Debug.LogError(str);
+                }
+
         }
 
     }
