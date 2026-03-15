@@ -321,6 +321,14 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     if (GUILayout.Button("Add Selected Asset(s)"))
                         AddSelectedAssetsToMod();
 
+                    else if (GUILayout.Button("Add Selected Folder(s)"))
+                    {
+                        AddSelectedFolderToMod();
+                    }
+                    else if (GUILayout.Button("Add Selected Folder(s) Recursively"))
+                    {
+                        AddSelectedFolderRecursivelyToMod();
+                    }
                     else if (GUILayout.Button("Remove Selected Asset(s)"))
                     {
                         if (Assets == null || Assets.Count < 1)
@@ -452,6 +460,101 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 var modDependenciesWindow = CreateInstance<ModDependenciesEditorWindow>();
                 modDependenciesWindow.SetModinfo(modInfo);
                 modDependenciesWindow.ShowUtility();
+            }
+        }
+
+        private void AddSelectedFolderToMod()
+        {
+            if (Selection.objects == null || Selection.objects.Length == 0)
+            {
+                Debug.LogWarning("No folders selected. Please select one or more folders to add.");
+                return;
+            }
+
+            foreach (UnityEngine.Object selectedObject in Selection.objects)
+            {
+                string folderPath = AssetDatabase.GetAssetPath(selectedObject);
+
+                // Verify the selection is a folder
+                if (!AssetDatabase.IsValidFolder(folderPath))
+                {
+                    Debug.LogWarning($"Selection '{selectedObject.name}' is not a folder. Skipping.");
+                    continue;
+                }
+
+                // Get all assets in the folder (non-recursive)
+                string[] guids = AssetDatabase.FindAssets("", new[] { folderPath });
+
+                foreach (string guid in guids)
+                {
+                    string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                    // Skip if it's a subfolder
+                    if (AssetDatabase.IsValidFolder(assetPath))
+                        continue;
+
+                    // Skip if the asset is not directly in the selected folder (i.e., it's in a subfolder)
+                    string assetDirectory = Path.GetDirectoryName(assetPath).Replace('\\', '/');
+                    if (assetDirectory != folderPath)
+                        continue;
+
+                    // Add the file to assets if not already added
+                    if (!Assets.Contains(assetPath))
+                    {
+                        Assets.Add(assetPath);
+                        Debug.Log($"Added file: {assetPath}");
+                    }
+                }
+
+                Debug.Log($"Processed folder: {folderPath}");
+            }
+        }
+
+        private void AddSelectedFolderRecursivelyToMod()
+        {
+            if (Selection.objects == null || Selection.objects.Length == 0)
+            {
+                Debug.LogWarning("No folders selected. Please select one or more folders to add recursively.");
+                return;
+            }
+
+            foreach (UnityEngine.Object selectedObject in Selection.objects)
+            {
+                string folderPath = AssetDatabase.GetAssetPath(selectedObject);
+
+                // Verify the selection is a folder
+                if (!AssetDatabase.IsValidFolder(folderPath))
+                {
+                    Debug.LogWarning($"Selection '{selectedObject.name}' is not a folder. Skipping.");
+                    continue;
+                }
+
+                // Recursively add all files in the folder and its subfolders
+                AddFilesFromFolderRecursively(folderPath);
+
+                Debug.Log($"Processed folder recursively: {folderPath}");
+            }
+        }
+
+        private void AddFilesFromFolderRecursively(string folderPath)
+        {
+            // Get all assets in the folder (including subfolders)
+            string[] guids = AssetDatabase.FindAssets("", new[] { folderPath });
+
+            foreach (string guid in guids)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                // Skip if it's a folder
+                if (AssetDatabase.IsValidFolder(assetPath))
+                    continue;
+
+                // Add the file to assets if not already added
+                if (!Assets.Contains(assetPath))
+                {
+                    Assets.Add(assetPath);
+                    Debug.Log($"Added file: {assetPath}");
+                }
             }
         }
 
