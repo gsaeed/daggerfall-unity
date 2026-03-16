@@ -94,6 +94,15 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return (archive, record);
         }
+        public static MeshRenderer GetPrefabMaterials(MeshRenderer mr)
+        {
+            Func<MeshRenderer, MeshRenderer> del;
+            if (TryGetOverride("GetPrefabMaterials", out del))
+                return del(mr);
+
+            return mr;
+        }
+
  
         public static int DamageModifier(int strength)
         {
