@@ -107,6 +107,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
             var mr = modelGO.GetComponent<MeshRenderer>();
             if (mr == null)
                 modelGO.AddComponent<MeshRenderer>();
+            mr = FormulaHelper.GetPrefabMaterials(mr);
             modelGO.transform.parent = parent;
             modelGO.transform.position = matrix.GetColumn(3);
             modelGO.transform.rotation = matrix.rotation;
