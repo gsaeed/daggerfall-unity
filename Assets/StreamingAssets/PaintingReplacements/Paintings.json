@@ -11,7 +11,7 @@
     "archiveGood": -1,
     "recordGoodStart": 0,
     "recordGoodEnd": 23,
-    "archiveBest": -1,
+    "archiveBest": 0,
     "recordBestStart": 0,
     "recordBestEnd": 23,
 	"paintingNames": [
