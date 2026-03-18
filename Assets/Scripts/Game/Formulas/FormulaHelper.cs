@@ -94,6 +94,15 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return (archive, record);
         }
+        public static bool  OverrideCombinerSetting()
+        {
+            Func<bool> del;
+            if (TryGetOverride("OverrideCombinerSetting", out del))
+                return del();
+
+            return false;
+        }
+
         public static MeshRenderer GetPrefabMaterials(MeshRenderer mr)
         {
             Func<MeshRenderer, MeshRenderer> del;
