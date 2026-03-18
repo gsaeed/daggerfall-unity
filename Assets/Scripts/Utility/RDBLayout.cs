@@ -18,6 +18,7 @@ using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Utility.AssetInjection;
@@ -597,7 +598,7 @@ namespace DaggerfallWorkshop.Utility
             bool isAutomapRun = false)
         {
             exitDoorsOut = new List<StaticDoor>();
-
+            var overrideCombiner = FormulaHelper.OverrideCombinerSetting();
             // Iterate object groups
             foreach (DFBlock.RdbObjectRoot group in blockData.RdbBlock.ObjectRootList)
             {
@@ -662,7 +663,7 @@ namespace DaggerfallWorkshop.Utility
                                 AddStandaloneModel(dfUnity, ref modelData, modelMatrix, modelsParent, isAutomapRun, hasAction, true);
                             }
                             // Add or combine
-                            else if (combiner == null || DaggerfallUnity.Settings.IgnoreCombiner || hasAction || PlayerActivate.HasCustomActivation(modelId))
+                            else if (combiner == null || (DaggerfallUnity.Settings.IgnoreCombiner && !overrideCombiner) || hasAction || PlayerActivate.HasCustomActivation(modelId))
                             {
                                 standaloneObject = AddStandaloneModel(dfUnity, ref modelData, modelMatrix, parent, isAutomapRun, hasAction);
                                 standaloneObject.GetComponent<DaggerfallMesh>().SetDungeonTextures(textureTable);
