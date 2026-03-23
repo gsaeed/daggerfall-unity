@@ -17,6 +17,7 @@ using UnityEngine;
 using FullSerializer;
 using IniParser.Model;
 using DaggerfallWorkshop.Utility.AssetInjection;
+using UnityEditor;
 
 namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
 {
@@ -421,7 +422,13 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         /// </summary>
         public static bool HasSettings(Mod mod)
         {
-            if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
+            if (mod.ModInfo.ModPatch && !mod.HasAsset(settingsFileName))
+            {
+                var checkMod= ModManager.Instance.GetModFromGUID(mod.ModInfo.GUID);
+                if (checkMod != null)
+                    mod = checkMod;
+            }
+            else if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
             {
                 var patchMod = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
                 if (patchMod.HasAsset(settingsFileName))
@@ -435,7 +442,14 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         /// </summary>
         public static ModSettingsData Make(Mod mod)
         {
-            if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
+
+            if (mod.ModInfo.ModPatch && !mod.HasAsset(settingsFileName))
+            {
+                var checkMod = ModManager.Instance.GetModFromGUID(mod.ModInfo.GUID);
+                if (checkMod != null)
+                    mod = checkMod;
+            }
+            else if (ModManager.Instance.patchMods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
             {
                 var patchMod = ModManager.Instance.patchMods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
                 if (patchMod.HasAsset(settingsFileName))

@@ -1079,7 +1079,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 int index = GetModIndex(mod.Title);
                 if (index < 0)
                 {
-                    if(mod.ModInfo.ModPatch)
+                    if(mod.ModInfo.ModPatch && ModManager.Instance.GetModFromGUID(mod.ModInfo.GUID) != null)
                     {
                         if (patchMods == null)
                             patchMods = new List<Mod>();
