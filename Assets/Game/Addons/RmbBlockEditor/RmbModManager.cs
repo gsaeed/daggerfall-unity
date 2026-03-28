@@ -1,4 +1,4 @@
-﻿// Project:         Daggerfall Tools For Unity
+// Project:         Daggerfall Tools For Unity
 // Copyright:       Copyright (C) 2009-2022 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -537,22 +537,30 @@ namespace DaggerfallWorkshop.Game.Addons.RmbBlockEditor
             return filePath.EndsWith(".prefab") && int.TryParse(Path.GetFileNameWithoutExtension(filePath), out int _);
         }
 
+        // Add these as static readonly fields at the class level
+        private static readonly Regex customBillboardImagePattern = new Regex(@"/\d+_\d+-\d+\.(jpg|png)", RegexOptions.Compiled);
+        private static readonly Regex customBillboardXmlPattern = new Regex(@"/\d+_\d+-\d+\.xml", RegexOptions.Compiled);
+
         private static bool IsCustomBillboardImage(string filePath)
         {
-            Regex r = new Regex(@"/\d+_\d+-\d+\.(jpg|png)");
-            return r.IsMatch(filePath);
+            return customBillboardImagePattern.IsMatch(filePath);
         }
 
         private static bool IsCustomBillboardXML(string filePath)
         {
-            Regex r = new Regex(@"/\d+_\d+-\d+\.(xml)");
-            return r.IsMatch(filePath);
+            return customBillboardXmlPattern.IsMatch(filePath);
         }
 
         private static string FileToBillboardId(string id)
         {
-            var parts = id.Split('-');
-            return parts[0].Replace('_', '.');
+            int dashIndex = id.IndexOf('-');
+            if (dashIndex == -1)
+            {
+                return id.Replace('_', '.');
+            }
+
+            // Only process the part before the dash, avoiding unnecessary string allocation
+            return id.Substring(0, dashIndex).Replace('_', '.');
         }
     }
 #endif
