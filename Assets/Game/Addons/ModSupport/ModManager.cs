@@ -444,129 +444,146 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         public bool TryGetAssetPatch<T>(string guid, string name, bool? clone, out T asset) where T : UnityEngine.Object
         {
-            if (patchMods.All(x => x.ModInfo.GUID != guid))
+            // Early exit if no patch mods exist
+            if (patchMods == null || patchMods.Count == 0)
             {
                 asset = null;
                 return false;
             }
 
-            var query = from mod in patchMods
-                where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
-                select clone.HasValue ? mod.GetAssetPatch<T>(name, out _) : mod.LoadAssetPatch<T>(name);
-
-            asset = query.FirstOrDefault(x => x != null);
-
-            return asset != null;
-
-        }
-
-        /// <summary>
-        /// Seek asset in all mods with load order.
-        /// </summary>
-        /// <param name="name">Name of asset to seek.</param>
-        /// <param name="clone">Make a copy of asset? If null is loaded without cache.</param>
-        /// <param name="asset">Loaded asset or null.</param>
-        /// <remarks>
-        /// If multiple mods contain an asset with given name, priority is defined by load order.
-        /// </remarks>
-        /// <returns>True if asset is found and loaded successfully.</returns>
-        public bool TryGetAsset<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
-        {
-            int archive = 0, record = 0, frame = 0;
-            if (!DaggerfallUnity.Settings.BundleTexture2DFrames || name.ToLower().EndsWith(".xml"))
-                return TryGetAssetFullSearch(name, clone, out asset);
-
-            string pattern = @"^(\d{1,8})_(\d{1,8})-(\d{1,8})(.*)$";
-            Match match = Regex.Match(name, pattern);
-
-            if (!match.Success)
-                return TryGetAssetFullSearch(name, clone, out asset);
-
-            // Extract the integers as archive, record, and frame
-            archive = int.Parse(match.Groups[1].Value);
-            record = int.Parse(match.Groups[2].Value);
-            frame = int.Parse(match.Groups[3].Value);
-            string suffix = match.Groups[4].Value;
-            if (frame == 0)
-                return TryGetAssetFullSearch(name, clone, out asset);
-            
-
-            Mod realMod = null;
-            T patchAsset;
-            if (match.Success)
+            // Iterate through patch mods directly - no LINQ overhead
+            for (int i = patchMods.Count - 1; i >= 0; i--)
             {
-                var newName = $"{archive}_{record}-0";
-                var foundMod = TryGetModAsset<Texture2D>(newName);
-                if (foundMod.found)
-                {
-                    if (!foundMod.isLoose)
-                    {
-                        var cherryPickResult = clone.HasValue
-                            ? foundMod.mod.GetAsset<T>(name, clone.Value)
-                            : foundMod.mod.LoadAsset<T>(name);
-                        if (cherryPickResult != null)
-                        {
-                            asset = cherryPickResult;
-                            realMod = foundMod.mod;
-                        }
-                        else
-                        {
-                            asset = null;
-                        }
-                    }
-                    else
-                    {
-                        asset = null;
-                    }
+                Mod mod = patchMods[i];
 
-                    if (TryGetAssetPatch(realMod?.ModInfo.GUID, name, clone, out patchAsset))
-                    {
-                        asset = patchAsset;
-                    }
-                    return asset != null;
-                }
-                else
+                // Skip mods that don't match the GUID
+                if (mod.ModInfo.GUID != guid)
+                    continue;
+
+                // Skip mods without asset bundles or that don't contain the asset
+                if (mod.AssetBundle == null || !mod.AssetBundle.Contains(name))
+                    continue;
+
+                // Load the patch asset
+                T patchAsset = clone.HasValue
+                    ? mod.GetAssetPatch<T>(name, out _)
+                    : mod.LoadAssetPatch<T>(name);
+
+                if (patchAsset != null)
                 {
-                    asset = null;
-                    return asset != null;
+                    asset = patchAsset;
+                    return true;
                 }
             }
 
-            return TryGetAssetFullSearch(name, clone, out asset);
+            asset = null;
+            return false;
+        }        /// <summary>
+                 /// Seek asset in all mods with load order.
+                 /// </summary>
+                 /// <param name="name">Name of asset to seek.</param>
+                 /// <param name="clone">Make a copy of asset? If null is loaded without cache.</param>
+                 /// <param name="asset">Loaded asset or null.</param>
+                 /// <remarks>
+                 /// If multiple mods contain an asset with given name, priority is defined by load order.
+                 /// </remarks>
+                 /// <returns>True if asset is found and loaded successfully.</returns>
+        public bool TryGetAsset<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
+        {
+            // Fast path for non-texture bundle or XML files
+            if (!DaggerfallUnity.Settings.BundleTexture2DFrames || (name.Length > 4 && name.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)))
+                return TryGetAssetFullSearch(name, clone, out asset);
+
+            // Check if name matches archive_record-frame pattern
+            Match match = AssetNamePattern.Match(name);
+            if (!match.Success)
+                return TryGetAssetFullSearch(name, clone, out asset);
+
+            // Extract frame number early to avoid unnecessary work
+            int frame = int.Parse(match.Groups[3].Value);
+            if (frame == 0)
+                return TryGetAssetFullSearch(name, clone, out asset);
+
+            // Build the base texture name (frame 0)
+            int archive = int.Parse(match.Groups[1].Value);
+            int record = int.Parse(match.Groups[2].Value);
+            string baseName = $"{archive}_{record}-0";
+
+            // Look for the base texture in mods
+            ModAsset foundMod = TryGetModAsset<Texture2D>(baseName);
+            if (!foundMod.found)
+            {
+                asset = null;
+                return false;
+            }
+
+            // Can't load specific frames from loose files
+            if (foundMod.isLoose)
+            {
+                asset = null;
+                return false;
+            }
+
+            // Try to load the specific frame from the mod's asset bundle
+            T frameAsset = clone.HasValue
+                ? foundMod.mod.GetAsset<T>(name, clone.Value)
+                : foundMod.mod.LoadAsset<T>(name);
+
+            // Check for patches
+            if (frameAsset != null && TryGetAssetPatch(foundMod.mod.ModInfo.GUID, name, clone, out T patchAsset))
+            {
+                asset = patchAsset;
+                return true;
+            }
+
+            asset = frameAsset;
+            return asset != null;
         }
 
         public bool TryGetAssetFullSearch<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
         {
-            Mod realMod = null;
-            T patchAsset;
-            var query = from mod in EnumerateEnabledModsReverse()
+            // Iterate through mods in reverse order manually for better performance
+            for (int i = mods.Count - 1; i >= 0; i--)
+            {
+                Mod mod = mods[i];
+
+                // Skip disabled mods if not yet at start menu state
+                if (!alreadyAtStartMenuState && !mod.Enabled)
+                    continue;
+
 #if UNITY_EDITOR
-                where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
-                      (mod.IsVirtual && mod.HasAsset(name))
+                // Check if mod contains the asset
+                if ((mod.AssetBundle == null || !mod.AssetBundle.Contains(name)) &&
+                    (!mod.IsVirtual || !mod.HasAsset(name)))
+                    continue;
 #else
-                        where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
+        if (mod.AssetBundle == null || !mod.AssetBundle.Contains(name))
+            continue;
 #endif
-                //select clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name),
-                select new { Mod = mod, Asset = clone.HasValue ? mod.GetAsset<T>(name, clone.Value) : mod.LoadAsset<T>(name) };
 
-            var result = query.FirstOrDefault(x => x.Asset != null);
-            if (result != null)
-            {
-                asset = result.Asset;
-                realMod = result.Mod;
-            }
-            else
-            {
-                asset = null;
+                // Try to load the asset
+                T loadedAsset = clone.HasValue
+                    ? mod.GetAsset<T>(name, clone.Value)
+                    : mod.LoadAsset<T>(name);
+
+                if (loadedAsset != null)
+                {
+                    // Check for patches
+                    if (TryGetAssetPatch(mod.ModInfo.GUID, name, clone, out T patchAsset))
+                    {
+                        asset = patchAsset;
+                        return true;
+                    }
+
+                    asset = loadedAsset;
+                    return true;
+                }
             }
 
-            if (TryGetAssetPatch(realMod?.ModInfo.GUID, name, clone, out patchAsset))
-            {
-                asset = patchAsset;
-            }
-            return asset != null;
+            // No asset found
+            asset = null;
+            return false;
         }
-
 
         /// <summary>
         /// Seek asset in all mods with load order.
@@ -617,6 +634,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         }
 
+        private static readonly Regex AssetNamePattern = new Regex(@"^(\d{1,8})_(\d{1,8})-(\d{1,8})(?:_.*)?$", RegexOptions.Compiled);
+
         /// <summary>
         /// Seek asset in all mods with load order.
         /// </summary>
@@ -627,112 +646,84 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         /// <returns>True if asset is found and loaded sucessfully.</returns>
         public ModAsset TryGetModAsset<T>(string name) where T : UnityEngine.Object
         {
-            // place logic here to find patch
+            // Try to parse archive_record-frame pattern
+            Match match = AssetNamePattern.Match(name);
+            bool isArchivePattern = match.Success;
 
-            // Define the regular expression pattern for N_N-N
-            string pattern = @"^(\d{1,8})_(\d{1,8})-(\d{1,8})(?:_.*)?$";
-            string prefabName = string.Empty;
-            int archive = 0, record = 0, frame = 0;
-
-            // Check if the name matches the pattern
-            Match match = Regex.Match(name, pattern);
-            if (match.Success)
+            // Check loose files for archive pattern
+            if (isArchivePattern)
             {
-                // Extract the integers as archive, record, and frame
-                archive = int.Parse(match.Groups[1].Value);
-                record = int.Parse(match.Groups[2].Value);
-                frame = int.Parse(match.Groups[3].Value);
+                int archive = int.Parse(match.Groups[1].Value);
+                int record = int.Parse(match.Groups[2].Value);
+                int frame = int.Parse(match.Groups[3].Value);
 
-                // Modify the name to N_N.prefab by removing the -N part
+                if (TextureReplacement.TryImportTextureFromLooseFiles(archive, record, frame, TextureMap.Albedo, true, out Texture2D tex))
+                {
+                    return new ModAsset
+                    {
+                        found = true,
+                        isLoose = true,
+                        name = name,
+                        searchName = name,
+                        mod = null,
+                        type = tex.GetType(),
+                        go = tex
+                    };
+                }
+            }
+
+            // Try prefab name first (for archive pattern: "archive_record.prefab")
+            if (isArchivePattern)
+            {
                 int lastDashIndex = name.LastIndexOf('-');
-                prefabName = name.Substring(0, lastDashIndex) + ".prefab";
-            }
-            else
-            {
-                // Append ".prefab" to the name
-                prefabName = name + ".prefab";
-            }
+                string prefabName = name.Substring(0, lastDashIndex) + ".prefab";
 
-            if (match.Success)
-            {
-                //check loose files
-                Texture2D tex = null;
-                var found = TextureReplacement.TryImportTextureFromLooseFiles(archive, record, frame, TextureMap.Albedo,
-                    true, out tex);
-                if (found)
-                {
-                    var types = tex.GetType();
-                    ModAsset modAsset = new ModAsset();
-                    modAsset.found = true;
-                    modAsset.isLoose = true;
-                    modAsset.name = name;
-                    modAsset.searchName = name;
-                    modAsset.mod = null;
-                    modAsset.type = tex.GetType();
-                    modAsset.go = tex;
-                    return modAsset;
-                }
+                ModAsset result = TryLoadAssetFromMods<T>(prefabName, name);
+                if (result.found)
+                    return result;
             }
 
-            if (!string.IsNullOrEmpty(prefabName))
+            // Try with .prefab extension
+            string nameWithExtension = name + ".prefab";
+            ModAsset prefabResult = TryLoadAssetFromMods<T>(nameWithExtension, name);
+            if (prefabResult.found)
+                return prefabResult;
 
-            {
-                var query = from mod in EnumerateEnabledModsReverse()
-#if UNITY_EDITOR
-                    where (mod.AssetBundle != null && mod.AssetBundle.Contains(prefabName)) ||
-                          (mod.IsVirtual && mod.HasAsset(prefabName))
-#else
-                        where mod.AssetBundle != null && mod.AssetBundle.Contains(prefabName)
-#endif
-                            select new { Name = prefabName, Mod = mod, Asset = mod.LoadAsset<T>(prefabName) };
-
-                var result = query.FirstOrDefault(x => x.Asset != null);
-                var modAsset = new ModAsset();
-                modAsset.found = false;
-                if (result != null)
-                {
-                    modAsset.found = true;
-                    modAsset.isLoose = false;
-                    modAsset.name = result.Asset.name;
-                    modAsset.searchName = result.Name;
-                    modAsset.mod = result.Mod;
-                    modAsset.type = result.Asset.GetType();
-                    modAsset.go = result.Asset;
-                    return modAsset;
-
-                }
-            }
-            
-            {
-
-                var query = from mod in EnumerateEnabledModsReverse()
-#if UNITY_EDITOR
-                    where (mod.AssetBundle != null && mod.AssetBundle.Contains(name)) ||
-                          (mod.IsVirtual && mod.HasAsset(name))
-#else
-                    where mod.AssetBundle != null && mod.AssetBundle.Contains(name)
-#endif
-                    select new { Name = name, Mod = mod, Asset = mod.LoadAsset<T>(name) };
-
-                var result = query.FirstOrDefault(x => x.Asset != null);
-                var modAsset = new ModAsset();
-                modAsset.found = false;
-                if (result != null)
-                {
-                    modAsset.found = true;
-                    modAsset.isLoose = false;
-                    modAsset.name = result.Asset.name;
-                    modAsset.searchName = result.Name;
-                    modAsset.mod = result.Mod;
-                    modAsset.type = result.Asset.GetType();
-                    modAsset.go = result.Asset;
-                    return modAsset;
-                }
-            }
-
-            return new ModAsset();
+            // Try exact name
+            return TryLoadAssetFromMods<T>(name, name);
         }
 
+        private ModAsset TryLoadAssetFromMods<T>(string assetName, string originalName) where T : UnityEngine.Object
+        {
+            foreach (var mod in EnumerateEnabledModsReverse())
+            {
+#if UNITY_EDITOR
+                if ((mod.AssetBundle == null || !mod.AssetBundle.Contains(assetName)) &&
+                    (!mod.IsVirtual || !mod.HasAsset(assetName)))
+                    continue;
+#else
+        if (mod.AssetBundle == null || !mod.AssetBundle.Contains(assetName))
+            continue;
+#endif
+
+                T asset = mod.LoadAsset<T>(assetName);
+                if (asset != null)
+                {
+                    return new ModAsset
+                    {
+                        found = true,
+                        isLoose = false,
+                        name = asset.name,
+                        searchName = assetName,
+                        mod = mod,
+                        type = asset.GetType(),
+                        go = asset
+                    };
+                }
+            }
+
+            return new ModAsset { found = false };
+        }
         public Type TryFindModAssetType(string name)
         {
             List<Type> typesArray = new List<Type>

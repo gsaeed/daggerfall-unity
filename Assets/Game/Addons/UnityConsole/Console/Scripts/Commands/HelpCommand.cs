@@ -49,17 +49,29 @@ namespace Wenzil.Console.Commands
             return commandList.ToString();
         }
 
+        private static readonly Dictionary<string, Regex> regexCache = new Dictionary<string, Regex>();
+
         private static string DisplaySomeCommands(string commandString, bool checkDescription)
         {
             commandList.Length = 0; // clear the command list before rebuilding it
             commandList.Append("<b>Available Commands</b>\n");
 
-            commandString = "^" + Regex.Escape(commandString).Replace(@"\*", ".*").Replace(@"\?", ".") + "$";
+            string pattern = "^" + Regex.Escape(commandString).Replace(@"\*", ".*").Replace(@"\?", ".") + "$";
+            string lowerPattern = pattern.ToLower();
 
-            foreach (ConsoleCommand command in ConsoleCommandsDatabase.commands)                
-                if ((Regex.IsMatch(command.name, commandString.ToLower(), RegexOptions.IgnoreCase)) || (checkDescription &&
-                    Regex.IsMatch(command.description, commandString.ToLower(), RegexOptions.IgnoreCase)))
+            if (!regexCache.TryGetValue(lowerPattern, out Regex compiledRegex))
+            {
+                compiledRegex = new Regex(lowerPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                regexCache[lowerPattern] = compiledRegex;
+            }
+
+            foreach (ConsoleCommand command in ConsoleCommandsDatabase.commands)
+            {
+                if (compiledRegex.IsMatch(command.name) || (checkDescription && compiledRegex.IsMatch(command.description)))
+                {
                     commandList.Append(string.Format("    <b>{0}</b> - {1}\n", command.name, command.description));
+                }
+            }
 
             commandList.Append("To display details about a specific command, type 'HELP' followed by the command name.");
             return commandList.ToString();
