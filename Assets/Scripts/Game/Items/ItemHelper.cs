@@ -210,6 +210,13 @@ namespace DaggerfallWorkshop.Game.Items
                 for (int i = LastDFTemplate; i < itemTemplates.Count; i++)
                     if (itemTemplates[i].index == templateIndex)
                         return itemTemplates[i];
+                string message = string.Format("Custom Item template not found: TemplateIndex={0}", templateIndex);
+                Debug.LogWarning(message);
+                var itemTemplate = new ItemTemplate
+                {
+                    index = templateIndex
+                };
+                return itemTemplate;
             }
 
 //            if (templateIndex < 0 || templateIndex >= itemTemplates.Count)
