@@ -1040,7 +1040,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             var modFiles = Directory.GetFiles(ModDirectory, "*" + MODEXTENSION, SearchOption.AllDirectories);
             var modFileNames = new string[modFiles.Length];
             var loadedModNames = GetAllModFileNames();
-
+            var pendingPatchMod = new List<Mod>();
             for (int i = 0; i < modFiles.Length; i++)
             {
                 string modFilePath = modFiles[i];
@@ -1067,27 +1067,39 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 Mod mod = new Mod(modFileNames[i], DirPath, ab);
 
                 mod.LoadPriority = i;
-                int index = GetModIndex(mod.Title);
-                if (index < 0)
+                if (mod.ModInfo.ModPatch)
+                    pendingPatchMod.Add(mod);
+                else
                 {
-                    if(mod.ModInfo.ModPatch && ModManager.Instance.GetModFromGUID(mod.ModInfo.GUID) != null)
+                    int index = GetModIndex(mod.Title);
+                    if (index < 0)
                     {
-                        if (patchMods == null)
-                            patchMods = new List<Mod>();
-                        if (patchMods.All(x => x.ModInfo.GUID != mod.ModInfo.GUID))
+                        if (DaggerfallUnity.Settings.AllowModsWithSharedGuid &&
+                            mods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
                         {
-                            Debug.Log($"Found patch mod: {mod.Title} {mod.ModInfo.GUID}");
-                            patchMods.Add(mod);
+                            var oldMod = mods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
+                            Debug.LogErrorFormat(" mod {0} has same GUID as mod {1}, changing GUID of Mod {0}",
+                                mod.Title, oldMod.Title);
+                            mod.ModInfo.GUID = Guid.NewGuid().ToString();
                         }
-                    }
-                    else if (DaggerfallUnity.Settings.AllowModsWithSharedGuid && mods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
-                    {
-                        var oldMod = mods.First(x => x.ModInfo.GUID == mod.ModInfo.GUID);
-                        Debug.LogErrorFormat(" mod {0} has same GUID as mod {1}, changing GUID of Mod {0}", mod.Title, oldMod.Title);
-                        mod.ModInfo.GUID = Guid.NewGuid().ToString();
-                    }
-                    if (!mod.ModInfo.ModPatch)
                         mods.Add(mod);
+                    }
+                }
+            }
+            if (patchMods == null)
+                patchMods = new List<Mod>();
+
+            patchMods.Clear();
+            for (int n = 0; n < pendingPatchMod.Count; n++)
+            {
+                var mod = pendingPatchMod[n];
+                if (mod.ModInfo.ModPatch && ModManager.Instance.GetModFromGUID(mod.ModInfo.GUID) != null)
+                {
+                    if (patchMods.All(x => x.ModInfo.GUID != mod.ModInfo.GUID))
+                    {
+                        Debug.Log($"Found patch mod: {mod.Title} {mod.ModInfo.GUID}");
+                        patchMods.Add(mod);
+                    }
                 }
             }
 
