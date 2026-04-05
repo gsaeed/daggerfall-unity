@@ -1075,7 +1075,10 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                         if (patchMods == null)
                             patchMods = new List<Mod>();
                         if (patchMods.All(x => x.ModInfo.GUID != mod.ModInfo.GUID))
+                        {
+                            Debug.Log($"Found patch mod: {mod.Title} {mod.ModInfo.GUID}");
                             patchMods.Add(mod);
+                        }
                     }
                     else if (DaggerfallUnity.Settings.AllowModsWithSharedGuid && mods.Any(x => x.ModInfo.GUID == mod.ModInfo.GUID))
                     {
