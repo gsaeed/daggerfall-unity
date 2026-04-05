@@ -338,7 +338,7 @@ namespace DaggerfallWorkshop.Utility
             localizedStringDebug = enable;
         }
 
-        public string GetWeaponMaterialName(WeaponMaterialTypes material)
+        public virtual string GetWeaponMaterialName(WeaponMaterialTypes material)
         {
             switch(material)
             {
@@ -367,7 +367,7 @@ namespace DaggerfallWorkshop.Utility
             }
         }
 
-        public string GetArmorMaterialName(ArmorMaterialTypes material)
+        public virtual string GetArmorMaterialName(ArmorMaterialTypes material)
         {
             switch (material)
             {
