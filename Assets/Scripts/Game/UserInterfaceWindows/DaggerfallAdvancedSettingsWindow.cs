@@ -287,6 +287,12 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 DaggerfallUnity.Settings.MeleeAttackDetection, TextManager.Instance.GetLocalizedTextList("meleeAttackDetectionModes", TextCollections.TextSettings));
             meleeAttackFriendlyProtection = AddCheckbox(rightPanel, "meleeAttackFriendlyProtection", DaggerfallUnity.Settings.MeleeAttackFriendlyProtection);
 
+            // Melee Attacks
+            AddSectionTitle(rightPanel, "meleeAttacks");
+            meleeAttackDetection = AddSlider(rightPanel, "meleeAttackDetection",
+                DaggerfallUnity.Settings.MeleeAttackDetection, TextManager.Instance.GetLocalizedTextList("meleeAttackDetectionModes", TextCollections.TextSettings));
+            meleeAttackFriendlyProtection = AddCheckbox(rightPanel, "meleeAttackFriendlyProtection", DaggerfallUnity.Settings.MeleeAttackFriendlyProtection);
+
             // Spells
             AddSectionTitle(rightPanel, "spells");
             spellLighting = AddCheckbox(rightPanel, "spellLighting", DaggerfallUnity.Settings.EnableSpellLighting);
