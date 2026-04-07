@@ -1067,12 +1067,14 @@ namespace DaggerfallWorkshop.Game
                         {
                             if (hit.collider != collider)
                             {
+
                                 //Target center does not have LOS
                                 canHit = false;
                             }
                         }
                         else
                         {
+
                             //Target center is outside radial weapon reach
                             canHit = false;
                         }
@@ -1121,6 +1123,7 @@ namespace DaggerfallWorkshop.Game
                                         canHit = true;
                                 }
                             }
+
                         }
 
                         if (canHit)
@@ -1144,6 +1147,7 @@ namespace DaggerfallWorkshop.Game
                 //Logic: pacified NPCs and commoners can only be attacked if they are the only targets in front of the player
                 ray.origin = mainCamera.transform.position;
                 ray.direction = mainCamera.transform.forward;
+
 
                 if (Physics.SphereCast(ray, SphereCastRadius, out hit, weapon.Reach, playerLayerMask))
                 {
