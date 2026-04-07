@@ -579,6 +579,7 @@ namespace DaggerfallWorkshop
             MeleeAttackDetection = GetInt(sectionMeleeAttacks, "MeleeAttackDetection", 0, 1);
             MeleeAttackFriendlyProtection = GetBool(sectionMeleeAttacks, "MeleeAttackFriendlyProtection");
             HideSkillImprovedMessage = GetBool(sectionGUI, "HideSkillImprovedMessage");
+
             EnableSpellLighting = GetBool(sectionSpells, "EnableSpellLighting");
             EnableSpellShadows = GetBool(sectionSpells, "EnableSpellShadows");
 
@@ -799,6 +800,9 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "IgnoreActiveFoeSpawners", IgnoreActiveFoeSpawners);
             SetFloat(sectionGUI, "DoorBashEaseMultiplier", DoorBashEaseMultiplier);
             SetBool(sectionGUI, "DisplayMobileEnemyHealthStatus", DisplayMobileEnemyHealthStatus);
+
+            SetInt(sectionMeleeAttacks, "MeleeAttackDetection", MeleeAttackDetection);
+            SetBool(sectionMeleeAttacks, "MeleeAttackFriendlyProtection", MeleeAttackFriendlyProtection);
 
             SetInt(sectionMeleeAttacks, "MeleeAttackDetection", MeleeAttackDetection);
             SetBool(sectionMeleeAttacks, "MeleeAttackFriendlyProtection", MeleeAttackFriendlyProtection);
