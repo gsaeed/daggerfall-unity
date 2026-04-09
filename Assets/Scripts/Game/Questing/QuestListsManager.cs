@@ -231,6 +231,7 @@ namespace DaggerfallWorkshop.Game.Questing
             } catch (Exception ex) {
                 Debug.LogErrorFormat("QuestListsManager unable to parse quest list table {0} at {1} with exception message {1}", questListFilename,questsPath, ex.Message);
             }
+            Debug.Log($"QuestList: {questListFilename} loaded.");
         }
 
         private void ParseQuestList(Table questsTable, string questsPath = "")
