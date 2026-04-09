@@ -75,7 +75,7 @@ ColorBoostDungeonFalloff=0.0
 [Audio]
 AlternateMusic=False
 SoundFont=
-PlayDaggerfallUnitySetupGameWizardMusic=True
+PlayDaggerfallUnitySetupGameWizardMusic=False
 
 [ChildGuard]
 PlayerNudity=False
