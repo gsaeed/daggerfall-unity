@@ -224,7 +224,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             popupText.Enabled = ShowPopupText;
             midScreenTextLabel.Enabled = ShowMidScreenText;
             crosshair.Enabled = ShowCrosshair;
-            if (GameManager.Instance.PlayerEntity.CurrentHealth == GameManager.Instance.PlayerEntity.MaxHealth &&
+            if (GameManager.Instance.PlayerEntity.GodMode == false &&
+                GameManager.Instance.PlayerEntity.CurrentHealth == GameManager.Instance.PlayerEntity.MaxHealth &&
                 GameManager.Instance.PlayerEntity.CurrentMagicka == GameManager.Instance.PlayerEntity.MaxMagicka &&
                 (GameManager.Instance.PlayerEntity.CurrentFatigue == GameManager.Instance.PlayerEntity.MaxFatigue ||
                  !DaggerfallUnity.Settings.ShowVitalsWhenFatigueBelowMaximum))

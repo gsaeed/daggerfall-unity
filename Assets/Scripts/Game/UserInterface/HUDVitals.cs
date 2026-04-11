@@ -37,6 +37,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
         VerticalProgress fatigueBarGain = new VerticalProgress();
         VerticalProgress magickaBarGain = new VerticalProgress();
         PlayerEntity playerEntity;
+        TextLabel godModeTextLabel = new TextLabel();
 
         Color healthLossColor = new Color(0, 0.22f, 0);
         Color fatigueLossColor = new Color(0.44f, 0, 0);
@@ -96,6 +97,13 @@ namespace DaggerfallWorkshop.Game.UserInterface
             fatigueBar.VerticalAlignment = VerticalAlignment.Bottom;
             magickaBar.VerticalAlignment = VerticalAlignment.Bottom;
 
+            godModeTextLabel.Position = new Vector2(healthBar.Position.x, healthBar.Position.y - 40);
+            godModeTextLabel.Text = "";
+            godModeTextLabel.TextScale = 2f;
+            godModeTextLabel.TextColor = Color.yellow;
+            godModeTextLabel.ShadowColor = Color.black;
+            
+
             if (DaggerfallUnity.Settings.EnableVitalsIndicators)
             {
                 healthBarLoss.VerticalAlignment = VerticalAlignment.Bottom;
@@ -117,6 +125,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             Components.Add(healthBar);
             Components.Add(fatigueBar);
             Components.Add(magickaBar);
+            Components.Add(godModeTextLabel);
 
             VitalsChangeDetector.OnReset += VitalChangeDetector_OnReset;
             vitalsDetector.HealthChanged += VitalsDetector_HealthChanged;
@@ -212,6 +221,11 @@ namespace DaggerfallWorkshop.Game.UserInterface
                     UpdateAllVitals();
                 else
                     SynchronizeImmediately();
+
+                godModeTextLabel.Enabled = false;
+                if (!GameManager.Instance.PlayerEntity.GodMode) return;
+                godModeTextLabel.Enabled = true;
+                godModeTextLabel.Text = "GOD MODE";
             }
         }
 
