@@ -11,6 +11,8 @@
 
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Game.MacadaynuMods.QuestOfferLocations;
+using DaggerfallConnect;
 using UnityEngine;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Utility;
@@ -592,7 +594,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
         }
 
-        private int GetFactionIdForGuild()
+        protected virtual int GetFactionIdForGuild()
         {
             return (guildGroup == FactionFile.GuildGroups.HolyOrder || guildGroup == FactionFile.GuildGroups.KnightlyOrder) ? buildingFactionId : guildManager.GetGuildFactionId(guildGroup);
         }
@@ -620,6 +622,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             questPool.Clear();
         }
+
+
 
         protected virtual void GettingQuestsBox_OnClose()
         {
