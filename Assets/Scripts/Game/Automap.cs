@@ -26,6 +26,7 @@ using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Player;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility;
 using Wenzil.Console;
@@ -459,6 +460,8 @@ namespace DaggerfallWorkshop.Game
             }
         }
 
+
+
         /// <summary>
         /// DaggerfallAutomapWindow script will use this to signal this script to update when anything changed that requires Automap to update - TODO: check if this can done with an event (if events work with gui windows)
         /// </summary>
@@ -618,7 +621,14 @@ namespace DaggerfallWorkshop.Game
                 {
                     return TextManager.Instance.GetLocalizedText("automapTeleporterExit");
                 }
+                else
+                {
+                    var hit = nearestHit.Value.transform;
+                    return FormulaHelper.TranslateMapPosition(hit);
+                }
             }
+
+
             return ""; // otherwise return empty string (= no mouse hover over text will be displayed)
         }
 

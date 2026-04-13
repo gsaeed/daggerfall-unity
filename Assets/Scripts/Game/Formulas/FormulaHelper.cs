@@ -86,6 +86,15 @@ namespace DaggerfallWorkshop.Game.Formulas
             return false;
         }
 
+        public static string TranslateMapPosition(Transform transform)
+        {
+            Func<Transform, string> del;
+            if (TryGetOverride("TranslateMapPosition", out del))
+                return del(transform);
+
+            return "";
+        }
+
         public static (int, int)  GetTextureAssetReplacement(int archive, int record)
         {
             Func<int, int, (int, int)> del;
