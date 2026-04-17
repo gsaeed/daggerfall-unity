@@ -99,11 +99,20 @@ namespace DaggerfallWorkshop.Game
         {
             public string note;
             public Vector3 position;
+            public Color color;
 
             public NoteMarker(Vector3 position, string note)
             {
                 this.note = note;
                 this.position = position;
+                this.color = new Color(1.0f, 0.55f, 0.0f); // default color for user note markers is orange
+            }
+
+            public NoteMarker(Vector3 position, string note, Color color)
+            {
+                this.note = note;
+                this.position = position;
+                this.color = color;
             }
         }
 
@@ -823,6 +832,7 @@ namespace DaggerfallWorkshop.Game
                 if (nearestHit.Value.transform.name.StartsWith(NameGameobjectUserNoteMarkerSubStringStart)) // if user note marker was hit
                 {                    
                     int id = System.Convert.ToInt32(nearestHit.Value.transform.name.Replace(NameGameobjectUserNoteMarkerSubStringStart, ""));
+
                     if (listUserNoteMarkers.ContainsKey(id))
                         listUserNoteMarkers.Remove(id); // remove it from list
                     GameObject.Destroy(nearestHit.Value.transform.gameObject); // and destroy gameobject
