@@ -280,6 +280,28 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             }
             return null;
         }
+
+        public static IUserInterfaceWindow GetUnregisteredInstance(Type windowType, IUserInterfaceManager uiManager)
+        {
+            object[] args = new object[] { uiManager };
+            return GetUnregisteredInstance(windowType, args);
+        }
+
+        public static IUserInterfaceWindow GetUnregisteredInstance(Type windowType, IUserInterfaceManager uiManager, DaggerfallBaseWindow previous)
+        {
+            object[] args = new object[] { uiManager, previous };
+            return GetUnregisteredInstance(windowType, args);
+        }
+
+        public static IUserInterfaceWindow GetUnregisteredInstanceWithArgs(Type windowType, object[] args)
+        {
+
+            return GetUnregisteredInstance(windowType, args);
+        }
+        private static IUserInterfaceWindow GetUnregisteredInstance(Type windowClassType, object[] args)
+        {
+            return (IUserInterfaceWindow)Activator.CreateInstance(windowClassType, args);
+        }
     }
 }
 

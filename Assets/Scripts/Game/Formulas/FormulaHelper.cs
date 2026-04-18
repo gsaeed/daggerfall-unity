@@ -85,6 +85,14 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return false;
         }
+        public static bool CustomEditUserNote(int id)
+        {
+            Func<int, bool> del;
+            if (TryGetOverride("CustomEditUserNote", out del))
+                return del(id);
+
+            return false;
+        }
 
         public static string TranslateMapPosition(Transform transform)
         {
