@@ -1612,19 +1612,23 @@ namespace DaggerfallWorkshop.Game
         /// <param name="id">the id of the user note to be edited</param>
         private void EditUserNote(int id)
         {
-            // edit user note marker
-            messageboxUserNote = new DaggerfallInputMessageBox(DaggerfallUI.UIManager, DaggerfallUI.Instance.AutomapWindow);
-            messageboxUserNote.SetTextBoxLabel(TextManager.Instance.GetLocalizedText("youNote"));
-            messageboxUserNote.TextPanelDistanceX = 5;
-            messageboxUserNote.TextPanelDistanceY = 8;            
-            if (listUserNoteMarkers.ContainsKey(id))
-                messageboxUserNote.TextBox.Text = listUserNoteMarkers[id].note;
-            messageboxUserNote.TextBox.Numeric = false;
-            messageboxUserNote.TextBox.MaxCharacters = 50;
-            messageboxUserNote.TextBox.WidthOverride = 306;
-            idOfUserMarkerNoteToBeChanged = id;
-            messageboxUserNote.OnGotUserInput += UserNote_OnGotUserInput;
-            messageboxUserNote.Show();
+            if (!FormulaHelper.CustomEditUserNote(id))
+            {
+                // edit user note marker
+                messageboxUserNote =
+                    new DaggerfallInputMessageBox(DaggerfallUI.UIManager, DaggerfallUI.Instance.AutomapWindow);
+                messageboxUserNote.SetTextBoxLabel(TextManager.Instance.GetLocalizedText("youNote"));
+                messageboxUserNote.TextPanelDistanceX = 5;
+                messageboxUserNote.TextPanelDistanceY = 8;
+                if (listUserNoteMarkers.ContainsKey(id))
+                    messageboxUserNote.TextBox.Text = listUserNoteMarkers[id].note;
+                messageboxUserNote.TextBox.Numeric = false;
+                messageboxUserNote.TextBox.MaxCharacters = 50;
+                messageboxUserNote.TextBox.WidthOverride = 306;
+                idOfUserMarkerNoteToBeChanged = id;
+                messageboxUserNote.OnGotUserInput += UserNote_OnGotUserInput;
+                messageboxUserNote.Show();
+            }
         }
 
         /// <summary>
@@ -2542,6 +2546,7 @@ namespace DaggerfallWorkshop.Game
         void UserNote_OnGotUserInput(DaggerfallInputMessageBox sender, string input)
         {
             listUserNoteMarkers[idOfUserMarkerNoteToBeChanged].note = input;
+            listUserNoteMarkers[idOfUserMarkerNoteToBeChanged].color = Color.blue;
             messageboxUserNote = null;
         }
 
