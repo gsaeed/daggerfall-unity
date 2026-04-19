@@ -124,7 +124,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         AutomapViewMode automapViewMode = AutomapViewMode.View3D; // default to 3D - this deviation from classic is on purpose (after people asked for it)
 
         Panel dummyPanelAutomap = null; // used to determine correct render panel position
-        Panel panelRenderAutomap = null; // level geometry is rendered into this panel
+        public Panel panelRenderAutomap = null; // level geometry is rendered into this panel
         Panel dummyPanelOverlay = null; // used to determine correct panel position for additional overlays
         Panel panelRenderOverlay = null; // used for overlays rendering (micro-map)
         Rect oldPositionNativePanel;
