@@ -100,12 +100,14 @@ namespace DaggerfallWorkshop.Game
             public string note;
             public Vector3 position;
             public Color color;
+            public float scale;
 
             public NoteMarker(Vector3 position, string note)
             {
                 this.note = note;
                 this.position = position;
                 this.color = new Color(1.0f, 0.55f, 0.0f); // default color for user note markers is orange
+                this.scale = 0.6f;
             }
 
             public NoteMarker(Vector3 position, string note, Color color)
@@ -113,6 +115,15 @@ namespace DaggerfallWorkshop.Game
                 this.note = note;
                 this.position = position;
                 this.color = color;
+                this.scale = 0.6f;
+            }
+
+            public NoteMarker(Vector3 position, string note, Color color, float scale)
+            {
+                this.note = note;
+                this.position = position;
+                this.color = color;
+                this.scale = scale;
             }
         }
 
@@ -171,7 +182,7 @@ namespace DaggerfallWorkshop.Game
         const string NameGameobjectTeleporterConnection = "Teleporter Connection";
 
         const string NameGameobjectUserMarkerNotes = "UserMarkerNotes";
-        const string NameGameobjectUserNoteMarkerSubStringStart = "UserNoteMarker_";
+        public string NameGameobjectUserNoteMarkerSubStringStart = "UserNoteMarker_";
         public static float userNoteMarkerSize = 0.6f; // size of user note markers
         const string NameGameobjectDiamond = "Diamond";
 
@@ -185,11 +196,11 @@ namespace DaggerfallWorkshop.Game
 
         GameObject gameobjectGeometry = null; // used to hold reference to instance of GameObject with level geometry used for automap        
 
-        int layerAutomap; // layer used for level geometry of automap
-        int layerPlayer; // player layer
+        public int layerAutomap; // layer used for level geometry of automap
+        public int layerPlayer; // player layer
 
         GameObject gameObjectCameraAutomap = null; // used to hold reference to GameObject to which camera class for automap camera is attached to
-        Camera cameraAutomap = null; // camera for automap camera
+        public Camera cameraAutomap = null; // camera for automap camera
         
         GameObject gameobjectAutomapKeyLight = null; // instead this script will use its own key light to lighten the level geometry used for automap
         GameObject gameobjectAutomapFillLight = null; // and fill light
@@ -571,37 +582,39 @@ namespace DaggerfallWorkshop.Game
 
             if (nearestHit.HasValue)
             {
+                var hit = nearestHit.Value.transform;
+
                 // if hit geometry is user note marker
                 if (nearestHit.Value.transform.name.StartsWith(NameGameobjectUserNoteMarkerSubStringStart))
                 {
                     int id = System.Convert.ToInt32(nearestHit.Value.transform.name.Replace(NameGameobjectUserNoteMarkerSubStringStart, ""));
                     if (listUserNoteMarkers.ContainsKey(id))
-                        return listUserNoteMarkers[id].note; // get user note by id
+                        return listUserNoteMarkers[id].note + " " + FormulaHelper.TranslateMapPosition(hit); // get user note by id
                 }
                 // if hit geometry is player position beacon
                 else if (nearestHit.Value.transform.name == NameGameobjectBeaconPlayerPosition)
                 {
-                    return TextManager.Instance.GetLocalizedText("automapPlayerPositionBeacon");
+                    return TextManager.Instance.GetLocalizedText("automapPlayerPositionBeacon") + FormulaHelper.TranslateMapPosition(hit);
                 }
                 // if hit geometry is player rotation pivot axis or rotation indicator arrows
                 else if (nearestHit.Value.transform.name == NameGameobjectBeaconRotationPivotAxis || nearestHit.Value.transform.name == NameGameobjectRotateArrow)
                 {
-                    return TextManager.Instance.GetLocalizedText("automapRotationPivotAxis");
+                    return TextManager.Instance.GetLocalizedText("automapRotationPivotAxis") + FormulaHelper.TranslateMapPosition(hit);
                 }
                 // if hit geometry is dungeon entrance/exit position beacon
                 else if (nearestHit.Value.transform.name == NameGameobjectBeaconEntrancePositionMarker)
                 {
-                    return TextManager.Instance.GetLocalizedText("automapEntranceExitPositionBeacon");
+                    return TextManager.Instance.GetLocalizedText("automapEntranceExitPositionBeacon") + FormulaHelper.TranslateMapPosition(hit);
                 }
                 // if hit geometry is dungeon entrance/exit position marker
                 else if (nearestHit.Value.transform.name == NameGameobjectCubeEntrancePositionMarker)
                 {
-                    return TextManager.Instance.GetLocalizedText("automapEntranceExit");
+                    return TextManager.Instance.GetLocalizedText("automapEntranceExit") + FormulaHelper.TranslateMapPosition(hit);
                 }
                 // if hit geometry is player position marker arrow
                 else if (nearestHit.Value.transform.name == NameGameobjectPlayerMarkerArrow)
                 {
-                    return TextManager.Instance.GetLocalizedText("automapPlayerMarker");
+                    return TextManager.Instance.GetLocalizedText("automapPlayerMarker") + FormulaHelper.TranslateMapPosition(hit);
                 }
                 // if hit geometry is teleporter portal marker and its parent gameobject is an teleporter entrance
                 else if (
@@ -610,7 +623,7 @@ namespace DaggerfallWorkshop.Game
                         nearestHit.Value.transform.parent.transform.name.EndsWith(NameGameobjectTeleporterEntranceSubStringEnd)
                         )
                 {
-                    return TextManager.Instance.GetLocalizedText("automapTeleporterEntrance");
+                    return TextManager.Instance.GetLocalizedText("automapTeleporterEntrance") + FormulaHelper.TranslateMapPosition(hit);
                 }
                 // if hit geometry is teleporter portal marker and its parent gameobject is an teleporter exit
                 else if (
@@ -619,11 +632,10 @@ namespace DaggerfallWorkshop.Game
                         nearestHit.Value.transform.parent.transform.name.EndsWith(NameGameobjectTeleporterExitSubStringEnd)
                         )
                 {
-                    return TextManager.Instance.GetLocalizedText("automapTeleporterExit");
+                    return TextManager.Instance.GetLocalizedText("automapTeleporterExit") + FormulaHelper.TranslateMapPosition(hit);
                 }
                 else
                 {
-                    var hit = nearestHit.Value.transform;
                     return FormulaHelper.TranslateMapPosition(hit);
                 }
             }
@@ -801,7 +813,8 @@ namespace DaggerfallWorkshop.Game
                     }
                     
                     int id = listUserNoteMarkers.AddNext(new NoteMarker(spawningPosition, ""));
-                    /*GameObject gameObjectNewUserNoteMarker =*/ CreateUserMarker(id, spawningPosition);
+                    /*GameObject gameObjectNewUserNoteMarker =*/
+                    CreateUserMarker(id, spawningPosition);
 
                     if (editUserNoteOnCreation)
                     {
@@ -1607,6 +1620,34 @@ namespace DaggerfallWorkshop.Game
         }
 
         /// <summary>
+        /// creates gameobjects for user marker (it is just the marker, not the note - the marker and note info is stored seperately and not touched by this function)
+        /// </summary>
+        /// <param name="id">the target id of the marker</param>
+        /// <param name="spawningPosition">the requested spawning position of the marker</param>
+        /// <param name="color">the color of the marker</param>
+        /// <param name="scale">the scale of the marker</param>
+        /// <returns>the GameObject with the marker</returns>
+        public GameObject CreateUserMarker(int id, Vector3 spawningPosition, Color color, float scale)
+        {
+            if (gameObjectUserNoteMarkers == null)
+            {
+                gameObjectUserNoteMarkers = new GameObject(NameGameobjectUserMarkerNotes);
+                gameObjectUserNoteMarkers.transform.SetParent(gameobjectAutomap.transform);
+                gameObjectUserNoteMarkers.layer = layerAutomap;
+            }
+            GameObject gameObjectUserNoteMarker = CreateDiamondShapePrimitive();
+            gameObjectUserNoteMarker.transform.SetParent(gameObjectUserNoteMarkers.transform);
+            gameObjectUserNoteMarker.transform.position = spawningPosition;
+            gameObjectUserNoteMarker.name = NameGameobjectUserNoteMarkerSubStringStart + id;
+            Material materialUserNoteMarker = new Material(Shader.Find("Standard"));
+            materialUserNoteMarker.color = color;
+            gameObjectUserNoteMarker.GetComponent<MeshRenderer>().material = materialUserNoteMarker;
+            gameObjectUserNoteMarker.layer = layerAutomap;
+            gameObjectUserNoteMarker.transform.localScale = new Vector3(scale, scale, scale);
+            return gameObjectUserNoteMarker;
+        }
+
+        /// <summary>
         /// edits the user note with a given id
         /// </summary>
         /// <param name="id">the id of the user note to be edited</param>
@@ -1862,7 +1903,7 @@ namespace DaggerfallWorkshop.Game
         /// </summary>
         /// <param name="screenPosition">the mouse position used for raycast</param>
         /// <param name="nearestHit">[out] the nearest RaycastHit with automap layer geometry, might be null if no geometry was hit</param>
-        private void GetRayCastNearestHitOnAutomapLayer(Vector2 screenPosition, out RaycastHit? nearestHit)
+        public void GetRayCastNearestHitOnAutomapLayer(Vector2 screenPosition, out RaycastHit? nearestHit)
         {
             if (cameraAutomap == null)
             {
@@ -2454,7 +2495,7 @@ namespace DaggerfallWorkshop.Game
 
             foreach (var userNoteMarker in listUserNoteMarkers)
             {
-                CreateUserMarker(userNoteMarker.Key, userNoteMarker.Value.position);
+                CreateUserMarker(userNoteMarker.Key, userNoteMarker.Value.position, userNoteMarker.Value.color, userNoteMarker.Value.scale);
             }
 
             // (try to) load teleporter connections (creation of teleporter gameobjects for map is done on map open (UpdateAutomapStateOnWindowPush))
@@ -2546,7 +2587,6 @@ namespace DaggerfallWorkshop.Game
         void UserNote_OnGotUserInput(DaggerfallInputMessageBox sender, string input)
         {
             listUserNoteMarkers[idOfUserMarkerNoteToBeChanged].note = input;
-            listUserNoteMarkers[idOfUserMarkerNoteToBeChanged].color = Color.blue;
             messageboxUserNote = null;
         }
 
