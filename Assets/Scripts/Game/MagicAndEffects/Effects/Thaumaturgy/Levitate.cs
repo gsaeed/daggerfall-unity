@@ -69,7 +69,8 @@ namespace DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects
 
             base.Start(manager, caster);
             StartLevitating();
-            levitateMotor.levitateEffect = this;
+            if (levitateMotor != null)
+                levitateMotor.levitateEffect = this;
         }
 
         public override void Resume(EntityEffectManager.EffectSaveData_v1 effectData, EntityEffectManager manager, DaggerfallEntityBehaviour caster = null)
