@@ -720,6 +720,9 @@ namespace DaggerfallWorkshop.Game
                 }
             }
 
+            if (DaggerfallUnity.Settings.IgnoreActiveFoeSpawners)
+                return areEnemiesNearby;
+
             // Also check for enemy spawners that might emit an enemy
             foreach (FoeSpawner spawner in ActiveGameObjectDatabase.GetActiveFoeSpawners())
             {

@@ -126,6 +126,7 @@ ShowVitalsWhenFatigueBelowMaximum=True
 DisplayMobileEnemyHealthStatus=False
 IgnoreCombiner=True
 LogHudMessages=False
+IgnoreActiveFoeSpawners=True
 DoorBashEaseMultiplier=1.0
 HideSkillImprovedMessage=False;
 
