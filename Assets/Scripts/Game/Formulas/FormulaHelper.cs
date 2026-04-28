@@ -400,11 +400,11 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         //Let player know that a quest is in process
-        public static bool ReplyFinishTheQuestFirst(QuestResourceBehaviour questResourceBehaviour)
+        public static bool ReplyFinishTheQuestFirst(StaticNPC npc, QuestResourceBehaviour questResourceBehaviour)
         {
-            Func<QuestResourceBehaviour, bool> del;
+            Func<StaticNPC, QuestResourceBehaviour, bool> del;
             if (TryGetOverride("ReplyFinishTheQuestFirst", out del))
-                return del(questResourceBehaviour);
+                return del(npc, questResourceBehaviour);
 
             return false;
         }
