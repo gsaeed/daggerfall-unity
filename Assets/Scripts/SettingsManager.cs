@@ -233,6 +233,7 @@ namespace DaggerfallWorkshop
         public float ColorBoostRadius { get; set; }
         public float ColorBoostIntensity { get; set; }
         public bool LogHudMessages { get; set; }
+        public bool IgnoreActiveFoeSpawners { get; set; }
         public float DoorBashEaseMultiplier { get; set; }
         public float ColorBoostDungeonScale { get; set; }
         public float ColorBoostExteriorScale { get; set; }
@@ -545,6 +546,8 @@ namespace DaggerfallWorkshop
             ShowVitalsWhenFatigueBelowMaximum = GetBool(sectionGUI, "ShowVitalsWhenFatigueBelowMaximum");
             LogReputationChanges = GetBool(sectionGUI, "LogReputationChanges");
             LogHudMessages = GetBool(sectionGUI, "LogHudMessages");
+            IgnoreActiveFoeSpawners = GetBool(sectionGUI, "IgnoreActiveFoeSpawners");
+
             DoorBashEaseMultiplier = GetFloat(sectionGUI, "DoorBashEaseMultiplier");
 
             DisplayMobileEnemyHealthStatus = GetBool(sectionGUI, "DisplayMobileEnemyHealthStatus");
@@ -785,6 +788,7 @@ namespace DaggerfallWorkshop
             SetBool(sectionGUI, "ShowVitalsWhenFatigueBelowMaximum", ShowVitalsWhenFatigueBelowMaximum);
             SetBool(sectionGUI, "LogReputationChanges", LogReputationChanges);
             SetBool(sectionGUI, "LogHudMessages", LogHudMessages);
+            SetBool(sectionGUI, "IgnoreActiveFoeSpawners", IgnoreActiveFoeSpawners);
             SetFloat(sectionGUI, "DoorBashEaseMultiplier", DoorBashEaseMultiplier);
             SetBool(sectionGUI, "DisplayMobileEnemyHealthStatus", DisplayMobileEnemyHealthStatus);
 
