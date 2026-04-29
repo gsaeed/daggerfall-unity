@@ -784,7 +784,7 @@ namespace DaggerfallWorkshop.Game.Items
         /// <returns>DaggerfallUnityItem</returns>
         public static DaggerfallUnityItem SetItemPropertiesByMaterial(DaggerfallUnityItem item, WeaponMaterialTypes material)
         {
-            item.value *= 3 * valueMultipliersByMaterial[(int)material];
+            item.value = Formulas.FormulaHelper.GetItemValueMultiplier(item, material);
             item.weightInKg = CalculateWeightForMaterial(item, material);
             item.maxCondition = item.maxCondition * conditionMultipliersByMaterial[(int)material] / 4;
             item.currentCondition = item.maxCondition;

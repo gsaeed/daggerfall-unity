@@ -2640,7 +2640,17 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return (item.ItemGroup == ItemGroups.Armor || item.ItemGroup == ItemGroups.Weapons);
         }
-        
+
+
+        public static int GetItemValueMultiplier(DaggerfallUnityItem item, WeaponMaterialTypes material)
+        {
+            Func<DaggerfallUnityItem, WeaponMaterialTypes, int> del;
+            if (TryGetOverride("GetItemValueMultiplier", out del))
+                return del(item, material);
+
+            short[] valueMultipliersByMaterial = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
+            return item.value * 3 * valueMultipliersByMaterial[(int)material];
+        }
         public static string WeaponHealthMessage(int messageType, DaggerfallUnityItem weapon)
         {
             Func<int, DaggerfallUnityItem, string> del;
