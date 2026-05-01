@@ -1001,12 +1001,12 @@ namespace DaggerfallWorkshop.Game.Items
 
         public virtual int GetBaseDamageMin()
         {
-            return FormulaHelper.CalculateWeaponMinDamage((Weapons)TemplateIndex);
+            return FormulaHelper.CalculateWeaponMinDamage((Weapons)TemplateIndex, this);
         }
 
         public virtual int GetBaseDamageMax()
         {
-            return FormulaHelper.CalculateWeaponMaxDamage((Weapons)TemplateIndex);
+            return FormulaHelper.CalculateWeaponMaxDamage((Weapons)TemplateIndex, this);
         }
 
         public int GetWeaponMaterialModifier()
@@ -1081,14 +1081,14 @@ namespace DaggerfallWorkshop.Game.Items
             }
             else
             {
-                return GetShieldArmorValue();
+                result = GetShieldArmorValue();
             }
 
             // Armor artifact appear to use armor rating divided by 2 rounded down
             if (IsArtifact && ItemGroup == ItemGroups.Armor)
                 result /= 2;
 
-            return result;
+            return result + FormulaHelper.ApplyCustomArmorRating(this, result);
         }
 
         public virtual int GetShieldArmorValue()
