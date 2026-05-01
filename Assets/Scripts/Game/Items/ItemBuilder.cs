@@ -776,6 +776,47 @@ namespace DaggerfallWorkshop.Game.Items
             return newItem;
         }
 
+        public static int CalculateEnchantValue(DaggerfallUnityItem item)
+        {
+            // return value of the enchantment. This is determined by the enchantment point cost/spell-casting cost
+            // of the enchantments on the item.
+            int value = 0;
+            var magicItem = item.LegacyEnchantments;
+            for (int i = 0; i < magicItem.Length; ++i)
+            {
+                if (magicItem[i].type != EnchantmentTypes.None
+                      && magicItem[i].type < EnchantmentTypes.ItemDeteriorates)                {
+                      switch (magicItem[i].type)                    {
+                        case EnchantmentTypes.CastWhenUsed:
+                        case EnchantmentTypes.CastWhenHeld:
+                        case EnchantmentTypes.CastWhenStrikes:
+                            // Enchantments that cast a spell. The parameter is the spell index in SPELLS.STD.
+                              value += Formulas.FormulaHelper.GetSpellEnchantPtCost(magicItem[i].param);
+                            break;
+                        case EnchantmentTypes.RepairsObjects:
+                        case EnchantmentTypes.AbsorbsSpells:
+                        case EnchantmentTypes.EnhancesSkill:
+                        case EnchantmentTypes.FeatherWeight:
+                        case EnchantmentTypes.StrengthensArmor:
+                            // Enchantments that provide an effect that has no parameters
+                              value += enchantmentPointCostsForNonParamTypes[(int)magicItem[i].type];
+                            break;
+                        case EnchantmentTypes.SoulBound:
+                            // Bound soul
+                              MobileEnemy mobileEnemy = GameObjectHelper.EnemyDict[magicItem[i].param];
+                            value += mobileEnemy.SoulPts; // TODO: Not sure about this. Should be negative? Needs to be tested.
+                            break;
+                        default:
+                            // Enchantments that provide a non-spell effect with a parameter (parameter = when effect applies, what enemies are affected, etc.)
+                              value += enchantmentPtsForItemPowerArrays[(int)magicItem[i].type][magicItem[i].param];
+                            break;
+                    }
+                }
+            }
+
+            return value;
+        }
+
         /// <summary>
         /// Sets properties for a weapon or piece of armor based on its material.
         /// </summary>
