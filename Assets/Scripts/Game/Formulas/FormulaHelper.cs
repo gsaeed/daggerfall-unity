@@ -842,11 +842,11 @@ namespace DaggerfallWorkshop.Game.Formulas
             return (handToHandSkill / 5) + 1;
         }
 
-        public static int CalculateWeaponMinDamage(Weapons weapon)
+        public static int CalculateWeaponMinDamage(Weapons weapon, DaggerfallUnityItem item)
         {
-            Func<Weapons, int> del;
+            Func<Weapons, DaggerfallUnityItem, int> del;
             if (TryGetOverride("CalculateWeaponMinDamage", out del))
-                return del(weapon);
+                return del(weapon, item);
 
             switch (weapon)
             {
@@ -877,11 +877,11 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
         }
 
-        public static int CalculateWeaponMaxDamage(Weapons weapon)
+        public static int CalculateWeaponMaxDamage(Weapons weapon, DaggerfallUnityItem item)
         {
-            Func<Weapons, int> del;
+            Func<Weapons,DaggerfallUnityItem, int> del;
             if (TryGetOverride("CalculateWeaponMaxDamage", out del))
-                return del(weapon);
+                return del(weapon, item);
 
             switch (weapon)
             {
@@ -1546,6 +1546,15 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return del(weapon);
 
             return weapon.GetWeaponMaterialModifier() * 10;
+        }
+
+        public static int ApplyCustomArmorRating(DaggerfallUnityItem item, int baseArmor)
+        {
+            Func<DaggerfallUnityItem, int, int> del;
+            if (TryGetOverride("ApplyCustomArmorRating", out del))
+                return del(item, baseArmor);
+
+            return 0;
         }
 
         public static int CalculateArmorToHit(DaggerfallEntity target, int struckBodyPart)
@@ -2642,6 +2651,14 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
 
+        public static DaggerfallUnityItem SetItemPropertiesCustom(DaggerfallUnityItem item)
+        {
+            Func<DaggerfallUnityItem, DaggerfallUnityItem> del;
+            if (TryGetOverride("SetItemPropertiesCustom", out del))
+                return del(item);
+
+            return item;
+        }
         public static int GetItemValueMultiplier(DaggerfallUnityItem item, WeaponMaterialTypes material)
         {
             Func<DaggerfallUnityItem, WeaponMaterialTypes, int> del;
@@ -3857,5 +3874,6 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         #endregion
+
     }
 }
