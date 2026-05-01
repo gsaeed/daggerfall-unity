@@ -833,6 +833,7 @@ namespace DaggerfallWorkshop.Game.Items
             item.weightInKg = CalculateWeightForMaterial(item, material);
             item.maxCondition = item.maxCondition * conditionMultipliersByMaterial[(int)material] / 4;
             item.currentCondition = item.maxCondition;
+            item = FormulaHelper.SetItemPropertiesCustom(item);
 
             return item;
         }
