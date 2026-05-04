@@ -432,6 +432,13 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             precompiledMod = EditorGUILayout.ToggleLeft(new GUIContent("Precompiled (experimental)", "Compile C# files into a .dll."), precompiledMod);
             patchMod = EditorGUILayout.ToggleLeft(new GUIContent("Patch Existing Mod", "Replace Files in Existing Mod"), patchMod);
 
+            EditorGUILayout.TextArea("", GUI.skin.horizontalSlider);
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+
             GUILayoutHelper.Horizontal(() =>
             {
 
