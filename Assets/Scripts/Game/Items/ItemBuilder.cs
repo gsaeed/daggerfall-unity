@@ -483,11 +483,34 @@ namespace DaggerfallWorkshop.Game.Items
                 SetVariant(armor, variant);
             else
                 RandomizeArmorVariant(armor);
+            armor.nativeMaterialValue = FixNativeMaterialValue(armor);
+        }
+
+        public static int FixNativeMaterialValue(DaggerfallUnityItem item)
+        {
+            if (item.ItemGroup != ItemGroups.Armor)
+                return item.nativeMaterialValue;
+
+            // Check if a value exists in the enum
+            if (Enum.IsDefined(typeof(ArmorMaterialTypes), item.nativeMaterialValue))
+            {
+                return item.nativeMaterialValue;
+            }
+
+            Debug.LogError($"ERROR - Armor {item.LongName} has a bad nativeMaterialValue: {item.nativeMaterialValue} will fix to 0x{(item.nativeMaterialValue + 0x200):X} : {(ArmorMaterialTypes)(item.nativeMaterialValue + 0x200)}");
+            // Check if a value exists in the enum
+            if (Enum.IsDefined(typeof(ArmorMaterialTypes), item.nativeMaterialValue + 0x200))
+            {
+                return item.nativeMaterialValue + 0x200;
+            }
+
+            return 0;
         }
 
         /// <summary>Set material and adjust armor stats accordingly</summary>
         public static void ApplyArmorMaterial(DaggerfallUnityItem armor, ArmorMaterialTypes material)
         {
+            material = (ArmorMaterialTypes)FixNativeMaterialValue(armor);
             armor.nativeMaterialValue = (int)material;
 
             if (armor.nativeMaterialValue == (int)ArmorMaterialTypes.Leather)
