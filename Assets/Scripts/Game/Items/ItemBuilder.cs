@@ -510,8 +510,11 @@ namespace DaggerfallWorkshop.Game.Items
         /// <summary>Set material and adjust armor stats accordingly</summary>
         public static void ApplyArmorMaterial(DaggerfallUnityItem armor, ArmorMaterialTypes material)
         {
-            material = (ArmorMaterialTypes)FixNativeMaterialValue(armor);
             armor.nativeMaterialValue = (int)material;
+
+            armor.nativeMaterialValue = FixNativeMaterialValue(armor);
+
+            material = (ArmorMaterialTypes)armor.nativeMaterialValue;
 
             if (armor.nativeMaterialValue == (int)ArmorMaterialTypes.Leather)
             {
