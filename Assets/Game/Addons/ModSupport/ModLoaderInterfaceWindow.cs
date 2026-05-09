@@ -22,6 +22,7 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using FullSerializer;
+using UnityEngine.Rendering.PostProcessing;
 using static DaggerfallWorkshop.Game.UserInterfaceWindows.DaggerfallMessageBox;
 
 public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
@@ -638,7 +639,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             str += "#\n";
             str += "# Mod = the mod to apply the rule.\n";
             str += "# Override is true or false and dictates if you overWrite an existing rule.\n";
-            str += "# modName is the dependency for the mod\n";
+            str += "# modName is the dependency for the mod or the order (0 for first or -1 for last) or position (Top, NearTop, NearBottom, Bottom)\n";
             str += "# IsOptional is true or false, does the dependent mod need to exist?\n";
             str += "# IsPeer is true or false, if false, dependent mod must appear earlier in load order\n";
             str += "# IsConflict is true or false, if true, dependent mod should not be run with Mod\n";
@@ -702,14 +703,80 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             if (target != null && target.Enabled)
             {
                 var depTarget = GetModFromName(fields[2]);
+                var pos = 0;
                 if (depTarget == null)
                 {
                     int a;
                     if (fields.Length > 2 && int.TryParse(fields[2], out a))
                     {
+                        Debug.Log($"SortOrder - Changing loadpriority of {target.ModInfo.ModTitle} to {a} from {target.LoadPriority}");
                         ChangePriority(target, a);
                     }
+                    else if (fields.Length > 2 && fields[2].ToLower() == "top")
+                    {
+                        var rangeFrom = 0;
+                        var rangeTo = (int)(ModManager.Instance.mods.Count * 0.10f);
+                        pos = UnityEngine.Random.Range(rangeFrom, rangeTo);
+                        if (target.LoadPriority > rangeTo)
+                        {
+                            Debug.Log($"SortOrder - Changing load priority of {target.ModInfo.ModTitle} flagged as {fields[2]} to {pos} from {target.LoadPriority} Range for {fields[2]} is {rangeFrom} - {rangeTo}");
 
+                            ChangePriority(target, pos);
+                        }
+                        else
+                        {
+                            Debug.Log($"SortOrder - {target.ModInfo.ModTitle} was flagged for |{fields[2]} which is {rangeFrom} - {rangeTo} and already has load order of {target.LoadPriority} - so it was skipped");
+                        }
+                    }
+                    else if (fields.Length > 2 && ( fields[2].ToLower() == "neartop" || fields[2].ToLower() == "near top"))
+                    {
+                        var rangeFrom = 0;
+                        var rangeTo = (int)(ModManager.Instance.mods.Count * 0.20f);
+                        pos = UnityEngine.Random.Range(rangeFrom, rangeTo);
+                        if (target.LoadPriority > rangeTo)
+                        {
+                            Debug.Log($"SortOrder - Changing load priority of {target.ModInfo.ModTitle} flagged as {fields[2]} to {pos} from {target.LoadPriority} Range for {fields[2]} is {rangeFrom} - {rangeTo}");
+
+                            ChangePriority(target, pos);
+                        }
+                        else
+                        {
+                            Debug.Log($"SortOrder - {target.ModInfo.ModTitle} was flagged for |{fields[2]} which is {rangeFrom} - {rangeTo} and already has load order of {target.LoadPriority} - so it was skipped");
+                        }
+
+                    }
+                    else if (fields.Length > 2 && (fields[2].ToLower() == "nearbottom" || fields[2].ToLower() == "near bottom"))
+                    {
+                        var rangeTo = ModManager.Instance.mods.Count;
+                        var rangeFrom = (int)(ModManager.Instance.mods.Count * 0.80f);
+                        pos = UnityEngine.Random.Range(rangeFrom, rangeTo);
+                        if (target.LoadPriority < rangeFrom)
+                        {
+                            Debug.Log($"SortOrder - Changing load priority of {target.ModInfo.ModTitle} flagged as {fields[2]} to {pos} from {target.LoadPriority} Range for {fields[2]} is {rangeFrom} - {rangeTo}");
+
+                            ChangePriority(target, pos);
+                        }
+                        else
+                        {
+                            Debug.Log($"SortOrder - {target.ModInfo.ModTitle} was flagged for |{fields[2]} which is {rangeFrom} - {rangeTo} and already has load order of {target.LoadPriority} - so it was skipped");
+                        }
+                    }
+                    else if (fields.Length > 2 && fields[2].ToLower() == "bottom")
+                    {
+                        var rangeTo = ModManager.Instance.mods.Count;
+                        var rangeFrom = (int)(ModManager.Instance.mods.Count * 0.90f);
+                        pos = UnityEngine.Random.Range(rangeFrom, rangeTo);
+                        if (target.LoadPriority < rangeFrom)
+                        {
+                            Debug.Log($"SortOrder - Changing load priority of {target.ModInfo.ModTitle} flagged as {fields[2]} to {pos} from {target.LoadPriority} Range for {fields[2]} is {rangeFrom} - {rangeTo}");
+
+                            ChangePriority(target, pos);
+                        }
+                        else
+                        {
+                            Debug.Log($"SortOrder - {target.ModInfo.ModTitle} was flagged for |{fields[2]} which is {rangeFrom} - {rangeTo} and already has load order of {target.LoadPriority} - so it was skipped");
+                        }
+                    }
                 }
                 else if (target.Enabled &&  depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
                 {
@@ -803,20 +870,34 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         var origin = ModManager.Instance.GetLoadPriority(target.FileName);
         if (dest >= 0)
         {
-            if (origin <= dest)
-                return;
-
-            if (dest > ModManager.Instance.mods.Count)
-                dest = ModManager.Instance.mods.Count;
-
-            for (int i = origin; i > dest; i--)
+            if (origin < dest)
             {
-                var m1 = ModManager.Instance.mods[i];
-                var m2 = ModManager.Instance.mods[i - 1];
-                m1.LoadPriority -= 1;
-                m2.LoadPriority += 1;
-                ModManager.Instance.mods[i] = m2;
-                ModManager.Instance.mods[i - 1] = m1;
+                if (dest >= ModManager.Instance.mods.Count)
+                    dest = ModManager.Instance.mods.Count - 1;
+                for (int i = origin; i < dest; i++)
+                {
+                    var m1 = ModManager.Instance.mods[i];
+                    var m2 = ModManager.Instance.mods[i + 1];
+                    m1.LoadPriority += 1;
+                    m2.LoadPriority -= 1;
+                    ModManager.Instance.mods[i] = m2;
+                    ModManager.Instance.mods[i + 1] = m1;
+                }
+            }
+            else if (origin > dest)
+            {
+                if (dest > ModManager.Instance.mods.Count)
+                    dest = ModManager.Instance.mods.Count;
+
+                for (int i = origin; i > dest; i--)
+                {
+                    var m1 = ModManager.Instance.mods[i];
+                    var m2 = ModManager.Instance.mods[i - 1];
+                    m1.LoadPriority -= 1;
+                    m2.LoadPriority += 1;
+                    ModManager.Instance.mods[i] = m2;
+                    ModManager.Instance.mods[i - 1] = m1;
+                }
             }
         }
         else
