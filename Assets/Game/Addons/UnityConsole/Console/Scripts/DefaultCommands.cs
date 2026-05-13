@@ -355,6 +355,7 @@ namespace Wenzil.Console
                 {
                     string locIndex = "";
                     Dictionary<int, List<int>> locations = new Dictionary<int, List<int>>();
+                    Dictionary<string, List<string>> locationsNames = new Dictionary<string, List<string>>();
                     for (int region = 0; region < mapFileReader.RegionCount; region++)
                     {
                         DFRegion dfRegion = mapFileReader.GetRegion(region);
@@ -369,7 +370,14 @@ namespace Wenzil.Console
                                         if (!locations.ContainsKey(region))
                                             locations[region] = new List<int>();
                                         if (!locations[region].Contains(dfLoc.LocationIndex))
+                                        {
                                             locations[region].Add(dfLoc.LocationIndex);
+                                            var dfLocation = mapFileReader.GetLocation(region, dfLoc.LocationIndex);
+                                            if (!locationsNames.ContainsKey(dfRegion.Name))
+                                                locationsNames[dfRegion.Name] = new List<string>();
+                                            if (!locationsNames[dfRegion.Name].Contains(dfLocation.Name))
+                                                locationsNames[dfRegion.Name].Add(dfLocation.Name);
+                                        }
                                     }
                         }
                     }
@@ -381,7 +389,34 @@ namespace Wenzil.Console
                     locIndex += "};";
                     string fileName = Path.Combine(DaggerfallUnity.Settings.PersistentDataPathForBlockData, "LocationIndex.txt");
                     File.WriteAllText(fileName, locIndex);
-                    return "Location index written to " + fileName;
+                    locIndex = "";
+                    foreach (var kvp in locationsNames.OrderBy(k => k.Key))
+                    {
+                        var sortedValues = kvp.Value.OrderBy(v => v).ToList();
+                        var sb = new System.Text.StringBuilder();
+
+                        // First line: key name + up to 3 values
+                        int index = 0;
+                        var firstBatch = sortedValues.Take(3).ToList();
+                        sb.Append($"{kvp.Key}: {string.Join(", ", firstBatch)}");
+                        index += firstBatch.Count;
+
+                        // Subsequent lines: up to 4 values per line
+                        while (index < sortedValues.Count)
+                        {
+                            var batch = sortedValues.Skip(index).Take(4).ToList();
+                            sb.Append($"\n{string.Join(", ", batch)}");
+                            index += batch.Count;
+                        }
+
+                        // Blank line between keys
+                        sb.Append("\n\n");
+                        locIndex += sb.ToString();
+                    }
+
+                    string file2Name = Path.Combine(DaggerfallUnity.Settings.PersistentDataPathForBlockData, "LocationIndexNames.txt");
+                    File.WriteAllText(file2Name, locIndex);
+                    return "Location index names written to " + fileName;
                 }
                 else
                 {
