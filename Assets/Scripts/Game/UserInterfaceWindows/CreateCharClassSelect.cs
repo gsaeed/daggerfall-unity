@@ -71,10 +71,6 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     classList.Add(classFile.Career);
                     careerName = TextManager.Instance.GetLocalizedText(classFile.Career.Name);
                     listBox.AddItem(GrammarManager.grammarProcessor.ProcessGrammar(careerName));
-
- //                   listBox.AddItem(TextManager.Instance.GetLocalizedText(classFile.Career.Name));
-                    listBox.AddItem(classFile.Career.Name);
-
                 }
             }
             coreClassCount = classList.Count;
