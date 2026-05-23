@@ -1,0 +1,31 @@
+{
+    "textureActivations": [
+        { "textureArchive": 205, "recordStart": 0,  "recordEnd": 0,  "modelCategoryName": "Barrel",      "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
+        { "textureArchive": 205, "recordStart": 8,  "recordEnd": 10, "modelCategoryName": "Basket",      "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
+        { "textureArchive": 205, "recordStart": 17, "recordEnd": 20, "modelCategoryName": "Sack",        "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
+        { "textureArchive": 205, "recordStart": 21, "recordEnd": 26, "modelCategoryName": "Chest",       "lootChanceMatrixKey": "DHL-Jewelry", "registerActivation": true },
+        { "textureArchive": 205, "recordStart": 27, "recordEnd": 28, "modelCategoryName": "Small Cart",  "lootChanceMatrixKey": "DHL-Crates",  "registerActivation": true },
+        { "textureArchive": 205, "recordStart": 29, "recordEnd": 30, "modelCategoryName": "Bucket",      "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
+        { "textureArchive": 205, "recordStart": 36, "recordEnd": 36, "modelCategoryName": "Coin Purse",  "lootChanceMatrixKey": "DHL-Jewelry", "registerActivation": true },
+
+        { "textureArchive": 195, "recordStart": 23, "recordEnd": 23, "modelCategoryName": "Barrel",      "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
+        { "textureArchive": 195, "recordStart": 26, "recordEnd": 28, "modelCategoryName": "Sack",        "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
+        { "textureArchive": 195, "recordStart": 31, "recordEnd": 31, "modelCategoryName": "Basket",      "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
+        { "textureArchive": 195, "recordStart": 34, "recordEnd": 34, "modelCategoryName": "Small Cart",  "lootChanceMatrixKey": "DHL-Crates",  "registerActivation": true },
+
+        { "textureArchive": 206, "recordStart": 8,  "recordEnd": 8,  "modelCategoryName": "Corpse",      "lootChanceMatrixKey": "DHL-Corpse",  "registerActivation": true },
+        { "textureArchive": 206, "recordStart": 14, "recordEnd": 14, "modelCategoryName": "Corpse",      "lootChanceMatrixKey": "DHL-Corpse",  "registerActivation": true },
+        { "textureArchive": 206, "recordStart": 22, "recordEnd": 26, "modelCategoryName": "Corpse",      "lootChanceMatrixKey": "DHL-Corpse",  "registerActivation": true },
+
+        { "textureArchive": 211, "recordStart": 12, "recordEnd": 14, "modelCategoryName": "Weapon Rack", "lootChanceMatrixKey": "DHL-Weapons", "registerActivation": true },
+
+        { "textureArchive": 218, "recordStart": 0,  "recordEnd": 3,  "modelCategoryName": "Pot",         "lootChanceMatrixKey": "DHL-Crates",  "registerActivation": true },
+
+        { "textureArchive": 253, "recordStart": 70, "recordEnd": 73, "modelCategoryName": "Sack",        "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
+        { "textureArchive": 253, "recordStart": 76, "recordEnd": 76, "modelCategoryName": "Skeleton",    "lootChanceMatrixKey": "DHL-Corpse",  "registerActivation": true },
+        { "textureArchive": 253, "recordStart": 81, "recordEnd": 84, "modelCategoryName": "Corpse",      "lootChanceMatrixKey": "DHL-Corpse",  "registerActivation": true },
+
+        { "textureArchive": 213, "recordStart": 2,  "recordEnd": 6,  "modelCategoryName": "Plant",       "lootChanceMatrixKey": "DHL-Plant",   "registerActivation": true },
+        { "textureArchive": 213, "recordStart": 13, "recordEnd": 17, "modelCategoryName": "Plant",       "lootChanceMatrixKey": "DHL-Plant",   "registerActivation": true }
+    ]
+}
