@@ -1,5 +1,6 @@
 {
     "textureActivations": [
+        { "textureArchive": 200, "recordStart": 19,  "recordEnd": 19,  "modelCategoryName": "Bucket",    "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
         { "textureArchive": 205, "recordStart": 0,  "recordEnd": 0,  "modelCategoryName": "Barrel",      "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
         { "textureArchive": 205, "recordStart": 8,  "recordEnd": 10, "modelCategoryName": "Basket",      "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
         { "textureArchive": 205, "recordStart": 17, "recordEnd": 20, "modelCategoryName": "Sack",        "lootChanceMatrixKey": "DHL-Sacks",   "registerActivation": true },
