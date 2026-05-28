@@ -1814,7 +1814,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         // Moving local and remote Use item clicks to new method
         // This ensures the items are handled the same except when needed
         // This will need more work as more usable items are available
-        protected void UseItem(DaggerfallUnityItem item, ItemCollection collection = null)
+        protected virtual void UseItem(DaggerfallUnityItem item, ItemCollection collection = null)
         {
             // Allow item to handle its own use.
             if (item.UseItem(collection))
