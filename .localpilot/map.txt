@@ -1,5 +1,5 @@
 ## WORKSPACE EXECUTIVE SUMMARY (YAML)
-# Generated: 2026-05-27T14:38:01.4284063+01:00
+# Generated: 2026-05-31T18:01:59.4398410+01:00
 # Root: C:\Users\gsaee\Projects\gsaeed\daggerfall-unity
 Architecture:
   Type: Backend (C#/.NET)
@@ -33,10 +33,12 @@ Architecture:
   Preview: "<Project Sdk='Microsoft.NET.Sdk'>  <PropertyGroup>   <AssemblyName>LiteNetLib</AssemblyName>   <RootNamespace>LiteNetLib</RootNamespace>   <TargetFram..."
 - File: README.md
   Preview: "![image](https://github.com/Interkarma/daggerfall-unity/assets/10426244/4f176f9d-6332-47b3-a4d7-317ed8d6b38b) # What is Daggerfall Unity? Daggerfall U..."
+- File: Temp.txt
+  Preview: "// Placeholder content for Temp.txt foreach (KeyValuePair<string, CharacterDocument> c in careers.DfCareers) {   if (myDFCareers.DfCareers.ContainsKey..."
 - File: .vscode\settings.json
   Preview: "{   // File exclusions created by Unity   'files.exclude': {     '**/.DS_Store': true,     '**/.git': true,     '**/.gitignore': true,     '**/.gitmod..."
 - File: Library\EditorInstance.json
-  Preview: "{ 	'process_id' : 24240, 	'version' : '2019.4.41f2', 	'app_path' : 'C:/Program Files/Unity/Hub/Editor/2019.4.41f2/Editor/Unity.exe', 	'app_contents_pa..."
+  Preview: "{ 	'process_id' : 28640, 	'version' : '2019.4.41f2', 	'app_path' : 'C:/Program Files/Unity/Hub/Editor/2019.4.41f2/Editor/Unity.exe', 	'app_contents_pa..."
 - File: Library\EditorOnlyScriptingSettings.json
   Preview: "{'m_DefineSymbols':[{'first':1,'second':'UNITY_POST_PROCESSING_STACK_V2'},{'first':7,'second':'UNITY_POST_PROCESSING_STACK_V2'},{'first':13,'second':'..."
 - File: Library\LastSceneManagerSetup.txt
@@ -56,8 +58,10 @@ Architecture:
 - File: .github\ISSUE_TEMPLATE\bug_report.md
   Preview: "--- name: Issue Template about: READ THIS FIRST title: '' labels: '' assignees: '' --- **!READ THIS FIRST!** GitHub Issues are for developers to track..."
 - File: Assets\ConsolePro\ConsoleProDebug.cs
+  Symbols: [Clear, ConsoleProDebug]
   Preview: "using UnityEngine; using System; #if UNITY_EDITOR using System.Reflection; #endif public static class ConsoleProDebug { 	// Clear the console and the ..."
 - File: Assets\Editor\PostProcessBuild.cs
+  Symbols: [PostProcessBuild]
   Preview: "using System.Diagnostics; using UnityEditor; using UnityEditor.Callbacks; using System.IO; using Debug = UnityEngine.Debug; public class PostProcessBu..."
 - File: Assets\Licenses\C# Synth Project.txt
   Preview: "The MIT License (MIT) Copyright (c) 2011 Copyright Holders  Permission is hereby granted, free of charge, to any person obtaining a copy of this softw..."
@@ -126,7 +130,7 @@ Architecture:
 - File: Assets\Untracked\readme.txt
   Preview: "This folder can be used to store files that are not versioned by git. For example: * Test scenes * Scripts * Temporary files"
 - File: Library\com.unity.addressables\AddressablesBuildTEP.json
-  Preview: "{ 'Date': '5/26/2026 3:29:28 PM', 'UnityVersion': '2019.4.41f2', 'com.unity.scriptablebuildpipeline': '1.21.0', 'com.unity.addressables': '1.21.1', 't..."
+  Preview: "{ 'Date': '5/31/2026 4:28:41 PM', 'UnityVersion': '2019.4.41f2', 'com.unity.scriptablebuildpipeline': '1.21.0', 'com.unity.addressables': '1.21.1', 't..."
 - File: .idea\.idea.daggerfall-unity\.idea\encodings.xml
   Preview: "<?xml version='1.0' encoding='UTF-8'?> <project version='4'>  <component name='Encoding' addBOMForNewFiles='with BOM under Windows, with no BOM otherw..."
 - File: .idea\.idea.daggerfall-unity\.idea\indexLayout.xml
@@ -256,10 +260,12 @@ Architecture:
 - File: Assets\Scripts\API\WoodsFile.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\AudioSynthesis\IResource.cs
+  Symbols: [IResource]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis {   using System.IO;   public interface IResource   {     bool ReadAllowed();     bool WriteAllowed();    ..."
 - File: Assets\Scripts\Editor\AtlasEditorWindow.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Editor\DaggerfallActionEditor.cs
+  Symbols: [DaggerfallActionEditor, OnInspectorGUI]
   Preview: "using UnityEngine; using UnityEditor; using DaggerfallWorkshop; [CustomEditor(typeof(DaggerfallAction))] public class DaggerfallActionEditor : Editor ..."
 - File: Assets\Scripts\Editor\DaggerfallAudioSourceEditor.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
@@ -316,6 +322,7 @@ Architecture:
 - File: Assets\Scripts\Editor\TextureArrayWizard.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\External\FPSDisplay.cs
+  Symbols: [FPSDisplay]
   Preview: "using DaggerfallWorkshop; using UnityEngine; /// <summary> /// Simple FPS counter using OnGui(), taken from here: /// http://wiki.unity3d.com/index.ph..."
 - File: Assets\Scripts\External\iTween.cs
   Preview: "// Copyright (c) 2011 - 2018 Bob Berkebile (pixelplacment) // Please direct any bugs/comments/suggestions to http://pixelplacement.com // // Permissio..."
@@ -372,6 +379,7 @@ Architecture:
 - File: Assets\Scripts\Game\GameManager.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Game\HotkeySequence.cs
+  Symbols: [to]
   Preview: "using System; using System.Text; using UnityEngine; namespace DaggerfallWorkshop.Game {   // this is a helper class to implement behaviour and easier ..."
 - File: Assets\Scripts\Game\InputManager.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
@@ -388,6 +396,7 @@ Architecture:
 - File: Assets\Scripts\Game\NewLocationAlert.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Game\NoFogCamera.cs
+  Symbols: [NoFogCamera, OnPreRender]
   Preview: "using UnityEngine; public class NoFogCamera : MonoBehaviour {   bool doWeHaveFogInScene;   private void OnPreRender()   {     doWeHaveFogInScene = Ren..."
 - File: Assets\Scripts\Game\PlayerActivate.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
@@ -400,6 +409,7 @@ Architecture:
 - File: Assets\Scripts\Game\PlayerCompass.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Game\PlayerCrush.cs
+  Symbols: [PlayerCrush]
   Preview: "using System.Collections; using System.Collections.Generic; using UnityEngine; using DaggerfallWorkshop.Utility; namespace DaggerfallWorkshop.Game {  ..."
 - File: Assets\Scripts\Game\PlayerDeath.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
@@ -440,12 +450,14 @@ Architecture:
 - File: Assets\Scripts\Game\TransportManager.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Game\UnderwaterFog.cs
+  Symbols: [UnderwaterFog]
   Preview: "using UnityEngine; namespace DaggerfallWorkshop.Game {   public class UnderwaterFog   {     //DaggerfallSky sky;     Camera mainCamera;     public Col..."
 - File: Assets\Scripts\Game\WeaponManager.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Game\WeatherManager.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Internal\AudioSourceExtensionMethods.cs
+  Symbols: [AudioSourceExtensionMethods]
   Preview: "using System; using System.Collections; using DaggerfallWorkshop; namespace UnityEngine {   public static class AudioSourceExtensionMethods   {     pr..."
 - File: Assets\Scripts\Internal\ColorBoost.cs
   Preview: "using System; using UnityEngine; using UnityEngine.Rendering.PostProcessing; using DaggerfallWorkshop.Game; [Serializable] [PostProcess(typeof(ColorBo..."
@@ -610,6 +622,7 @@ Architecture:
 - File: Assets\Scripts\Utility\TextureReader.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Utility\Tuple.cs
+  Symbols: [because]
   Preview: "using System; namespace DaggerfallWorkshop.Utility {   /// <summary>   /// A tuple/pair class because the version of C# that Unity uses doesn't have t..."
 - File: Assets\Scripts\Utility\ViewportChanger.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
@@ -657,6 +670,8 @@ Architecture:
   Preview: "Place replacement BIOG*.txt files in this folder. The name format is BIOG[class]T[index].txt Class is a value between 0 and 17, inclusively. They corr..."
 - File: Assets\StreamingAssets\Docs\readme.txt
   Preview: "This folder can be used to store documentation files that are shipped with a mod. This ensures that mod packages can be installed with Vortex or manua..."
+- File: Assets\StreamingAssets\DungeonActivations\DungeonHasLootLootTable.json
+  Preview: "{   'lootTable': [     { 'key': 'DHL-Alchemy',  'MinGold': 0, 'MaxGold':  8, 'P1': 5, 'P2': 5, 'C1': 4, 'C2': 2, 'C3': 1, 'M1': 3, 'AM': 0, 'WP': 0, '..."
 - File: Assets\StreamingAssets\DungeonActivations\DungeonHasLootObjects.json
   Preview: "{   'smallCartObjects': [ 41239, 41241 ],   'alchemyObjects':  [ 41035, 41041, 41042, 41043, 41044, 41047, 41124, 41807, 41027, 41029 ],   'bookObject..."
 - File: Assets\StreamingAssets\DungeonActivations\DungeonHasLootTextures.json
@@ -1542,7 +1557,7 @@ Architecture:
 - File: Library\StateCache\Hierarchy\3626c1-ce4f9c26e45f9e1479.json
   Preview: "{'m_ExpandedPrefabGameObjectFileIDs':[1709254077376921,1589667821646929],'m_ExpandedSceneGameObjectInstanceIDs':[],'m_ScrollY':0.0,'m_LastClickedFileI..."
 - File: Library\StateCache\Hierarchy\3626c1-mainStage.json
-  Preview: "{'m_ExpandedPrefabGameObjectFileIDs':[],'m_ExpandedSceneGameObjectInstanceIDs':[-1236],'m_ScrollY':0.0,'m_LastClickedFileID':0,'m_LastClickedInstanceI..."
+  Preview: "{'m_ExpandedPrefabGameObjectFileIDs':[],'m_ExpandedSceneGameObjectInstanceIDs':[],'m_ScrollY':0.0,'m_LastClickedFileID':0,'m_LastClickedInstanceID':0}"
 - File: Library\StateCache\Hierarchy\534d1c-312abd0527754e047a.json
   Preview: "{'m_ExpandedPrefabGameObjectFileIDs':[100006,100004,100000,100002,100012,100008],'m_ExpandedSceneGameObjectInstanceIDs':[],'m_ScrollY':0.0,'m_LastClic..."
 - File: Library\StateCache\Hierarchy\534d1c-5759df48a6a512141b.json
@@ -1602,46 +1617,60 @@ Architecture:
 - File: Library\StateCache\SceneView\d014fb-mainStage.json
   Preview: "{'cameraMode':{'drawMode':0,'name':'Shaded','section':'Shading Mode'},'sceneLighting':false,'audioPlay':false,'sceneViewState':{'showFog':true,'showMa..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\FastBitConverter.cs
+  Symbols: [FastBitConverter]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System.Runtime.InteropServices; namespace FlyingWormConsole3.LiteNetLib.Utils {   public static class F..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\INetEventListener.cs
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using FlyingWormConsole3.LiteNetLib.Utils; namespace FlyingWormConsole3.LiteNetLib {   public enum Unconnecte..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NatPunchModule.cs
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System; using System.Collections.Generic; using FlyingWormConsole3.LiteNetLib.Utils; //Some code parts ..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetConstants.cs
+  Symbols: [N]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA namespace FlyingWormConsole3.LiteNetLib {   public enum SendOptions   {     Unreliable,     ReliableUnordered..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetDataReader.cs
+  Symbols: [NetDataReader]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System; using System.Text; namespace FlyingWormConsole3.LiteNetLib.Utils {   public class NetDataReader..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetDataWriter.cs
+  Symbols: [NetDataWriter]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System; using System.Text; namespace FlyingWormConsole3.LiteNetLib.Utils {   public class NetDataWriter..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetDebug.cs
+  Symbols: [INetLogger]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA ﻿using System; namespace FlyingWormConsole3.LiteNetLib {   public interface INetLogger   {     void WriteNet(..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetEndPoint.cs
+  Symbols: [NetEndPoint]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA #if !WINRT || UNITY_EDITOR using System; using System.Net; using System.Net.Sockets; namespace FlyingWormCons..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetManager.cs
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA #if DEBUG #define STATS_ENABLED #endif using System; using System.Collections.Generic; using System.Text; usi..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetPacket.cs
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System; using FlyingWormConsole3.LiteNetLib.Utils; namespace FlyingWormConsole3.LiteNetLib {   internal..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetPacketPool.cs
+  Symbols: [NetPacketPool]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA ﻿using System; using System.Collections.Generic; using FlyingWormConsole3.LiteNetLib.Utils; namespace FlyingW..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetPeer.cs
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System; using System.Collections.Generic; using System.Text; using FlyingWormConsole3.LiteNetLib.Utils;..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetPeerCollection.cs
+  Symbols: [NetPeerCollection]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA ﻿using System; using System.Collections.Generic; namespace FlyingWormConsole3.LiteNetLib {   internal sealed ..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetSerializer.cs
+  Symbols: [INetSeri]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA ﻿using System; using System.Reflection; using System.Collections.Generic; #if WINRT || NETCORE using System.L..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetSocket.cs
+  Symbols: [NetSocket]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA #if !WINRT || UNITY_EDITOR using System; using System.Net; using System.Net.Sockets; using System.Threading; ..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetThread.cs
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA #if WINRT && !UNITY_EDITOR #define USE_WINRT #endif using System; using System.Threading; #if USE_WINRT using..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NetUtils.cs
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA #define UNITY using System; using System.Collections.Generic; using System.Diagnostics; #if WINRT && !UNITY_E..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\NtpSyncModule.cs
+  Symbols: [NtpSyncModule]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System; using System.Threading; namespace FlyingWormConsole3.LiteNetLib {   public class NtpSyncModule ..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\ReliableChannel.cs
+  Symbols: [PendingPacket, ReliableChannel]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System; using System.Collections.Generic; using System.Threading; namespace FlyingWormConsole3.LiteNetL..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\SequencedChannel.cs
+  Symbols: [SequencedChannel]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System.Collections.Generic; namespace FlyingWormConsole3.LiteNetLib {   internal sealed class Sequenced..."
 - File: Assets\ConsolePro\Remote\LiteNetLib\SimpleChannel.cs
+  Symbols: [SimpleChannel]
   Preview: "#if DEBUG && !UNITY_WP_8_1 && !UNITY_WSA using System.Collections.Generic; namespace FlyingWormConsole3.LiteNetLib {   internal sealed class SimpleCha..."
 - File: Assets\Game\Addons\CSharpCompiler\CodeCompiler.cs
   Preview: "using Mono.CSharp; using System; using System.CodeDom; using System.CodeDom.Compiler; using System.Collections.Generic; using System.IO; using System...."
@@ -1650,6 +1679,7 @@ Architecture:
 - File: Assets\Game\Addons\CSharpCompiler\CustomDynamicDriver.cs
   Preview: "// modified version of Mono.CSharp.Driver // driver.cs: The compiler command line driver. // // Authors: //  Miguel de Icaza (miguel@gnu.org) //  Mare..."
 - File: Assets\Game\Addons\CSharpCompiler\CustomReportPrinter.cs
+  Symbols: [CustomReportPrinter]
   Preview: "using System.CodeDom.Compiler; using Mono.CSharp; namespace CSharpCompiler {   public class CustomReportPrinter : ReportPrinter   {     readonly Compi..."
 - File: Assets\Game\Addons\ModSupport\ImportedComponentAttribute.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
@@ -1690,6 +1720,7 @@ Architecture:
 - File: Assets\Game\Mods\advanced-dialogue\ADDialogue.cs
   Preview: "using UnityEngine; using DaggerfallWorkshop.Game; using DaggerfallConnect; using DaggerfallConnect.Arena2; using DaggerfallConnect.Utility; using Dagg..."
 - File: Assets\Game\Mods\advanced-dialogue\ADSaveDataHandler.cs
+  Symbols: [ADSaveDataHandler]
   Preview: "using System; using System.Collections; using System.Collections.Generic; using DaggerfallWorkshop.Game.Utility.ModSupport; using DaggerfallWorkshop.G..."
 - File: Assets\Game\Mods\advanced-dialogue\ADSeeThroughTalkWindow.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
@@ -1852,10 +1883,12 @@ Architecture:
 - File: Assets\Scripts\API\Save\TrappedSoulRecord.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\AudioSynthesis\Bank\AssetManager.cs
+  Symbols: [AssetManager]
   Preview: "using System.IO; using System.Collections.Generic; using DaggerfallWorkshop.AudioSynthesis.Wave; namespace DaggerfallWorkshop.AudioSynthesis.Bank {   ..."
 - File: Assets\Scripts\AudioSynthesis\Bank\DescriptorList.cs
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Bank {   using System;   using System.IO;   using System.Text;   using System.Collections.Generic;   using..."
 - File: Assets\Scripts\AudioSynthesis\Bank\PatchAsset.cs
+  Symbols: [PatchAsset]
   Preview: "using System; using DaggerfallWorkshop.AudioSynthesis.Bank.Patches; namespace DaggerfallWorkshop.AudioSynthesis.Bank {   public class PatchAsset   {  ..."
 - File: Assets\Scripts\AudioSynthesis\Bank\PatchBank.cs
   Preview: "using System; using System.IO; using System.Collections.Generic; using DaggerfallWorkshop.AudioSynthesis.Bank.Patches; using DaggerfallWorkshop.AudioS..."
@@ -1866,6 +1899,7 @@ Architecture:
 - File: Assets\Scripts\AudioSynthesis\Midi\MidiHelper.cs
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Midi {   //structs and enum   public enum MidiEventTypeEnum   {     NoteOff = 0x80,     NoteOn = 0x90,    ..."
 - File: Assets\Scripts\AudioSynthesis\Midi\MidiTrack.cs
+  Symbols: [MidiTrack]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Midi {   using DaggerfallWorkshop.AudioSynthesis.Midi.Event;   public class MidiTrack   {     private int ..."
 - File: Assets\Scripts\AudioSynthesis\Sequencer\MidiFileSequencer.cs
   Preview: "/* *  ______  __ __   _____       __ __  *  / ____/__/ // /_  / ___/__ ______ / /_/ /_  * / /  /_ _ __/  \__ \/ / / / __ \/ __/ __ \ * / /___ /_ _ __/..."
@@ -1874,34 +1908,48 @@ Architecture:
 - File: Assets\Scripts\AudioSynthesis\Sf2\Enum.cs
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public enum SFSampleLink   {     MonoSample = 1,     RightSample = 2,     LeftSample = 4,     Link..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\Generator.cs
+  Symbols: [Generator, Generator]
   Preview: "using System.IO; namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class Generator   {     private GeneratorEnum gentype;     private ushort ..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\Instrument.cs
+  Symbols: [Instrument]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class Instrument   {     private string name;     private Zone[] zones;     public string N..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\Modulator.cs
+  Symbols: [Modulator]
   Preview: "using System.IO; namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class Modulator   {     private ModulatorType sourceModulationData;     pr..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\ModulatorType.cs
+  Symbols: [ModulatorType]
   Preview: "using System.IO; using DaggerfallWorkshop.AudioSynthesis.Midi; namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class ModulatorType   {     ..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\PresetHeader.cs
+  Symbols: [PresetHeader]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class PresetHeader   {     private string name;     private ushort patchNumber;     private..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\SampleHeader.cs
+  Symbols: [SampleHeader]
   Preview: "using System.IO; using DaggerfallWorkshop.AudioSynthesis.Util; namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class SampleHeader   {     p..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\Sf2Region.cs
+  Symbols: [Sf2Region]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class Sf2Region   {     private short[] generators;     public short[] Generators     {    ..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\SoundFont.cs
+  Symbols: [SoundFont]
   Preview: "using System; using System.IO; using DaggerfallWorkshop.AudioSynthesis.Util; namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class SoundFon..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\SoundFontInfo.cs
+  Symbols: [SoundFontInfo]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   using System;   using System.Globalization;   using System.IO;   using DaggerfallWorkshop.AudioSyn..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\SoundFontPresets.cs
+  Symbols: [SoundFontPresets]
   Preview: "using System; using System.IO; using DaggerfallWorkshop.AudioSynthesis.Util; using DaggerfallWorkshop.AudioSynthesis.Sf2.Chunks; using System.Globaliz..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\SoundFontSampleData.cs
+  Symbols: [SoundFontSampleData]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   using System;   using System.Globalization;   using System.IO;   using DaggerfallWorkshop.AudioSyn..."
 - File: Assets\Scripts\AudioSynthesis\Sf2\Zone.cs
+  Symbols: [Zone]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Sf2 {   public class Zone   {     private Modulator[] modulators;     private Generator[] generators;     ..."
 - File: Assets\Scripts\AudioSynthesis\Sfz\SfzReader.cs
   Preview: "using System.Collections.Generic; using System; using System.Text; using System.IO; using DaggerfallWorkshop.AudioSynthesis.Bank.Components; using Dag..."
 - File: Assets\Scripts\AudioSynthesis\Sfz\SfzRegion.cs
+  Symbols: [SfzRegion]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Sfz {   using DaggerfallWorkshop.AudioSynthesis.Bank.Components;   public class SfzRegion   {     public e..."
 - File: Assets\Scripts\AudioSynthesis\Synthesis\Synthesizer.Constants.cs
+  Symbols: [Synthesizer]
   Preview: "using System; using DaggerfallWorkshop.AudioSynthesis.Bank.Components; namespace DaggerfallWorkshop.AudioSynthesis.Synthesis {   public partial class ..."
 - File: Assets\Scripts\AudioSynthesis\Synthesis\Synthesizer.Main.cs
   Preview: "/* *  ______  __ __   _____       __ __  *  / ____/__/ // /_  / ___/__ ______ / /_/ /_  * / /  /_ _ __/  \__ \/ / / / __ \/ __/ __ \ * / /___ /_ _ __/..."
@@ -1910,26 +1958,34 @@ Architecture:
 - File: Assets\Scripts\AudioSynthesis\Synthesis\SynthHelper.cs
   Preview: "using System; using DaggerfallWorkshop.AudioSynthesis.Util; using DaggerfallWorkshop.AudioSynthesis.Midi; using System.Runtime.InteropServices; namesp..."
 - File: Assets\Scripts\AudioSynthesis\Synthesis\SynthParameters.cs
+  Symbols: [SynthParameters]
   Preview: "using System; namespace DaggerfallWorkshop.AudioSynthesis.Synthesis {   /// <summary>   /// Parameters for a single synth channel including its progra..."
 - File: Assets\Scripts\AudioSynthesis\Synthesis\Voice.cs
+  Symbols: [Voice]
   Preview: "using System; using DaggerfallWorkshop.AudioSynthesis.Bank.Patches; namespace DaggerfallWorkshop.AudioSynthesis.Synthesis {   internal class Voice   {..."
 - File: Assets\Scripts\AudioSynthesis\Synthesis\VoiceManager.cs
+  Symbols: [VoiceNode, VoiceManager]
   Preview: "using System.Collections.Generic; namespace DaggerfallWorkshop.AudioSynthesis.Synthesis {   internal class VoiceManager   {     public class VoiceNode..."
 - File: Assets\Scripts\AudioSynthesis\Synthesis\VoiceParameters.cs
+  Symbols: [VoiceParameters]
   Preview: "using DaggerfallWorkshop.AudioSynthesis.Bank.Components; using DaggerfallWorkshop.AudioSynthesis.Bank.Components.Generators; using System; namespace D..."
 - File: Assets\Scripts\AudioSynthesis\Util\IOHelper.cs
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Util {   using System.Text;   using System.IO;   using System;   /// <summary>   /// Provides methods for ..."
 - File: Assets\Scripts\AudioSynthesis\Util\Tables.cs
   Preview: "using System; using DaggerfallWorkshop.AudioSynthesis.Synthesis; using DaggerfallWorkshop.AudioSynthesis.Bank.Descriptors; using DaggerfallWorkshop.Au..."
 - File: Assets\Scripts\AudioSynthesis\Wave\PcmData.cs
+  Symbols: [PcmData]
   Preview: "using System; namespace DaggerfallWorkshop.AudioSynthesis.Wave {   public abstract class PcmData   {     protected byte[] data;     protected byte byt..."
 - File: Assets\Scripts\AudioSynthesis\Wave\WaveFile.cs
+  Symbols: [WaveFile]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Wave {   using DaggerfallWorkshop.AudioSynthesis.Util.Riff;   public class WaveFile   {     //--Fields    ..."
 - File: Assets\Scripts\AudioSynthesis\Wave\WaveFileReader.cs
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Wave {   using System;   using System.IO;   using System.Collections.Generic;   using DaggerfallWorkshop.A..."
 - File: Assets\Scripts\AudioSynthesis\Wave\WaveFileWriter.cs
+  Symbols: [WaveFileWriter]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Wave {   using System;   using System.Diagnostics;   using System.IO;   public sealed class WaveFileWriter..."
 - File: Assets\Scripts\AudioSynthesis\Wave\WaveHelper.cs
+  Symbols: [WaveHelper]
   Preview: "namespace DaggerfallWorkshop.AudioSynthesis.Wave {   using System;   using DaggerfallWorkshop.AudioSynthesis.Util;   using DaggerfallWorkshop.AudioSyn..."
 - File: Assets\Scripts\Game\Entities\CivilianEntity.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
@@ -2002,8 +2058,4 @@ Architecture:
 - File: Assets\Scripts\Game\MagicAndEffects\EntityEffectBroker.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
 - File: Assets\Scripts\Game\MagicAndEffects\EntityEffectBundle.cs
-  Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
-- File: Assets\Scripts\Game\MagicAndEffects\EntityEffectManager.cs
-  Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."
-- File: Assets\Scripts\Game\MagicAndEffects\EntityEffectMCP.cs
   Preview: "// Project:     Daggerfall Unity // Copyright:    Copyright (C) 2009-2023 Daggerfall Workshop // Web Site:    http://www.dfworkshop.net // License:   ..."

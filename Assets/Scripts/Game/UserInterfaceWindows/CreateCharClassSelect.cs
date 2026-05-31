@@ -100,12 +100,22 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                 {
                     if (myDFCareers.DfCareers.ContainsKey(c.Key))
                         continue;
-                    myDFCareers.DfCareers.Add(c.Key, c.Value);
+
                     if (CreateCharCustomClass.fullDFCareers == null)
                         CreateCharCustomClass.fullDFCareers = new DFCareerArray();
+
+                    if (CreateCharCustomClass.fullDFCareers.DfCareers.ContainsKey(c.Key))
+                        continue;
+
+                    if (classList.Exists(career => career.Name == c.Key))
+                        continue;
+
+                    myDFCareers.DfCareers.Add(c.Key, c.Value);
                     CreateCharCustomClass.fullDFCareers.DfCareers.Add(c.Key, c.Value);
                     classList.Add(c.Value.career);
-                    listBox.AddItem(c.Key);
+
+                    if (listBox.FindIndex(c.Key) == -1)
+                        listBox.AddItem(c.Key);
                 }
                 return;
             }
