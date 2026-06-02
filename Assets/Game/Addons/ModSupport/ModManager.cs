@@ -1972,6 +1972,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         #endregion
         #region Bisect
+
         public static void RunBisect(IUserInterfaceManager uiManager, bool startOfFirstBisect = false)
         {
             ReadAlwaysIncludeModList();
@@ -1990,7 +1991,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                 DaggerfallUnity.Settings.BinarySearch = 1;
                 DaggerfallUnity.Settings.SaveSettings();
-                
+
                 var str = string.Empty;
                 var halfWay = 0;
                 for (int i = 0; i < activeModList.Count; i++)
@@ -2028,61 +2029,67 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             }
             else
             {
-                ReadActiveModList();
-                if (fileActiveModList.Count <= 1)
+                RunBisect_Continue(uiManager);
+            }
+        }
+
+        private static bool IsAlwaysInclude(ActiveModListComponents entry)
+        {
+            return _alwaysIncludeModList.Contains(entry.Filename.ToLower());
+        }
+
+        private static void RunBisect_Continue(IUserInterfaceManager uiManager)
+        {
+            ReadActiveModList();
+
+            int candidateCount = fileActiveModList.Count(x => !IsAlwaysInclude(x));
+
+            if (candidateCount <= 1)
+            {
+                ProcessLastEntry(uiManager);
+                ResetBisect();
+                return;
+            }
+
+            var messageBox = new DaggerfallMessageBox(uiManager);
+            messageBox.EnableVerticalScrolling(80);
+            messageBox.SetText("Was the last test successful?");
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
+            messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Cancel);
+            messageBox.OnButtonClick += (box, button) =>
+            {
+                // Only consider non-always-include mods when checking if all indicators are the same
+                var candidates = fileActiveModList.Where(x => !IsAlwaysInclude(x)).ToList();
+                bool allSameIndicator = candidates.Count == 0 ||
+                    candidates.All(x => x.EnableIndicator == candidates[0].EnableIndicator);
+
+                if (button == DaggerfallMessageBox.MessageBoxButtons.Cancel)
                 {
-                    ProcessLastEntry(uiManager);
+                    messageBox.CloseWindow();
                     ResetBisect();
                     return;
                 }
-                var messageBox = new DaggerfallMessageBox(uiManager);
-                messageBox.EnableVerticalScrolling(80);
-                messageBox.SetText("Was the last test successful?");
-                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
-                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
-                messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Cancel);
-                messageBox.OnButtonClick += (box, button) =>
+                if (button == DaggerfallMessageBox.MessageBoxButtons.Yes)
                 {
-
-                    bool allSameIndicator = fileActiveModList.All(x => x.EnableIndicator == fileActiveModList[0].EnableIndicator);
-
-                    if (button == DaggerfallMessageBox.MessageBoxButtons.Cancel)
-                    {
-                        messageBox.CloseWindow();
-                        ResetBisect();
-                        return;
-                    }
-                    if (button == DaggerfallMessageBox.MessageBoxButtons.Yes)
-                    {
-                        messageBox.CloseWindow();
-                        if (!allSameIndicator)
-                        {
-                            BisectSuccessXO();
-                        }
-                        else
-                        {
-                            BisectSuccessX();
-                        }
-
-                    }
+                    messageBox.CloseWindow();
+                    if (!allSameIndicator)
+                        BisectSuccessXO();
                     else
-                    {
-                        messageBox.CloseWindow();
-                        File.Copy(Application.persistentDataPath + @"/bisect.txt",
-                            Application.persistentDataPath + @"/bisectLastFail.txt", overwrite:true);
-                        if (!allSameIndicator)
-                        {
-                            BisectFailXO();
-                        }
-                        else
-                        {
-                            BisectFailX();
-                        }
-                    }
-                };
-                messageBox.Show();
-
-            }
+                        BisectSuccessX();
+                }
+                else
+                {
+                    messageBox.CloseWindow();
+                    File.Copy(Application.persistentDataPath + @"/bisect.txt",
+                        Application.persistentDataPath + @"/bisectLastFail.txt", overwrite: true);
+                    if (!allSameIndicator)
+                        BisectFailXO();
+                    else
+                        BisectFailX();
+                }
+            };
+            messageBox.Show();
         }
 
         private static void ReadAlwaysIncludeModList()
@@ -2104,7 +2111,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         private static void ProcessLastEntry(IUserInterfaceManager uiManager)
         {
-            var lastFileName = fileActiveModList[0].Filename;
+            var candidate = fileActiveModList.FirstOrDefault(x => !IsAlwaysInclude(x));
+            var lastFileName = candidate.Filename ?? fileActiveModList[0].Filename;
+
             var messageBox = new DaggerfallMessageBox(uiManager);
             messageBox.EnableVerticalScrolling(80);
             messageBox.SetText("Was the last test successful?");
@@ -2130,14 +2139,20 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         private static void BisectSuccessXO()
         {
-            int firstIndex = fileActiveModList.FindIndex(x => x.EnableIndicator == "O");
-            int lastIndex = fileActiveModList.FindLastIndex(x => x.EnableIndicator == "O");
+            // Range is the O block — exclude always-include from boundary detection
+            int firstIndex = fileActiveModList.FindIndex(x => x.EnableIndicator == "O" && !IsAlwaysInclude(x));
+            int lastIndex = fileActiveModList.FindLastIndex(x => x.EnableIndicator == "O" && !IsAlwaysInclude(x));
+            if (firstIndex < 0 || lastIndex < 0)
+            {
+                BisectSuccessX();
+                return;
+            }
             int halfway = (lastIndex + firstIndex) / 2;
+
             for (int i = 0; i < fileActiveModList.Count; i++)
             {
                 var activeModListComponents = fileActiveModList[i];
-
-                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfway) || _alwaysIncludeModList.Contains(activeModListComponents.Filename.ToLower()) ? "X" : "O";
+                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfway) || IsAlwaysInclude(activeModListComponents) ? "X" : "O";
                 fileActiveModList[i] = activeModListComponents;
                 var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
                 if (mod != null)
@@ -2146,7 +2161,6 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             SetAlwaysIncludeModToActive();
             CreateBisectFile(firstIndex, lastIndex);
-
         }
 
         private static void SetAlwaysIncludeModToActive()
@@ -2161,28 +2175,28 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         private static void CreateBisectFile(int firstIndex, int lastIndex)
         {
-
             string str = string.Empty;
-            
-           // for(int i = firstIndex; i <= lastIndex; i++)
-           for (int i = 0; i < fileActiveModList.Count; i++)
+            for (int i = 0; i < fileActiveModList.Count; i++)
             {
-                if ((i >= firstIndex && i <= lastIndex) || _alwaysIncludeModList.Contains(fileActiveModList[i].Filename.ToLower()))
+                if ((i >= firstIndex && i <= lastIndex) || IsAlwaysInclude(fileActiveModList[i]))
                     str += $"{fileActiveModList[i].Filename}\t{fileActiveModList[i].EnableIndicator}\n";
             }
 
             File.WriteAllText(Application.persistentDataPath + @"/bisect.txt", str);
 
-            str = string.Empty;
-            
+            // bisectRange.txt uses the candidate boundaries, never always-include mods
             str = $"{fileActiveModList[firstIndex].Filename}\n";
             str += $"{fileActiveModList[lastIndex].Filename}\n";
             File.WriteAllText(Application.persistentDataPath + @"/bisectRange.txt", str);
 
+            int candidatesInRange = 0;
+            for (int i = firstIndex; i <= lastIndex; i++)
+                if (!IsAlwaysInclude(fileActiveModList[i]))
+                    candidatesInRange++;
 
             var estSteps = Mathf.Clamp(
-                UnityEngine.Mathf.RoundToInt(UnityEngine.Mathf.Log(lastIndex - firstIndex + 1) / UnityEngine.Mathf.Log(2)),
-                1, lastIndex - firstIndex + 1);
+                UnityEngine.Mathf.RoundToInt(UnityEngine.Mathf.Log(Mathf.Max(candidatesInRange, 1)) / UnityEngine.Mathf.Log(2)),
+                1, Mathf.Max(candidatesInRange, 1));
 
             DaggerfallUI.MessageBox(
                 $"Mods have been set for the next Binary search test, There will be about \r{estSteps} tests.  Press Play to begin.");
@@ -2214,46 +2228,55 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         private static void BisectFailXO()
         {
-            int firstIndex = fileActiveModList.FindIndex(x => x.EnableIndicator == "X");
-            int lastIndex = fileActiveModList.FindLastIndex(x => x.EnableIndicator == "X");
+            // Range is the X block — exclude always-include from boundary detection
+            int firstIndex = fileActiveModList.FindIndex(x => x.EnableIndicator == "X" && !IsAlwaysInclude(x));
+            int lastIndex = fileActiveModList.FindLastIndex(x => x.EnableIndicator == "X" && !IsAlwaysInclude(x));
+            if (firstIndex < 0 || lastIndex < 0)
+            {
+                BisectSuccessX();
+                return;
+            }
             int halfway = (lastIndex + firstIndex) / 2;
 
             for (int i = 0; i < fileActiveModList.Count; i++)
             {
                 var activeModListComponents = fileActiveModList[i];
-                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfway) || _alwaysIncludeModList.Contains(activeModListComponents.Filename.ToLower()) ? "X" : "O";
+                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfway) || IsAlwaysInclude(activeModListComponents) ? "X" : "O";
                 fileActiveModList[i] = activeModListComponents;
                 var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
                 if (mod != null)
                     mod.Enabled = activeModListComponents.EnableIndicator == "X";
-
             }
 
             SetAlwaysIncludeModToActive();
             CreateBisectFile(firstIndex, lastIndex);
         }
-        
+
         private static void BisectFailX()
         {
-            int firstIndex = 0;
-            int lastIndex = fileActiveModList.Count - 1;
-            int halfWay = lastIndex / 2;
+            // Full list case — exclude always-include from boundaries
+            int firstIndex = fileActiveModList.FindIndex(x => !IsAlwaysInclude(x));
+            int lastIndex = fileActiveModList.FindLastIndex(x => !IsAlwaysInclude(x));
+            if (firstIndex < 0 || lastIndex < 0)
+            {
+                BisectSuccessX();
+                return;
+            }
+            int halfWay = (firstIndex + lastIndex) / 2;
 
             for (int i = 0; i < fileActiveModList.Count; i++)
             {
                 var activeModListComponents = fileActiveModList[i];
-                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfWay) || _alwaysIncludeModList.Contains(activeModListComponents.Filename.ToLower()) ? "X" : "O";
+                activeModListComponents.EnableIndicator = (i >= firstIndex && i <= halfWay) || IsAlwaysInclude(activeModListComponents) ? "X" : "O";
                 fileActiveModList[i] = activeModListComponents;
                 var mod = ModLoaderInterfaceWindow.GetModFromName(fileActiveModList[i].Filename);
                 if (mod != null)
                     mod.Enabled = activeModListComponents.EnableIndicator == "X";
-
             }
 
             SetAlwaysIncludeModToActive();
             CreateBisectFile(firstIndex, lastIndex);
         }
-
         private static void ReadActiveModList(bool reset = false)
         {
             fileActiveModList.Clear();
