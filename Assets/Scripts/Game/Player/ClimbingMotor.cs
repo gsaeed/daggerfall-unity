@@ -312,14 +312,14 @@ namespace DaggerfallWorkshop.Game
             bool airborneGraspWall = (!isClimbing && !isSlipping && acrobatMotor.Falling);
             bool inputBack = InputManager.Instance.HasAction(InputManager.Actions.MoveBackwards);
             bool inputForward = InputManager.Instance.HasAction(InputManager.Actions.MoveForwards);
-            //inputForward = true;
+            bool touchingGround = (playerMotor.CollisionFlags & CollisionFlags.Below) != 0;
 
             // boolean that means ground directly below us is too close for climbing or rappelling
-            bool tooCloseToGroundForClimb = (((isClimbing && (inputBack || isSlipping)) || airborneGraspWall)
-                // short circuit evaluate the raycast, also prevents bug where you could teleport across town
-                && Physics.Raycast(controller.transform.position, Vector3.down, controller.height / 2 + 0.12f));
+            bool tooCloseToGroundForClimb = !rappelMotor.IsRappelling
+                                            && (((isClimbing && (inputBack || isSlipping)) || airborneGraspWall)
+                                                && Physics.Raycast(controller.transform.position, Vector3.down, controller.height / 2 + 0.12f));
 
-            CalcFrequencyAndToleranceOfWallChecks(airborneGraspWall);
+            CalcFrequencyAndToleranceOfWallChecks(airborneGraspWall, inputBack, touchingGround);
 
             bool inputAbortCondition;
             if (advancedClimbingOn)
@@ -345,13 +345,13 @@ namespace DaggerfallWorkshop.Game
 
             bool horizontallyStationary = Vector2.Distance(lastHorizontalPosition, new Vector2(controller.transform.position.x, controller.transform.position.z)) < startClimbHorizontalTolerance;
             bool touchingSides = (playerMotor.CollisionFlags & CollisionFlags.Sides) != 0;
-            bool touchingGround = (playerMotor.CollisionFlags & CollisionFlags.Below) != 0;
             //bool touchingAbove = (playerMotor.CollisionFlags & CollisionFlags.Above) != 0;
             bool slippedToGround = isSlipping && touchingGround;
             bool nonOrthogonalStart = !isClimbing && inputForward && !horizontallyStationary;
             //bool forwardStationaryNearCeiling = inputForward && hangingMotor.IsWithinHangingDistance && horizontallyStationary;
             bool pushingFaceAgainstWallNearCeiling = false;//hangingMotor.IsHanging && !isClimbing && touchingSides && forwardStationaryNearCeiling;
-            bool climbingOrForwardOrGrasping = (isClimbing || inputForward || airborneGraspWall);
+            bool climbingOrForwardOrGrasping = (isClimbing || inputForward || airborneGraspWall
+                      || (inputBack && touchingSides && !touchingGround));
             bool hangTouchNonVertical = false;//hangingMotor.IsHanging && touchingSides && Physics.Raycast(controller.transform.position, controller.transform.forward, out hit, 0.40f) && Mathf.Abs(hit.normal.y) > 0.06f;
 
             ClimbQuitMoveUnderToHang = (inputBack && !moveScanner.HitSomethingInFront && moveScanner.FrontUnderCeiling != null);
@@ -494,7 +494,7 @@ namespace DaggerfallWorkshop.Game
             climbingStartTimer = 0;
         }
 
-        private void CalcFrequencyAndToleranceOfWallChecks(bool airborneGraspWall)
+        private void CalcFrequencyAndToleranceOfWallChecks(bool airborneGraspWall, bool inputBack, bool touchingGround)
         {
             if (DaggerfallUnity.Settings.AdvancedClimbing)
             {
@@ -511,6 +511,11 @@ namespace DaggerfallWorkshop.Game
                 else if (releasedFromCeiling)
                 {
                     startClimbHorizontalTolerance = 0.90f;
+                    startClimbSkillCheckFrequency = 0;
+                }
+                else if (inputBack && !touchingGround)
+                {   // backing into a wall while airborne — treat like rappel for leniency
+                    startClimbHorizontalTolerance = 2f;
                     startClimbSkillCheckFrequency = 0;
                 }
                 else
