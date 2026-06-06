@@ -1539,6 +1539,7 @@ namespace DaggerfallWorkshop.Game.Items
             worldTextureArchive = other.worldTextureArchive;
             worldTextureRecord = other.worldTextureRecord;
             nativeMaterialValue = other.nativeMaterialValue;
+            ValidateNativeMaterialValue("FromItem");
             dyeColor = other.dyeColor;
             weightInKg = other.weightInKg;
             drawOrder = other.drawOrder;
@@ -1596,6 +1597,7 @@ namespace DaggerfallWorkshop.Game.Items
             worldTextureArchive = worldArchive;
             worldTextureRecord = worldRecord;
             nativeMaterialValue = itemRecord.ParsedData.material;
+            ValidateNativeMaterialValue("FromItemRecord");
             dyeColor = (DyeColors)itemRecord.ParsedData.color;
             weightInKg = (float)itemRecord.ParsedData.weight * 0.25f;
             drawOrder = itemTemplate.drawOrderOrEffect;
@@ -1666,6 +1668,7 @@ namespace DaggerfallWorkshop.Game.Items
             shortName = data.shortName;
             protectedItem = data.protectedItem;
             nativeMaterialValue = data.nativeMaterialValue;
+            ValidateNativeMaterialValue("FromItemData");
             dyeColor = data.dyeColor;
             weightInKg = data.weightInKg;
             drawOrder = data.drawOrder;
@@ -1727,6 +1730,65 @@ namespace DaggerfallWorkshop.Game.Items
             // This ID is present in some legacy save data and is retained for backwards compatibility only
             if (itemGroup == ItemGroups.Books && message == 10000)
                 message = 5;
+        }
+
+        /// <summary>
+        /// Validates nativeMaterialValue and logs detailed information if invalid.
+        /// </summary>
+        /// <param name="source">Source method name for context.</param>
+        private void ValidateNativeMaterialValue(string source)
+        {
+            // Define valid ranges based on item group
+            bool isInvalid = false;
+            string expectedRange = "";
+
+            if (itemGroup == ItemGroups.Weapons)
+            {
+                // Valid weapon materials: 0x0000-0x000A (Iron to Daedric)
+                if (nativeMaterialValue < 0x0000 || nativeMaterialValue > 0x000A)
+                {
+                    isInvalid = true;
+                    expectedRange = "0x0000-0x000A (weapon materials)";
+                }
+            }
+            else if (itemGroup == ItemGroups.Armor)
+            {
+                // Valid armor materials: 0x0100-0x0101 (Leather, Chain) or 0x0200-0x020A (armor materials including artifacts)
+                bool isValidLeatherOrChain = (nativeMaterialValue >= 0x0100 && nativeMaterialValue <= 0x0101);
+                bool isValidArmorMaterial = (nativeMaterialValue >= 0x0200 && nativeMaterialValue <= 0x020A);
+
+                if (!isValidLeatherOrChain && !isValidArmorMaterial)
+                {
+                    isInvalid = true;
+                    expectedRange = "0x0100-0x0101 (Leather/Chain) or 0x0200-0x020A (armor materials)";
+                    if (nativeMaterialValue < 0x0100)
+                        nativeMaterialValue += 0x0200;
+                }
+            }
+            else
+            {
+                // For non-weapon/armor items, material value should typically be 0
+                if (nativeMaterialValue != 0)
+                {
+                    isInvalid = true;
+                    expectedRange = "0 (non-material item)";
+                }
+            }
+
+            if (isInvalid)
+            {
+                UnityEngine.Debug.LogWarning(
+                    $"[{source}] Invalid nativeMaterialValue detected!\n" +
+                    $"  Item: {shortName}\n" +
+                    $"  UID: {uid}\n" +
+                    $"  Group: {itemGroup}\n" +
+                    $"  GroupIndex: {groupIndex}\n" +
+                    $"  TemplateIndex: {(cachedItemTemplate.index != 0 ? cachedItemTemplate.index.ToString() : "Not cached")}\n" +
+                    $"  Material Value: 0x{nativeMaterialValue:X4} ({nativeMaterialValue})\n" +
+                    $"  Expected Range: {expectedRange}\n" +
+                    $"  Stack Trace:\n{UnityEngine.StackTraceUtility.ExtractStackTrace()}"
+                );
+            }
         }
 
         /// <summary>
