@@ -1329,148 +1329,174 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
 
     void BuildModSupportFile(BaseScreenComponent sender, Vector2 position)
     {
-        ModManager.Instance.SortMods();
-        string path = Path.Combine(Application.persistentDataPath, "Mods");
-        Dictionary<string, int> assetCount = new Dictionary<string, int>();
-        foreach (Mod m in ModManager.Instance.Mods)
-        {
-           if (m.AssetNames != null && m.AssetNames.Length > 0)
-                foreach (string a in m.AssetNames)
-                {
-                    if (!assetCount.ContainsKey(a))
-                        assetCount.Add(a, 1);
-                    else
-                        assetCount[a]++;
-                }
-        }
+        var confirmBox = new DaggerfallMessageBox(uiManager, this, true);
+        confirmBox.AllowCancel = true;
+        confirmBox.ClickAnywhereToClose = true;
+        confirmBox.ParentPanel.BackgroundTexture = null;
+        confirmBox.SetText("Build Mod Support is a long running process. Are you sure?");
+        confirmBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+        confirmBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
 
-        File.WriteAllText(path + @"\mods.csv", "Mod Title,Mod Filename,Enabled,Load Priority, Asset List, Count" + Environment.NewLine);
-        foreach (Mod m in ModManager.Instance.Mods)
+        confirmBox.OnButtonClick += (messageBox, button) =>
         {
-            File.AppendAllText(path + @"\mods.csv", $"{m.Title.Trim().Replace(',','-')},{m.FileName.Trim().Replace(',','-')},{m.Enabled},{m.LoadPriority}" + Environment.NewLine);
-            if (m.AssetNames != null && m.AssetNames.Length > 0)
-                foreach (string a in m.AssetNames)
-                {
-                    int cnt;
-                    if (!assetCount.TryGetValue(a, out cnt))
-                        cnt = 1;
-                    File.AppendAllText(path + @"\mods.csv", $"{m.Title.Trim().Replace(',','-')},{m.FileName.Trim().Replace(',','-')},{m.Enabled},{m.LoadPriority},{a.Trim().Replace(',','-')},{cnt}" + Environment.NewLine);
-                }
-        }
+            messageBox.CancelWindow();
+            if (button != DaggerfallMessageBox.MessageBoxButtons.Yes)
+                return;
 
-    }
-    void ExtractAllTextFiles(BaseScreenComponent sender, Vector2 position)
-    {
-        foreach (Mod mod in ModManager.Instance.Mods)
-        {
-            Debug.Log($"Mod Extract - extracting {mod.Title}");
-            string path = string.Empty;
             try
-            {
-                string[] assets = mod.AssetNames;
-                if (assets == null)
-                    continue;
-
-                path = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles", mod.FileName);
-                ClearDirectory(path);
-                Directory.CreateDirectory(path);
-
-                for (int i = 0; i < assets.Length; i++)
-                {
-                    string extension = Path.GetExtension(assets[i]);
-
-                    var asset = mod.GetAsset<TextAsset>(assets[i]);
-                    if (asset == null)
-                        continue;
-
-                    if (assets[i].EndsWith(".bytes", StringComparison.Ordinal))
-                    {
-                        // Export binary asset without .bytes extension
-                        File.WriteAllBytes(Path.Combine(path, asset.name), asset.bytes);
-                    }
-                    else if (assets[i].EndsWith(".cs.txt", StringComparison.Ordinal))
-                    {
-                        // Export C# script without .txt extension
-                        File.WriteAllText(Path.Combine(path, asset.name), asset.text);
-                    }
-                    else
-                    {
-                        // Export text asset with original extension
-                        File.WriteAllText(Path.Combine(path, asset.name + extension), asset.text);
-                    }
-                }
-            }
-
-            catch (Exception e)
-            {
-                Debug.Log($"Mod Extract - unable to extract text for {mod.Title} at {path}, error {e.Message}");
-            }
-        }
-
-        var dirPath = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
-
-
-        var messageBox = new DaggerfallMessageBox(uiManager, this, true);
-        messageBox.AllowCancel = true;
-        messageBox.ClickAnywhereToClose = true;
-        messageBox.ParentPanel.BackgroundTexture = null;
-        messageBox.SetText($"This will Extract all files, and will take a while, do you want to continue?");
-        messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
-        messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
-
-        messageBox.OnButtonClick += (message2Box, message2BoxButton) =>
-        {
-            message2Box.CancelWindow();
-            if (message2BoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
             {
                 ModManager.Instance.SortMods();
 
-                foreach (Mod mod in ModManager.Instance.Mods)
+                string path = Path.Combine(Application.persistentDataPath, "Mods");
+                string csvPath = Path.Combine(path, "mods.csv");
+                Directory.CreateDirectory(path);
+
+                var mods = ModManager.Instance.Mods.ToList();
+                var assetCount = new Dictionary<string, int>(StringComparer.Ordinal);
+
+                for (int i = 0; i < mods.Count; i++)
                 {
-                    string[] assets = mod.AssetNames;
-                    if (assets == null)
+                    var assetNames = mods[i].AssetNames;
+                    if (assetNames == null || assetNames.Length == 0)
                         continue;
 
-                    string path = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles", mod.FileName);
+                    for (int n = 0; n < assetNames.Length; n++)
+                    {
+                        int count;
+                        if (assetCount.TryGetValue(assetNames[n], out count))
+                            assetCount[assetNames[n]] = count + 1;
+                        else
+                            assetCount.Add(assetNames[n], 1);
+                    }
+                }
+
+                var sb = new System.Text.StringBuilder(262144);
+                sb.AppendLine("Mod Title,Mod Filename,Enabled,Load Priority, Asset List, Count");
+
+                for (int i = 0; i < mods.Count; i++)
+                {
+                    var mod = mods[i];
+                    var safeTitle = (mod.Title ?? string.Empty).Trim().Replace(',', '-');
+                    var safeFileName = (mod.FileName ?? string.Empty).Trim().Replace(',', '-');
+
+                    sb.Append(safeTitle).Append(',')
+                        .Append(safeFileName).Append(',')
+                        .Append(mod.Enabled).Append(',')
+                        .Append(mod.LoadPriority).AppendLine();
+
+                    var assetNames = mod.AssetNames;
+                    if (assetNames == null || assetNames.Length == 0)
+                        continue;
+
+                    for (int n = 0; n < assetNames.Length; n++)
+                    {
+                        int cnt;
+                        if (!assetCount.TryGetValue(assetNames[n], out cnt))
+                            cnt = 1;
+
+                        var safeAsset = (assetNames[n] ?? string.Empty).Trim().Replace(',', '-');
+
+                        sb.Append(safeTitle).Append(',')
+                            .Append(safeFileName).Append(',')
+                            .Append(mod.Enabled).Append(',')
+                            .Append(mod.LoadPriority).Append(',')
+                            .Append(safeAsset).Append(',')
+                            .Append(cnt).AppendLine();
+                    }
+                }
+
+                File.WriteAllText(csvPath, sb.ToString());
+
+                var completeBox = new DaggerfallMessageBox(uiManager, this, true);
+                completeBox.AllowCancel = true;
+                completeBox.ClickAnywhereToClose = true;
+                completeBox.ParentPanel.BackgroundTexture = null;
+                completeBox.SetText("process complete");
+                uiManager.PushWindow(completeBox);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Build Mod Support failed: {ex.Message}");
+            }
+        };
+
+        uiManager.PushWindow(confirmBox);
+    }
+
+
+    void ExtractAllTextFiles(BaseScreenComponent sender, Vector2 position)
+    {
+        var confirmBox = new DaggerfallMessageBox(uiManager, this, true);
+        confirmBox.AllowCancel = true;
+        confirmBox.ClickAnywhereToClose = true;
+        confirmBox.ParentPanel.BackgroundTexture = null;
+        confirmBox.SetText("Extract all Text is a long running process. Are you sure?");
+        confirmBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
+        confirmBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
+
+        confirmBox.OnButtonClick += (messageBox, button) =>
+        {
+            messageBox.CancelWindow();
+            if (button != DaggerfallMessageBox.MessageBoxButtons.Yes)
+                return;
+
+            ModManager.Instance.SortMods();
+
+            var mods = ModManager.Instance.Mods.ToList();
+            var extractRoot = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
+
+            for (int m = 0; m < mods.Count; m++)
+            {
+                var mod = mods[m];
+                string path = string.Empty;
+
+                try
+                {
+                    var assets = mod.AssetNames;
+                    if (assets == null || assets.Length == 0)
+                        continue;
+
+                    path = Path.Combine(extractRoot, mod.FileName);
                     ClearDirectory(path);
                     Directory.CreateDirectory(path);
 
                     for (int i = 0; i < assets.Length; i++)
                     {
-                        string extension = Path.GetExtension(assets[i]);
-
-                        var asset = mod.GetAsset<TextAsset>(assets[i]);
+                        var assetName = assets[i];
+                        var asset = mod.GetAsset<TextAsset>(assetName);
                         if (asset == null)
                             continue;
 
-                        if (assets[i].EndsWith(".bytes", StringComparison.Ordinal))
+                        if (assetName.EndsWith(".bytes", StringComparison.Ordinal))
                         {
-                            // Export binary asset without .bytes extension
                             File.WriteAllBytes(Path.Combine(path, asset.name), asset.bytes);
                         }
-                        else if (assets[i].EndsWith(".cs.txt", StringComparison.Ordinal))
+                        else if (assetName.EndsWith(".cs.txt", StringComparison.Ordinal))
                         {
-                            // Export C# script without .txt extension
                             File.WriteAllText(Path.Combine(path, asset.name), asset.text);
                         }
                         else
                         {
-                            // Export text asset with original extension
+                            var extension = Path.GetExtension(assetName);
                             File.WriteAllText(Path.Combine(path, asset.name + extension), asset.text);
                         }
                     }
                 }
-
-                var message3Box = new DaggerfallMessageBox(uiManager, this, true);
-                message3Box.AllowCancel = true;
-                message3Box.ClickAnywhereToClose = true;
-                message3Box.ParentPanel.BackgroundTexture = null;
-                dirPath = Path.Combine(Application.persistentDataPath, "Mods", "ExtractedFiles");
-                message3Box.SetText($"all mods extracted to folders in {dirPath}");
-                uiManager.PushWindow(message3Box);
+                catch (Exception e)
+                {
+                    Debug.Log($"Mod Extract - unable to extract text for {mod.Title} at {path}, error {e.Message}");
+                }
             }
+
+            var completeBox = new DaggerfallMessageBox(uiManager, this, true);
+            completeBox.AllowCancel = true;
+            completeBox.ClickAnywhereToClose = true;
+            completeBox.ParentPanel.BackgroundTexture = null;
+            completeBox.SetText("process complete");
+            uiManager.PushWindow(completeBox);
         };
-        uiManager.PushWindow(messageBox);
+
+        uiManager.PushWindow(confirmBox);
     }
 
     string RemoveComma(string str)
