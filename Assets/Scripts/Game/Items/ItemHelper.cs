@@ -190,7 +190,7 @@ namespace DaggerfallWorkshop.Game.Items
             if (groupIndex < 0 || groupIndex >= values.Length)
             {
                 string message = string.Format("Item index out of range: Group={0} Index={1}", itemGroup.ToString(), groupIndex);
-                Debug.Log(message);
+                Debug.LogError(message);
                 return new ItemTemplate();
             }
 
