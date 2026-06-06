@@ -252,7 +252,7 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                     locations.Add(locationVariantKey, dfLocation);
 #endif
                 }
-                Debug.LogFormat("Found DFLocation override, region:{0}, index:{1} variant:{2}", regionIndex, locationIndex, variant);
+                //Debug.LogFormat("Found DFLocation override, region:{0}, index:{1} variant:{2}", regionIndex, locationIndex, variant);
                 return true;
             }
             dfLocation = noReplacementLocation;
