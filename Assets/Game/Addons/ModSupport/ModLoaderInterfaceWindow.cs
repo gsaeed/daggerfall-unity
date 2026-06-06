@@ -654,9 +654,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         return ModManager.Instance.Mods.FirstOrDefault(x => x.FileName.Equals(name.ToLower(), StringComparison.Ordinal));
     }
 
-    private void PopulateDependencies()
-    {
-        /*
+    /* Populate Dependencies flow
          * read config file into table
          * close config file
          * loop through mods
@@ -667,17 +665,17 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
          *
          *     Added global mod order configuration.  The file is called mod_order.txt in Daggerfall Unity appdata location
 
-    The format is to use tab delimited
-    Mod     Override        modName IsOptional      IsPeer  Version
-    Mod = the mod to apply the rule
-    Override is true or false and dictates if you overWrite an existing rule
-    modName is the dependency for the mod
-    IsOptional is true or false - does this mod need to exist in the order
-    IsPeer is true or false, if false, dependent mod must be earlier in the load order
-    Version is optional but if it exists, it checks for a minimum version for the dependent mod
-
-
-         */
+        The format is to use tab delimited
+        Mod     Override        modName IsOptional      IsPeer  Version
+        Mod = the mod to apply the rule
+        Override is true or false and dictates if you overWrite an existing rule
+        modName is the dependency for the mod
+        IsOptional is true or false - does this mod need to exist in the order
+        IsPeer is true or false, if false, dependent mod must be earlier in the load order
+        Version is optional but if it exists, it checks for a minimum version for the dependent mod
+    */
+    private void PopulateDependencies()
+    {
         string sep = "\t";
         string conflictStr = "";
         bool conflictFound = false;
@@ -700,8 +698,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
             str += "# IsOptional is true or false, does the dependent mod need to exist?\n";
             str += "# IsPeer is true or false, if false, dependent mod must appear earlier in load order\n";
             str += "# IsConflict is true or false, if true, dependent mod should not be run with Mod\n";
-            str +=
-                "# Version is optional but if it exists, checks that current dependent mod is at least at this version level.\n";
+            str += "# Version is optional but if it exists, checks that current dependent mod is at least at this version level.\n";
             str += "#\n";
             str += "#\n";
             str += "$Disable Conflicts = false\n";
@@ -715,40 +712,52 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         {
             lineNoQuotes = line;
             if (line.Contains("\""))
-            {
-
                 lineNoQuotes = line.Replace("\"", "");
-            }
 
             if (lineNoQuotes.Length == 0 || lineNoQuotes[0] == '#')
                 continue;
 
-            if (lineNoQuotes.Length > 0 && lineNoQuotes[0] == '$')
+            if (lineNoQuotes[0] == '$')
             {
-                var flds = lineNoQuotes.Split(('='));
-                if (flds[0].Trim().ToLower() == "$disable conflicts")
-                    DisableConflicts = flds[1].Trim().ToLower() == "true" ? true : false;
-                if (flds[0].Trim().ToLower() == "$disablemodwhendependenciesnotavailable")
-                    DisableModWhenDependenciesNotAvailable = flds[1].Trim().ToLower() == "true" ? true : false;
+                var flds = lineNoQuotes.Split('=');
+                if (flds.Length < 2)
+                    continue;
+
+                var key = flds[0].Trim().ToLower();
+                var value = flds[1].Trim().ToLower();
+
+                if (key == "$disable conflicts")
+                    DisableConflicts = value == "true" ? true : false;
+                if (key == "$disablemodwhendependenciesnotavailable")
+                    DisableModWhenDependenciesNotAvailable = value == "true" ? true : false;
+
                 continue;
             }
 
             var fields = lineNoQuotes.Split(sep.ToCharArray());
-            var target = GetModFromName(fields[0]);
-            if (fields[1].Trim().ToLower() == "ignore in-mod dep checks")
+            if (fields.Length < 2)
+                continue;
+
+            var modName = fields[0].Trim();
+            var action = fields[1].Trim().ToLower();
+            var target = GetModFromName(modName);
+
+            if (action == "ignore in-mod dep checks")
             {
+                if (fields.Length < 3)
+                    continue;
+
                 if (target != null && target.ModInfo != null && target.ModInfo.Dependencies != null)
                 {
                     var dependencies = target.ModInfo.Dependencies;
                     if (dependencies != null)
                     {
+                        var depName = fields[2].Trim().ToLower();
                         var newDependencies = new List<ModDependency>();
                         foreach (var dep in dependencies)
                         {
-                            if (dep.Name != fields[2])
-                            {
+                            if (dep.Name != depName)
                                 newDependencies.Add(dep);
-                            }
                         }
 
                         target.ModInfo.Dependencies = newDependencies.ToArray();
@@ -757,19 +766,24 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                 continue;
             }
 
+            if (fields.Length < 3)
+                continue;
+
             if (target != null && target.Enabled)
             {
-                var depTarget = GetModFromName(fields[2]);
+                var depName = fields[2].Trim().ToLower();
+                var depTarget = GetModFromName(depName);
                 var pos = 0;
+
                 if (depTarget == null)
                 {
                     int a;
-                    if (fields.Length > 2 && int.TryParse(fields[2], out a))
+                    if (int.TryParse(depName, out a))
                     {
                         Debug.Log($"SortOrder - Changing loadpriority of {target.ModInfo.ModTitle} to {a} from {target.LoadPriority}");
                         ChangePriority(target, a);
                     }
-                    else if (fields.Length > 2 && fields[2].ToLower() == "top")
+                    else if (depName == "top")
                     {
                         var rangeFrom = 0;
                         var rangeTo = (int)(ModManager.Instance.mods.Count * 0.10f);
@@ -777,7 +791,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                         if (target.LoadPriority > rangeTo)
                         {
                             Debug.Log($"SortOrder - Changing load priority of {target.ModInfo.ModTitle} flagged as {fields[2]} to {pos} from {target.LoadPriority} Range for {fields[2]} is {rangeFrom} - {rangeTo}");
-
                             ChangePriority(target, pos);
                         }
                         else
@@ -785,7 +798,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                             Debug.Log($"SortOrder - {target.ModInfo.ModTitle} was flagged for |{fields[2]} which is {rangeFrom} - {rangeTo} and already has load order of {target.LoadPriority} - so it was skipped");
                         }
                     }
-                    else if (fields.Length > 2 && ( fields[2].ToLower() == "neartop" || fields[2].ToLower() == "near top"))
+                    else if (depName == "neartop" || depName == "near top")
                     {
                         var rangeFrom = 0;
                         var rangeTo = (int)(ModManager.Instance.mods.Count * 0.20f);
@@ -793,16 +806,14 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                         if (target.LoadPriority > rangeTo)
                         {
                             Debug.Log($"SortOrder - Changing load priority of {target.ModInfo.ModTitle} flagged as {fields[2]} to {pos} from {target.LoadPriority} Range for {fields[2]} is {rangeFrom} - {rangeTo}");
-
                             ChangePriority(target, pos);
                         }
                         else
                         {
                             Debug.Log($"SortOrder - {target.ModInfo.ModTitle} was flagged for |{fields[2]} which is {rangeFrom} - {rangeTo} and already has load order of {target.LoadPriority} - so it was skipped");
                         }
-
                     }
-                    else if (fields.Length > 2 && (fields[2].ToLower() == "nearbottom" || fields[2].ToLower() == "near bottom"))
+                    else if (depName == "nearbottom" || depName == "near bottom")
                     {
                         var rangeTo = ModManager.Instance.mods.Count;
                         var rangeFrom = (int)(ModManager.Instance.mods.Count * 0.80f);
@@ -810,7 +821,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                         if (target.LoadPriority < rangeFrom)
                         {
                             Debug.Log($"SortOrder - Changing load priority of {target.ModInfo.ModTitle} flagged as {fields[2]} to {pos} from {target.LoadPriority} Range for {fields[2]} is {rangeFrom} - {rangeTo}");
-
                             ChangePriority(target, pos);
                         }
                         else
@@ -818,7 +828,7 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                             Debug.Log($"SortOrder - {target.ModInfo.ModTitle} was flagged for |{fields[2]} which is {rangeFrom} - {rangeTo} and already has load order of {target.LoadPriority} - so it was skipped");
                         }
                     }
-                    else if (fields.Length > 2 && fields[2].ToLower() == "bottom")
+                    else if (depName == "bottom")
                     {
                         var rangeTo = ModManager.Instance.mods.Count;
                         var rangeFrom = (int)(ModManager.Instance.mods.Count * 0.90f);
@@ -826,7 +836,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                         if (target.LoadPriority < rangeFrom)
                         {
                             Debug.Log($"SortOrder - Changing load priority of {target.ModInfo.ModTitle} flagged as {fields[2]} to {pos} from {target.LoadPriority} Range for {fields[2]} is {rangeFrom} - {rangeTo}");
-
                             ChangePriority(target, pos);
                         }
                         else
@@ -835,22 +844,34 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                         }
                     }
                 }
-                else if (target.Enabled &&  depTarget != null && depTarget.Enabled && fields[5].Trim().ToLower() == "true") // conflict
+                else
                 {
-                    if (DisableConflicts && DaggerfallWorkshop.DaggerfallUnity.Settings.BinarySearch == 0)
+                    var isConflict = fields.Length > 5 && fields[5].Trim().ToLower() == "true";
+                    if (target.Enabled && depTarget.Enabled && isConflict)
                     {
-                        conflictStr +=
-                            $"\r{fields[0]} conflicts with {fields[2]}, {fields[2]} was disabled.";
-                        depTarget.Enabled = false;
-                    }
-                    else
-                    {
-                        conflictStr +=
-                            $"\r{fields[0]} conflicts with {fields[2]}, you should disable one of them.\r";
-                    }
+                        if (DisableConflicts && DaggerfallWorkshop.DaggerfallUnity.Settings.BinarySearch == 0)
+                        {
+                            conflictStr += $"\r{fields[0]} conflicts with {fields[2]}, {fields[2]} was disabled.";
+                            depTarget.Enabled = false;
+                        }
+                        else
+                        {
+                            conflictStr += $"\r{fields[0]} conflicts with {fields[2]}, you should disable one of them.\r";
+                        }
 
-                    conflictFound = true;
-                    continue;
+                        conflictFound = true;
+                        continue;
+                    }
+                }
+
+                var isOptional = fields.Length > 3 && fields[3].Trim().ToLower() == "true";
+                var isPeer = fields.Length > 4 && fields[4].Trim().ToLower() == "true";
+                string version = null;
+                if (fields.Length > 6)
+                {
+                    version = fields[6].Trim().ToLower();
+                    if (!(version.Length > 0 && version[0] >= '0' && version[0] <= '9'))
+                        version = null;
                 }
 
                 bool found = false;
@@ -858,48 +879,41 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
                 {
                     for (var n = 0; n < target.ModInfo.Dependencies.Length; n++)
                     {
-                        if (target.ModInfo.Dependencies[n].Name == fields[2].Trim().ToLower())
+                        if (target.ModInfo.Dependencies[n].Name == depName)
                         {
                             found = true;
 
-
-                            if (fields[1] == "true")
+                            if (action == "true")
                             {
-                                target.ModInfo.Dependencies[n].IsOptional = fields[3].Trim().ToLower() == "true" ? true : false;
-                                target.ModInfo.Dependencies[n].IsPeer = fields[4].Trim().ToLower() == "true" ? true : false;
+                                target.ModInfo.Dependencies[n].IsOptional = isOptional;
+                                target.ModInfo.Dependencies[n].IsPeer = isPeer;
                                 if (fields.Length > 6)
-                                    target.ModInfo.Dependencies[n].Version = fields[6].Trim().ToLower();
+                                    target.ModInfo.Dependencies[n].Version = version;
                             }
 
                             break;
                         }
+                    }
 
-                        if (!found)
-                        {
-                            var l = target.ModInfo.Dependencies.Length;
-                            Array.Resize(ref target.ModInfo.Dependencies, l + 1);
-                            target.ModInfo.Dependencies[l].Name = fields[2].Trim().ToLower();
-                            target.ModInfo.Dependencies[l].IsOptional = fields[3].Trim().ToLower() == "true" ? true : false;
-                            target.ModInfo.Dependencies[l].IsPeer = fields[4].Trim().ToLower() == "true" ? true : false;
-                            if (fields.Length > 6)
-                            {
-                                var str = fields[6].Trim().ToLower();
-                                if (!(str.Length > 0 && str[0] >= '0' && str[0] <= '9'))
-                                    str = null;
-
-                                target.ModInfo.Dependencies[l].Version = str;
-                            }
-                        }
+                    if (!found)
+                    {
+                        var l = target.ModInfo.Dependencies.Length;
+                        Array.Resize(ref target.ModInfo.Dependencies, l + 1);
+                        target.ModInfo.Dependencies[l].Name = depName;
+                        target.ModInfo.Dependencies[l].IsOptional = isOptional;
+                        target.ModInfo.Dependencies[l].IsPeer = isPeer;
+                        if (fields.Length > 6)
+                            target.ModInfo.Dependencies[l].Version = version;
                     }
                 }
                 else
                 {
                     target.ModInfo.Dependencies = new ModDependency[1];
-                    target.ModInfo.Dependencies[0].Name = fields[2].Trim().ToLower();
-                    target.ModInfo.Dependencies[0].IsOptional = fields[3].Trim().ToLower() == "true" ? true : false;
-                    target.ModInfo.Dependencies[0].IsPeer = fields[4].Trim().ToLower() == "true" ? true : false;
+                    target.ModInfo.Dependencies[0].Name = depName;
+                    target.ModInfo.Dependencies[0].IsOptional = isOptional;
+                    target.ModInfo.Dependencies[0].IsPeer = isPeer;
                     if (fields.Length > 6)
-                        target.ModInfo.Dependencies[0].Version = fields[6].Trim().ToLower();
+                        target.ModInfo.Dependencies[0].Version = version;
                 }
             }
         }
@@ -921,7 +935,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         }
         return;
     }
-
     private void ChangePriority(Mod target, int dest)
     {
         var origin = ModManager.Instance.GetLoadPriority(target.FileName);
