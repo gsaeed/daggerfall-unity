@@ -259,6 +259,14 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return del();
 
             return 360;
+        }        
+        public static bool AllowClimbingWhenCrouching()
+        {
+            Func<bool> del;
+            if (TryGetOverride("AllowClimbingWhenCrouching", out del))
+                return del();
+
+            return false;
         }
 
         #endregion

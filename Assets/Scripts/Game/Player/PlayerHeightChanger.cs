@@ -12,6 +12,7 @@
 using DaggerfallWorkshop.Game.Serialization;
 using UnityEngine;
 using System;
+using DaggerfallWorkshop.Game.Formulas;
 
 namespace DaggerfallWorkshop.Game
 {
@@ -44,7 +45,6 @@ namespace DaggerfallWorkshop.Game
         public bool IsInWaterTile { get; set; }
         public bool ForcedSwimCrouch { get { return forcedSwimCrouch; } set { forcedSwimCrouch = value; } }
         private bool forcedSwimCrouch = true;
-
         private PlayerMotor playerMotor;
         private CharacterController controller;
         private HeadBobber headBobber;
@@ -52,7 +52,7 @@ namespace DaggerfallWorkshop.Game
         private ClimbingMotor climbingMotor;
         private Camera mainCamera;
         public const float controllerStandingHeight = 1.8f;
-        public const float controllerCrouchHeight = 0.9f;
+        public static float controllerCrouchHeight = 0.9f;
         public const float controllerRideHeight = 2.6f;   // Height of a horse plus seated rider. (1.6m + 1m)
         public const float controllerSwimHeight = 0.30f;
         public const float controllerSwimHorseDisplacement = 0.30f; // amount added to swim height if on horse
@@ -185,7 +185,7 @@ namespace DaggerfallWorkshop.Game
                 else if (climbing)
                 {
                     timerMax = timerMedium;
-                    if (crouching)
+                    if (crouching && !FormulaHelper.AllowClimbingWhenCrouching())
                         heightAction = HeightChangeAction.DoStanding;
                     forcedSwimCrouch = false;
                 }
