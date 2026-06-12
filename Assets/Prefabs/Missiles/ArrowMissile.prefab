@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 114835290752812540}
   - component: {fileID: 108732554255048532}
   - component: {fileID: 114624404217668130}
+  - component: {fileID: 191524344658850322}
   m_Layer: 14
   m_Name: ArrowMissile
   m_TagString: Untagged
@@ -234,3 +235,15 @@ MonoBehaviour:
   PostImpactLifespanInSeconds: 0.6
   PostImpactLightMultiplier: 1.5
   ImpactSound: 4
+--- !u!114 &191524344658850322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712884651827938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b70617390d76a624eb9aa57b95dd11e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
