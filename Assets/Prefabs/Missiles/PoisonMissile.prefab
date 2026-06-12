@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 114467433757248316}
   - component: {fileID: 108958489047367644}
   - component: {fileID: 114701158002484598}
+  - component: {fileID: -7226250944633726872}
   m_Layer: 14
   m_Name: PoisonMissile
   m_TagString: Untagged
@@ -234,3 +235,15 @@ MonoBehaviour:
   PostImpactLifespanInSeconds: 0.6
   PostImpactLightMultiplier: 1.5
   ImpactSound: 87
+--- !u!114 &-7226250944633726872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770169996000996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b70617390d76a624eb9aa57b95dd11e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
