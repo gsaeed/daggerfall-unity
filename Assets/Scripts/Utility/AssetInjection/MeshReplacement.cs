@@ -40,7 +40,25 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
 
         static readonly HashSet<Vector2Int> triedBillboards = new HashSet<Vector2Int>();
         static readonly HashSet<(uint, ClimateBases, DaggerfallDateTime.Seasons)> triedModels = new HashSet<(uint, ClimateBases, DaggerfallDateTime.Seasons)>();
+        // Add near other static fields
+        static readonly HashSet<string> missingMaterialWarnings = new HashSet<string>();
+        static Material missingMaterialFallback;
 
+        // Add near other private methods
+        private static Material GetMissingMaterialFallback()
+        {
+            if (missingMaterialFallback != null)
+                return missingMaterialFallback;
+
+            Shader shader = Shader.Find("Standard");
+            if (shader == null)
+                return null;
+
+            missingMaterialFallback = new Material(shader);
+            missingMaterialFallback.name = "MissingMaterialFallback";
+            missingMaterialFallback.color = Color.magenta;
+            return missingMaterialFallback;
+        }
         #endregion
 
         #region Properties
@@ -527,10 +545,22 @@ namespace DaggerfallWorkshop.Utility.AssetInjection
                     }
                     else
                     {
-                        if (go == meshRenderer.gameObject)
-                            Debug.LogWarningFormat("{0} is missing material {1}.", go.name, i.ToString());
-                        else
-                            Debug.LogWarningFormat("{0} (child {1}) is missing material {2}.", go.name, meshRenderer.name, i.ToString());
+                        Material fallback = GetMissingMaterialFallback();
+                        if (fallback != null)
+                        {
+                            materials[i] = fallback;
+                        }
+
+                        string warningKey = string.Format("{0}|{1}|{2}", go.name, meshRenderer.name, i);
+                        if (!missingMaterialWarnings.Contains(warningKey))
+                        {
+                            if (go == meshRenderer.gameObject)
+                                Debug.LogWarningFormat("{0} is missing material {1} which was replaced by fallback.", go.name, i.ToString());
+                            else
+                                Debug.LogWarningFormat("{0} (child {1}) is missing material {2} which was replaced by fallback.", go.name, meshRenderer.name, i.ToString());
+
+                            missingMaterialWarnings.Add(warningKey);
+                        }
                     }
                 }
 
