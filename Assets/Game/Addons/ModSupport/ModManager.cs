@@ -444,30 +444,28 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         public bool TryGetAssetPatch<T>(string guid, string name, bool? clone, out T asset) where T : UnityEngine.Object
         {
-            // Early exit if no patch mods exist
             if (patchMods == null || patchMods.Count == 0)
             {
                 asset = null;
                 return false;
             }
 
-            // Iterate through patch mods directly - no LINQ overhead
+            // Normalise name the same way LoadAssetFromBundle will, so Contains() is reliable
+            string normalisedName = ModManager.GetAssetName(name);
+
             for (int i = patchMods.Count - 1; i >= 0; i--)
             {
                 Mod mod = patchMods[i];
 
-                // Skip mods that don't match the GUID
                 if (mod.ModInfo.GUID != guid)
                     continue;
 
-                // Skip mods without asset bundles or that don't contain the asset
-                if (mod.AssetBundle == null || !mod.AssetBundle.Contains(name))
+                if (mod.AssetBundle == null || !mod.AssetBundle.Contains(normalisedName))
                     continue;
 
-                // Load the patch asset
                 T patchAsset = clone.HasValue
-                    ? mod.GetAssetPatch<T>(name, out _)
-                    : mod.LoadAssetPatch<T>(name);
+                    ? mod.GetAssetPatch<T>(normalisedName, out _)
+                    : mod.LoadAssetPatch<T>(normalisedName);
 
                 if (patchAsset != null)
                 {
@@ -478,16 +476,18 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             asset = null;
             return false;
-        }        /// <summary>
-                 /// Seek asset in all mods with load order.
-                 /// </summary>
-                 /// <param name="name">Name of asset to seek.</param>
-                 /// <param name="clone">Make a copy of asset? If null is loaded without cache.</param>
-                 /// <param name="asset">Loaded asset or null.</param>
-                 /// <remarks>
-                 /// If multiple mods contain an asset with given name, priority is defined by load order.
-                 /// </remarks>
-                 /// <returns>True if asset is found and loaded successfully.</returns>
+        }
+
+        /// <summary>
+        /// Seek asset in all mods with load order.
+        /// </summary>
+        /// <param name="name">Name of asset to seek.</param>
+        /// <param name="clone">Make a copy of asset? If null is loaded without cache.</param>
+        /// <param name="asset">Loaded asset or null.</param>
+        /// <remarks>
+        /// If multiple mods contain an asset with given name, priority is defined by load order.
+        /// </remarks>
+        /// <returns>True if asset is found and loaded successfully.</returns>
         public bool TryGetAsset<T>(string name, bool? clone, out T asset) where T : UnityEngine.Object
         {
             // Fast path for non-texture bundle or XML files
