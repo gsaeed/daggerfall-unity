@@ -508,7 +508,7 @@ namespace DaggerfallWorkshop.Utility
             randomEnemiesNode.transform.parent = go.transform;
 
             // Seed random generator
-            UnityEngine.Random.InitState(seed);
+            UnityEngine.Random.InitState(DateTime.Now.Millisecond);
 
             bool alternateRandomEnemySelection = DaggerfallUnity.Settings.AlternateRandomEnemySelection;
 
