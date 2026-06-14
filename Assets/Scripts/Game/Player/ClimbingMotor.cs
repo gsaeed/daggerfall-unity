@@ -81,7 +81,7 @@ namespace DaggerfallWorkshop.Game
         // minimum percent chance to grab a wall while falling
         private const int graspWallMinChance = 40;
 
-        private bool perfectClimbing = false;
+        public bool perfectClimbing = false;
 
         public bool IsClimbing
         {
