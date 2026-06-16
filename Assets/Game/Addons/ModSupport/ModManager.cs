@@ -2399,7 +2399,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
                     if (isSource)
                     {
-                        var newSource = sourceMod.GetAsset<TextAsset>(assetName);
+                        var newSource = sourceMod.GetAssetNoOverride<TextAsset>(assetName);
                         if (newSource)
                         {
                             sources.Add(new Source()
