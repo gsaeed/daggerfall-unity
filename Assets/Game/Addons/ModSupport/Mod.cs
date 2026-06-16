@@ -291,6 +291,13 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
         public T GetAsset<T>(string assetName, bool clone = false) where T : UnityEngine.Object
         {
             bool loadedBundle;
+            if (ModInfo.ModPatch)
+            {
+                var useMod = ModManager.Instance.mods.FirstOrDefault(x => x.GUID == GUID && !x.ModInfo.ModPatch);
+                if (useMod != null)
+                    return useMod.GetAsset<T>(assetName, out loadedBundle, clone);
+            }
+            
             return GetAsset<T>(assetName, out loadedBundle, clone);
         }
 
@@ -328,6 +335,42 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 return asset as T;
             }
         }
+
+        public T GetAssetNoOverride<T>(string assetName, bool clone = false) where T : UnityEngine.Object
+        {
+            bool loadedBundle;
+            return GetAssetNoOverride<T>(assetName, out loadedBundle, clone);
+        }
+
+        /// <summary>
+        /// Loads an asset from the assetbundle of this mod and cache it.
+        /// If required, the assetbundle will be automatically loaded.
+        /// </summary>
+        /// <typeparam name="T">The asset type.</typeparam>
+        /// <param name="assetname">The name of the asset with or without extension.</param>
+        /// <param name="loadedBundle">True if assetbundle had to be loaded.</param>
+        /// <param name="clone">Instantiate a cloned instance if true.</param>
+        /// <returns>A reference to the loaded asset or a cloned instance.</returns>
+        public T GetAssetNoOverride<T>(string assetName, out bool loadedBundle, bool clone = false) where T : UnityEngine.Object
+        {
+            loadedBundle = false;
+
+            T asset = LoadAssetFromBundle<T>(assetName, out loadedBundle);
+
+            if (asset == null)
+            {
+                Debug.LogWarning(string.Format("Failed to load asset: {0}", assetName));
+                return null;
+            }
+            else if (clone)
+            {
+                return UnityEngine.Object.Instantiate(asset) as T;
+            }
+            else
+                return asset as T;
+        }
+
+
 
         /// <summary>
         /// Loads an asset from the assetbundle of this mod and cache it.
