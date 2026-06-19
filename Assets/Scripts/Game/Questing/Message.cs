@@ -13,6 +13,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using DaggerfallWorkshop.Utility;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Formulas;
 using FullSerializer;
 
 namespace DaggerfallWorkshop.Game.Questing
@@ -98,7 +99,7 @@ namespace DaggerfallWorkshop.Game.Questing
         public void LoadMessage(int id, string[] source)
         {
             this.id = id;
-
+            source = FormulaHelper.FormulateQuestMessage(id, source);
             // Read through message lines and create a new variant on split token <--->
             // Variants are used to provide some randomness to text, e.g. rumours
             MessageVariant variant = CreateVariant();

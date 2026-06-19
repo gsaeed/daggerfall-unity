@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static DaggerfallConnect.Arena2.FactionFile;
 using Delegate = System.Delegate;
 
 namespace DaggerfallWorkshop.Game.Formulas
@@ -375,7 +376,16 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             return false;
         }
-        
+
+        public static string[] FormulateQuestMessage(int id, string[] source)
+        {
+            Func<int, string[], string[]> del;
+            if (TryGetOverride("FormulateQuestMessage", out del))
+                return del(id, source);
+            /* to do conversions */
+            return source;
+        }
+
         //Returns maximum training for skill
         public static int GetTrainingMax(int buildingQuality, DFCareer.Skills skill, int currentRank)
         {
@@ -3888,6 +3898,7 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         #endregion
+
 
     }
 }
