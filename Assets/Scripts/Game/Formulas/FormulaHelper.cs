@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static DaggerfallConnect.Arena2.FactionFile;
 using Delegate = System.Delegate;
 
 namespace DaggerfallWorkshop.Game.Formulas
@@ -336,6 +335,15 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return del(group);
 
             return Guild.DefaultNumDaysToCheckForPromotion;
+        }
+
+        public static bool WorldDataObjectIsClimbable(string dataID, int ladder)
+        {
+            Func<string, int, bool> del;
+            if (TryGetOverride("WorldDataObjectIsClimbable", out del))
+                return del(dataID, ladder);
+
+            return dataID == ladder.ToString();
         }
 
         //Returns background color
@@ -3898,6 +3906,7 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
         #endregion
+
 
 
     }
