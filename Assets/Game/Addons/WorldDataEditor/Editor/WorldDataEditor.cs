@@ -12,6 +12,7 @@ using UnityEditor;
 using UnityEngine;
 using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallWorkshop.Utility;
 
@@ -280,7 +281,8 @@ namespace DaggerfallWorkshop.Game.Utility.WorldDataEditor
                             {
                                 GUIElementSwitchSet(ref data, ref elementIndex);
                             }
-                            else if (data.id == WorldDataEditorObjectData.ladder.ToString())
+                            //else if (data.id == WorldDataEditorObjectData.ladder.ToString())
+                            else if (FormulaHelper.WorldDataObjectIsClimbable(data.id, WorldDataEditorObjectData.ladder))
                             {
                                 GUIElementObjectType(ref data, ref elementIndex, "Is Climbable");
                             }
