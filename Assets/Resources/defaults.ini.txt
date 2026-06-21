@@ -134,10 +134,6 @@ HideSkillImprovedMessage=False;
 MeleeAttackDetection=0
 MeleeAttackFriendlyProtection=True
 
-[MeleeAttacks]
-MeleeAttackDetection=0
-MeleeAttackFriendlyProtection=True
-
 [Spells]
 EnableSpellLighting=True
 EnableSpellShadows=True
