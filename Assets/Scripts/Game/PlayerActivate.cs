@@ -187,6 +187,17 @@ namespace DaggerfallWorkshop.Game
         }
 
         /// <summary>
+        /// Registers a custom activation for a flat object. Uses the textureArchive and textureRecord parameters to retrieve the correct object name
+        /// </summary>
+        /// <param name="provider">The mod that provides this override; used to enforce load order.</param>
+        /// <param name="goFlatName">Name of GameObject</param>/>
+        /// <param name="customActivation">A callback that implements the custom action.</param>
+        public static void RegisterCustomActivation(Mod provider, string goFlatName, CustomActivation customActivation, float activationDistance = DefaultActivationDistance)
+        {
+            HandleRegisterCustomActivation(provider, goFlatName, customActivation, activationDistance, false);
+        }
+
+        /// <summary>
         /// Registers a custom activation for a flat object
         /// </summary>
         /// <param name="provider">The mod that provides this override; used to enforce load order.</param>
