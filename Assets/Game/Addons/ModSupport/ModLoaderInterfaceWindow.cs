@@ -132,11 +132,6 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         ModListPanel.Size = new Vector2(120, 175);
         NativePanel.Components.Add(ModListPanel);
 
-        modsFound.Position = new Vector2(10, 20);
-        modsFound.Size = new Vector2(50, 10);
-        modsFound.Text = string.Format("{0}: ", ModManager.GetText("modsFound"));
-        ModListPanel.Components.Add(modsFound);
-
         //modsFound.HorizontalAlignment = HorizontalAlignment.Left;
         //modsFound.Position = new Vector2(0, 20);
         //modsFound.Text = string.Format("{0}: ", ModManager.GetText("modsFound"));
@@ -155,30 +150,30 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         ModListPanel.Components.Add(modCount);
 
 
-        modsSearch.Position = new Vector2(60, 20);
-        modsSearch.Size = new Vector2(34, 10);
-        modsSearch.Text = "";
-        modsSearch.MaxCharacters = 8;
-        modsSearch.DefaultText = ModManager.GetText("modsSearch");
-        modsSearch.UseFocus = true;
-        modsSearch.OverridesHotkeySequences = true;
-        ModListPanel.Components.Add(modsSearch);
+        //modsSearch.Position = new Vector2(60, 20);
+        //modsSearch.Size = new Vector2(34, 10);
+        //modsSearch.Text = "";
+        //modsSearch.MaxCharacters = 8;
+        //modsSearch.DefaultText = ModManager.GetText("modsSearch");
+        //modsSearch.UseFocus = true;
+        //modsSearch.OverridesHotkeySequences = true;
+        //ModListPanel.Components.Add(modsSearch);
 
-        modsPreviousButton.Position = new Vector2(102, 18);
-        modsPreviousButton.Size = new Vector2(8, 8);
-        modsPreviousButton.Outline.Enabled = true;
-        modsPreviousButton.BackgroundColor = textColor;
-        modsPreviousButton.BackgroundTexture = arrowUpTexture;
-        modsPreviousButton.OnMouseClick += ModsPreviousButton_OnMouseClick;
-        ModListPanel.Components.Add(modsPreviousButton);
+        //modsPreviousButton.Position = new Vector2(102, 18);
+        //modsPreviousButton.Size = new Vector2(8, 8);
+        //modsPreviousButton.Outline.Enabled = true;
+        //modsPreviousButton.BackgroundColor = textColor;
+        //modsPreviousButton.BackgroundTexture = arrowUpTexture;
+        //modsPreviousButton.OnMouseClick += ModsPreviousButton_OnMouseClick;
+        //ModListPanel.Components.Add(modsPreviousButton);
 
-        modsNextButton.Position = new Vector2(111, 18);
-        modsNextButton.Size = new Vector2(8, 8);
-        modsNextButton.Outline.Enabled = true;
-        modsNextButton.BackgroundColor = textColor;
-        modsNextButton.BackgroundTexture = arrowDownTexture;
-        modsNextButton.OnMouseClick += ModsNextButton_OnMouseClick;
-        ModListPanel.Components.Add(modsNextButton);
+        //modsNextButton.Position = new Vector2(111, 18);
+        //modsNextButton.Size = new Vector2(8, 8);
+        //modsNextButton.Outline.Enabled = true;
+        //modsNextButton.BackgroundColor = textColor;
+        //modsNextButton.BackgroundTexture = arrowDownTexture;
+        //modsNextButton.OnMouseClick += ModsNextButton_OnMouseClick;
+        //ModListPanel.Components.Add(modsNextButton);
 
         modsettingCheckbox.IsChecked = false;
         modsettingCheckbox.Position = new Vector2(0, 20);
