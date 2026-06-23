@@ -271,6 +271,92 @@ namespace DaggerfallWorkshop.Game
         }
 
         /// <summary>
+        /// Unregisters a custom activation for a model object. Uses the modelID parameter to retrieve the correct object name.
+        /// Only the original provider mod can unregister its own activation.
+        /// </summary>
+        /// <param name="provider">The mod that originally registered this activation.</param>
+        /// <param name="modelID">The model ID of the object whose custom activation will be removed.</param>
+        public static void UnregisterCustomActivation(Mod provider, uint modelID)
+        {
+            string goModelName = GameObjectHelper.GetGoModelName(modelID);
+            HandleUnregisterCustomActivation(provider, goModelName);
+        }
+
+        /// <summary>
+        /// Unregisters a custom activation for a flat object. Uses the textureArchive and textureRecord parameters to retrieve the correct object name.
+        /// Only the original provider mod can unregister its own activation.
+        /// </summary>
+        /// <param name="provider">The mod that originally registered this activation.</param>
+        /// <param name="textureArchive">The texture archive of the flat object whose custom activation will be removed.</param>
+        /// <param name="textureRecord">The texture record of the flat object whose custom activation will be removed.</param>
+        public static void UnregisterCustomActivation(Mod provider, int textureArchive, int textureRecord)
+        {
+            string goFlatName = GameObjectHelper.GetGoFlatName(textureArchive, textureRecord);
+            HandleUnregisterCustomActivation(provider, goFlatName);
+        }
+
+        /// <summary>
+        /// Unregisters a custom activation by GameObject name.
+        /// Only the original provider mod can unregister its own activation.
+        /// </summary>
+        /// <param name="provider">The mod that originally registered this activation.</param>
+        /// <param name="goName">Name of the GameObject whose custom activation will be removed.</param>
+        public static void UnregisterCustomActivation(Mod provider, string goName)
+        {
+            HandleUnregisterCustomActivation(provider, goName);
+        }
+
+        /// <summary>
+        /// Handles unregistration of a custom activation for both the base name and the [Replacement] variant.
+        /// Only removes the entry if the requesting mod is the current registered provider.
+        /// </summary>
+        private static void HandleUnregisterCustomActivation(Mod provider, string goFlatModelName)
+        {
+            string withoutRep, withRep;
+            if (goFlatModelName.EndsWith(" [Replacement]"))
+            {
+                withRep = goFlatModelName;
+                withoutRep = goFlatModelName.Substring(0, goFlatModelName.Length - " [Replacement]".Length);
+            }
+            else
+            {
+                withRep = goFlatModelName + " [Replacement]";
+                withoutRep = goFlatModelName;
+            }
+
+            HandleUnregisterSingleKey(provider, withRep);
+            HandleUnregisterSingleKey(provider, withoutRep);
+        }
+
+        /// <summary>
+        /// Attempts to remove a single key from the customModActivations dictionary,
+        /// enforcing that only the registered provider can remove it.
+        /// </summary>
+        private static void HandleUnregisterSingleKey(Mod provider, string key)
+        {
+            DaggerfallUnity.LogMessage($"HandleUnregisterCustomActivation: {key} from mod: {provider.FileName}", true);
+
+            CustomModActivation existingActivation;
+            if (customModActivations.TryGetValue(key, out existingActivation))
+            {
+                if (existingActivation.Provider.FileName != provider.FileName)
+                {
+                    Debug.LogWarning($"Custom Activation: Denied unregistration of {key} by {provider.Title} — " +
+                                     $"registered owner is {existingActivation.Provider.Title}");
+                }
+                else
+                {
+                    customModActivations.Remove(key);
+                    Debug.Log($"Custom Activation: custom activation unregistered for {key} by {provider.Title}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Custom Activation: Attempted to unregister {key} by {provider.Title} but no registration found");
+            }
+        }
+
+        /// <summary>
         /// Checks if a model object has a custom activation assigned
         /// </summary>
         /// <param name="modelID">The model ID of the object to check.</param>
