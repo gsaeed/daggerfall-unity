@@ -408,7 +408,16 @@ namespace DaggerfallWorkshop.Game.Items
         /// <summary>Set material and adjust weapon stats accordingly</summary>
         public static void ApplyWeaponMaterial(DaggerfallUnityItem weapon, WeaponMaterialTypes material)
         {
+            var materialInt = (int)material;
+            if (materialInt < 0 || materialInt > 9)
+            {
+                materialInt = Mathf.Clamp(materialInt, 0, 9);
+                Debug.LogError($"item {weapon.shortName} has an invalid materialID of {(int)material} and was changed to {materialInt}");
+                material = (WeaponMaterialTypes) materialInt;
+            }
+
             weapon.nativeMaterialValue = (int)material;
+            
             weapon = SetItemPropertiesByMaterial(weapon, material);
             weapon.dyeColor = DaggerfallUnity.Instance.ItemHelper.GetWeaponDyeColor(material);
 
