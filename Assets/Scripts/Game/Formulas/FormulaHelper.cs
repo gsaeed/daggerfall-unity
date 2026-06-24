@@ -2677,13 +2677,13 @@ namespace DaggerfallWorkshop.Game.Formulas
         }
 
 
-        public static DaggerfallUnityItem SetItemPropertiesCustom(DaggerfallUnityItem item)
+        public static bool SetItemPropertiesCustom(DaggerfallUnityItem item)
         {
-            Func<DaggerfallUnityItem, DaggerfallUnityItem> del;
+            Func<DaggerfallUnityItem, bool> del;
             if (TryGetOverride("SetItemPropertiesCustom", out del))
                 return del(item);
 
-            return item;
+            return true;
         }
         public static int GetItemValueMultiplier(DaggerfallUnityItem item, WeaponMaterialTypes material)
         {
