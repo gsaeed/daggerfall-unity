@@ -9,19 +9,20 @@
 // Notes:
 //
 
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using DaggerfallWorkshop.Game.Entity;
-using DaggerfallConnect.FallExe;
 using DaggerfallConnect.Arena2;
-using DaggerfallWorkshop.Utility;
-using DaggerfallWorkshop.Utility.AssetInjection;
-using DaggerfallWorkshop.Game.Utility;
+using DaggerfallConnect.FallExe;
+using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.MagicAndEffects;
+using DaggerfallWorkshop.Game.Questing;
+using DaggerfallWorkshop.Game.Utility;
+using DaggerfallWorkshop.Utility;
+using DaggerfallWorkshop.Utility.AssetInjection;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
 
 namespace DaggerfallWorkshop.Game.Items
 {
@@ -417,13 +418,15 @@ namespace DaggerfallWorkshop.Game.Items
             }
 
             weapon.nativeMaterialValue = (int)material;
-            
-            weapon = SetItemPropertiesByMaterial(weapon, material);
+
+            SetItemPropertiesByMaterial(weapon, material);
+
             weapon.dyeColor = DaggerfallUnity.Instance.ItemHelper.GetWeaponDyeColor(material);
 
             // Female characters use archive - 1 (i.e. 233 rather than 234) for weapons
             if (GameManager.Instance.PlayerEntity.Gender == Genders.Female)
                 weapon.PlayerTextureArchive -= 1;
+
         }
 
         /// <summary>
@@ -540,7 +543,7 @@ namespace DaggerfallWorkshop.Game.Items
             else if (armor.nativeMaterialValue >= (int)ArmorMaterialTypes.Iron)
             {
                 int plateMaterial = armor.nativeMaterialValue - 0x0200;
-                armor = SetItemPropertiesByMaterial(armor, (WeaponMaterialTypes)plateMaterial);
+                SetItemPropertiesByMaterial(armor, (WeaponMaterialTypes)plateMaterial);
             }
 
             armor.dyeColor = DaggerfallUnity.Instance.ItemHelper.GetArmorDyeColor(material);
@@ -862,15 +865,13 @@ namespace DaggerfallWorkshop.Game.Items
         /// <param name="item">Item to have its properties modified.</param>
         /// <param name="material">Material to use to apply properties.</param>
         /// <returns>DaggerfallUnityItem</returns>
-        public static DaggerfallUnityItem SetItemPropertiesByMaterial(DaggerfallUnityItem item, WeaponMaterialTypes material)
+        public static void SetItemPropertiesByMaterial(DaggerfallUnityItem item, WeaponMaterialTypes material)
         {
             item.value = Formulas.FormulaHelper.GetItemValueMultiplier(item, material);
             item.weightInKg = CalculateWeightForMaterial(item, material);
             item.maxCondition = item.maxCondition * conditionMultipliersByMaterial[(int)material] / 4;
             item.currentCondition = item.maxCondition;
-            item = FormulaHelper.SetItemPropertiesCustom(item);
-
-            return item;
+            FormulaHelper.SetItemPropertiesCustom(item);
         }
 
         static float CalculateWeightForMaterial(DaggerfallUnityItem item, WeaponMaterialTypes material)
