@@ -16,6 +16,7 @@ using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Banking;
+using DaggerfallWorkshop.Game.Formulas;
 using UnityEngine;
 
 namespace DaggerfallWorkshop.Game.Guilds
@@ -38,6 +39,8 @@ namespace DaggerfallWorkshop.Game.Guilds
         protected const int NoArmorId = 461;
         protected const int NoHouseId = 460;
         public static bool AssignHorse = false;
+        public static int ReceiveArmorChoicesMin = 3;
+        public static int ReceiveArmorChoicesMax = 6;
         public new static int NumDaysToCheckForPromotion { get; set; } = -1;
 
         private const int ArmorFlagMask = 1;
@@ -214,7 +217,7 @@ namespace DaggerfallWorkshop.Game.Guilds
             {   // Give a random armor piece, allowing player to choose one out of 3-6
                 ItemCollection rewardArmor = new ItemCollection();
                 ArmorMaterialTypes material = ArmorMaterialTypes.Iron + rank;
-                for (int i = UnityEngine.Random.Range(3, 7); i >= 0; i--)
+                for (int i = UnityEngine.Random.Range(ReceiveArmorChoicesMin, ReceiveArmorChoicesMax + 1); i >= 0; i--)
                 {
                     Armor armor = (Armor)UnityEngine.Random.Range(102, 108 + 1);
                     rewardArmor.AddItem(ItemBuilder.CreateArmor(playerEntity.Gender, playerEntity.Race, armor, material));
