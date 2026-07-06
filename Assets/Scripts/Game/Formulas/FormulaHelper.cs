@@ -27,7 +27,9 @@ using DaggerfallWorkshop.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using UnityEngine;
+using UnityEngine.Experimental.XR.Interaction;
 using Delegate = System.Delegate;
 
 namespace DaggerfallWorkshop.Game.Formulas
@@ -305,6 +307,14 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
 
             return high;
+        }
+
+        public static bool PauseTravelForYesAction()
+        {
+            Func<bool> del;
+            if (TryGetOverride("PauseTravelForYesAction", out del))
+                return del();
+            return false;
         }
 
         //Count Number of Low Skills

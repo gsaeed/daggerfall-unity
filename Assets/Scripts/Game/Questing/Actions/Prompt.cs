@@ -1,4 +1,4 @@
-﻿// Project:         Daggerfall Unity
+// Project:         Daggerfall Unity
 // Copyright:       Copyright (C) 2009-2023 Daggerfall Workshop
 // Web Site:        http://www.dfworkshop.net
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -10,6 +10,7 @@
 //
 
 using System.Text.RegularExpressions;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Utility;
 using FullSerializer;
@@ -77,7 +78,10 @@ namespace DaggerfallWorkshop.Game.Questing.Actions
         {
             // Start yes or no task
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
+            {
+                FormulaHelper.PauseTravelForYesAction();
                 ParentQuest.StartTask(yesTaskSymbol);
+            }
             else
                 ParentQuest.StartTask(noTaskSymbol);
 
