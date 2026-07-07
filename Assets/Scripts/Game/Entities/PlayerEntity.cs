@@ -1258,6 +1258,9 @@ namespace DaggerfallWorkshop.Game.Entity
         {
             int skillId = (int)skill;
 
+            if (skillUses == null || skillUses.Length == 0)
+                return;
+
             try
             {
                 skillUses[skillId] += (short)(amount * FormulaHelper.GetSkillTallyMultiplier(skill));
@@ -1270,12 +1273,12 @@ namespace DaggerfallWorkshop.Game.Entity
             }
             catch (Exception ex)
             {
-                string error = string.Format("Caught exception {0} with skillId {1}.", ex.Message, skillId);
+                string error = string.Format("Caught exception {0} with skillId {1}, {2}.", ex.Message, skillId, skill.ToString());
 
                 if (skillUses == null || skillUses.Length == 0)
                     error += " skillUses is null or empty.";
 
-                Debug.Log(error);
+                Debug.LogError(error);
             }
         }
 
