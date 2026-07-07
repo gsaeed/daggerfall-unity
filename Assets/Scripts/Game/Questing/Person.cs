@@ -777,9 +777,12 @@ namespace DaggerfallWorkshop.Game.Questing
         // Create an NPC aligned to a specific faction
         void SetupFactionAllianceNPC(string factionAllianceName)
         {
-            // Get faction data
-            // This also comes from a specific factionID
-            int factionID = GetIndividualFactionID(factionAllianceName);
+            if (factionAllianceName.ToLower() == "default")
+                return;
+
+                // Get faction data
+                // This also comes from a specific factionID
+                int factionID = GetIndividualFactionID(factionAllianceName);
             if (factionID != -1)
             {
                 FactionFile.FactionData factionData = GetFactionData(factionID);
