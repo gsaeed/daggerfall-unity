@@ -17,6 +17,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             Cancel,
             Yes,
             No,
+            Counter,
             OK,
             Male,
             Female,
