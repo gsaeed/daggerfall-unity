@@ -111,6 +111,8 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
                     return DaggerfallShortcut.Buttons.Yes;
                 case MessageBoxButtons.No:
                     return DaggerfallShortcut.Buttons.No;
+                case MessageBoxButtons.Counter:
+                    return DaggerfallShortcut.Buttons.Counter;
                 case MessageBoxButtons.OK:
                     return DaggerfallShortcut.Buttons.OK;
                 case MessageBoxButtons.Male:

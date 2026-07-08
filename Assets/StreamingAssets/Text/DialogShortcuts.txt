@@ -7,6 +7,7 @@ Reject,               R
 Cancel,               C
 Yes,                  Y
 No,                   N
+Counter,              C
 - Will most likely be the default button too
 OK,                   O
 Male,                 M
