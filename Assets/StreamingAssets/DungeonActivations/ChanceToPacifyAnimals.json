@@ -1,0 +1,28 @@
+{
+    "entries": [
+        {
+            "careerName": "Tigers",
+            "chance": 80
+        },
+        {
+            "careerName": "Wolf",
+            "chance": 80
+        },
+        {
+            "careerName": "Bears",
+            "chance": 100
+        },
+        {
+            "careerName": "Boar",
+            "chance": 100
+        },
+        {
+            "careerName": "MountainLion",
+            "chance": 50
+        },
+        {
+            "careerName": "SnowWolf",
+            "chance": 40
+        }
+    ]
+}
