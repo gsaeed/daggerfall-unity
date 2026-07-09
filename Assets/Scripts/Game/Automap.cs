@@ -288,6 +288,14 @@ namespace DaggerfallWorkshop.Game
         /// </summary>
         Dictionary<string, AutomapDungeonState> dictAutomapDungeonsDiscoveryState = new Dictionary<string, AutomapDungeonState>();
 
+        // key identifying the current building interior for note storage
+        string currentBuildingSceneName = null;
+
+        /// <summary>
+        /// dictionary storing user note markers per building interior, keyed by building scene name (MapID + BuildingKey)
+        /// </summary>
+        Dictionary<string, SortedList<int, NoteMarker>> dictAutomapBuildingInteriorNotes = new Dictionary<string, SortedList<int, NoteMarker>>();
+
         bool iTweenCameraAnimationIsRunning = false; // indicates if iTween camera animation is running (i.e. teleporter portal jump animation plays)
 
         static bool isCreatingDungeonAutomapBaseGameObjects = false; // Indicates that the Automap is creating the models for a Castle's or Dungeon's Automap
@@ -408,6 +416,30 @@ namespace DaggerfallWorkshop.Game
         public void SetState(Dictionary<string, AutomapDungeonState> savedDictAutomapDungeonsDiscoveryState)
         {
             dictAutomapDungeonsDiscoveryState = savedDictAutomapDungeonsDiscoveryState;
+        }
+
+        /// <summary>
+        /// GetBuildingInteriorNotesState() method for save system integration
+        /// </summary>
+        public Dictionary<string, SortedList<int, NoteMarker>> GetBuildingInteriorNotesState()
+        {
+            SaveBuildingInteriorNotes();
+            return dictAutomapBuildingInteriorNotes;
+        }
+
+        /// <summary>
+        /// SetBuildingInteriorNotesState() method for save system integration.
+        /// Also triggers immediate restoration if the player is currently inside a building,
+        /// which handles the save-load timing gap where InitWhenInInteriorOrDungeon runs
+        /// before the save data is applied.
+        /// </summary>
+        public void SetBuildingInteriorNotesState(Dictionary<string, SortedList<int, NoteMarker>> savedState)
+        {
+            if (savedState != null)
+                dictAutomapBuildingInteriorNotes = savedState;
+            // restore notes immediately if already inside a building (handles save load timing)
+            if (GameManager.Instance.IsPlayerInsideBuilding && !string.IsNullOrEmpty(currentBuildingSceneName))
+                RestoreBuildingInteriorNotes();
         }
 
         /// <summary>
@@ -1945,8 +1977,7 @@ namespace DaggerfallWorkshop.Game
         private void CreateIndoorGeometryForAutomap(StaticDoor door)
         {
             String newGeometryName = DaggerfallInterior.GetSceneName(GameManager.Instance.PlayerGPS.CurrentLocation, door);
-
-            //SetupMicroMapTexture(null); // setup micro map texture for interior geometry
+            currentBuildingSceneName = newGeometryName; // track which building we are in for note storage
 
             if (gameobjectGeometry != null)
             {
@@ -1988,8 +2019,6 @@ namespace DaggerfallWorkshop.Game
 
             // inject all materials of automap geometry with automap shader and reset MeshRenderer enabled state (this is used for the discovery mechanism)
             RaiseOnInjectMeshAndMaterialPropertiesEvent();
-
-            //oldGeometryName = newGeometryName;
         }
 
         /// <summary>
@@ -2202,6 +2231,29 @@ namespace DaggerfallWorkshop.Game
                 blockElements.Add(blockElement);
             }
             automapGeometryInteriorState.blockElements = blockElements;
+        }
+
+        /// <summary>
+        /// saves current building interior note markers to the per-building dictionary
+        /// </summary>
+        private void SaveBuildingInteriorNotes()
+        {
+            if (string.IsNullOrEmpty(currentBuildingSceneName))
+                return;
+            dictAutomapBuildingInteriorNotes[currentBuildingSceneName] = new SortedList<int, NoteMarker>(listUserNoteMarkers);
+        }
+
+        /// <summary>
+        /// restores building interior note markers from the per-building dictionary for the current building
+        /// </summary>
+        private void RestoreBuildingInteriorNotes()
+        {
+            DestroyUserMarkerNotes();
+            if (string.IsNullOrEmpty(currentBuildingSceneName) || !dictAutomapBuildingInteriorNotes.ContainsKey(currentBuildingSceneName))
+                return;
+            listUserNoteMarkers = new SortedList<int, NoteMarker>(dictAutomapBuildingInteriorNotes[currentBuildingSceneName]);
+            foreach (var marker in listUserNoteMarkers)
+                CreateUserMarker(marker.Key, marker.Value.position, marker.Value.color, marker.Value.scale);
         }
 
         /// <summary>
@@ -2566,6 +2618,7 @@ namespace DaggerfallWorkshop.Game
             {
                 CreateIndoorGeometryForAutomap(door.Value);
                 RestoreStateAutomapDungeon(true);
+                RestoreBuildingInteriorNotes(); // restore saved notes for this building (no-op if none saved yet)
                 resetAutomapSettingsFromExternalScript = true; // set flag so external script (DaggerfallAutomapWindow) can pull flag and reset automap values on next window push
 
                 SetActivationStateOfMapObjects(false);
@@ -2607,6 +2660,7 @@ namespace DaggerfallWorkshop.Game
         private void OnTransitionToExterior(PlayerEnterExit.TransitionEventArgs args)
         {
             SaveStateAutomapInterior();
+            SaveBuildingInteriorNotes(); // persist note markers for the building we are leaving
             DestroyBeacons();
         }
 
@@ -2643,6 +2697,8 @@ namespace DaggerfallWorkshop.Game
             DestroyBeacons();
             DestroyUserMarkerNotes();
             DestroyTeleporterMarkers();
+            dictAutomapBuildingInteriorNotes.Clear();
+            currentBuildingSceneName = null;
         }
 
         void OnTeleportAction(GameObject triggerObj, GameObject nextObj)

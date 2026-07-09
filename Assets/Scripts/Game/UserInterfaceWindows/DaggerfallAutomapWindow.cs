@@ -1868,15 +1868,16 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
         {
             Vector2 mousePosition = panelRenderAutomap.ScaledMousePosition;
             mousePosition.y = panelRenderAutomap.Size.y - mousePosition.y;
+
+            // teleporter portals only exist in dungeons, not in building interiors
             if (!GameManager.Instance.IsPlayerInsideBuilding)
             {
-                // first check for teleporter portal marker hits
                 if (automap.TryForTeleporterPortalsAtScreenPosition(mousePosition))
                     return;
-
-                // if no teleporter portal marker was hit, try to add or edit a user marker note
-                automap.TryToAddOrEditUserNoteMarkerOnDungeonSegmentAtScreenPosition(mousePosition, !Input.GetKey(KeyCode.LeftControl));
             }
+
+            // allow adding/editing user note markers in both dungeons and building interiors
+            automap.TryToAddOrEditUserNoteMarkerOnDungeonSegmentAtScreenPosition(mousePosition, !Input.GetKey(KeyCode.LeftControl));
         }
 
         private void PanelAutomap_OnRightMouseDoubleClick(BaseScreenComponent sender, Vector2 position)
