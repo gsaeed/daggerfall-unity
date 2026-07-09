@@ -51,6 +51,7 @@ namespace DaggerfallWorkshop.Game.Serialization
         const string conversationDataFilename = "ConversationData.txt";
         const string notebookDataFilename = "NotebookData.txt";
         const string worldVariationDataFilename = "WorldVariationData.txt";
+        const string automapBuildingDataFilename = "AutomapBuildingData.txt";
         const string automapDataFilename = "AutomapData.txt";
         const string questExceptionsFilename = "QuestExceptions.txt";
         const string screenshotFilename = "Screenshot.jpg";
@@ -1219,6 +1220,19 @@ namespace DaggerfallWorkshop.Game.Serialization
                 Debug.Log(message);
             }
 
+            // Save building interior automap notes
+            try
+            {
+                Dictionary<string, SortedList<int, Automap.NoteMarker>> buildingNotesState = GameManager.Instance.InteriorAutomap.GetBuildingInteriorNotesState();
+                string buildingNotesDataJson = Serialize(buildingNotesState.GetType(), buildingNotesState);
+                WriteSaveFile(Path.Combine(path, automapBuildingDataFilename), buildingNotesDataJson);
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("Failed to save building interior automap notes. Message: {0}", ex.Message);
+                Debug.Log(message);
+            }
+
             // Save mod data
             if (ModManager.Instance != null)
             {
@@ -1534,6 +1548,24 @@ namespace DaggerfallWorkshop.Game.Serialization
             catch (Exception ex)
             {
                 string message = string.Format("Failed to load automap state. Message: {0}", ex.Message);
+                Debug.Log(message);
+            }
+
+            // Load building interior automap notes
+            try
+            {
+                string buildingNotesDataJson = ReadSaveFile(Path.Combine(path, automapBuildingDataFilename));
+                Dictionary<string, SortedList<int, Automap.NoteMarker>> buildingNotesState = null;
+
+                if (!string.IsNullOrEmpty(buildingNotesDataJson))
+                    buildingNotesState = Deserialize(typeof(Dictionary<string, SortedList<int, Automap.NoteMarker>>), buildingNotesDataJson) as Dictionary<string, SortedList<int, Automap.NoteMarker>>;
+
+                if (buildingNotesState != null)
+                    GameManager.Instance.InteriorAutomap.SetBuildingInteriorNotesState(buildingNotesState);
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("Failed to load building interior automap notes. Message: {0}", ex.Message);
                 Debug.Log(message);
             }
 
