@@ -1258,6 +1258,15 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 Debug.Log("ModManager - started loading mod: " + mod.Title);
                 mod.CompileSourceToAssemblies();
                 Debug.Log("ModManager - compiled Assemblies for " + mod.Title);
+
+                // Compile patch mod assemblies so patched entry points are available at runtime
+                var patchMod = patchMods.FirstOrDefault(x => x.ModInfo.GUID == mod.ModInfo.GUID);
+                if (patchMod != null)
+                {
+                    Debug.Log("ModManager - compiling patch assemblies for: " + patchMod.Title);
+                    patchMod.CompileSourceToAssemblies();
+                    Debug.Log("ModManager - compiled patch assemblies for: " + patchMod.Title);
+                }
             }
             Debug.Log("ModManager - init finished.  Mod Count: " + LoadedModCount);
         }
@@ -1275,12 +1284,12 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 for (int i = 0; i < mods.Length; i++)
                 {
                     var curMod = mods[i];
-#if UNITY_EDITOR
-                    if (patchMods.Any(x => x.ModInfo.GUID == mods[i].ModInfo.GUID && x.IsVirtual))
+                    var patchMod = patchMods.FirstOrDefault(x => x.ModInfo.GUID == mods[i].ModInfo.GUID);
+                    if (patchMod != null)
                     {
-                        curMod = patchMods.First(x => x.ModInfo.GUID == mods[i].ModInfo.GUID);
+                        curMod = patchMod;
                     }
-#endif
+
                     List<SetupOptions> setupOptions = curMod.FindModLoaders(state);
 
                     if (setupOptions == null)

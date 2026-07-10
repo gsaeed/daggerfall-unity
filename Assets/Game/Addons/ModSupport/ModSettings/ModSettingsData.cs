@@ -551,7 +551,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings
         /// </summary>
         private static bool TryDeserialize<T>(Mod mod, string assetName, ref T instance)
         {
-            var textAsset = mod.GetAsset<TextAsset>(assetName);
+            var textAsset = mod.GetAssetNoOverride<TextAsset>(assetName);
             if (!textAsset)
             {
                 Debug.LogError($"{assetName} not found, Requested from {mod.FileName}");
