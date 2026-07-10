@@ -1513,8 +1513,14 @@ public class ModLoaderInterfaceWindow : DaggerfallPopupWindow
         ModDescriptionMessageBox.ParentPanel.BackgroundTexture = null;
 
         Mod mod = ModManager.Instance.GetMod(modSettings[currentSelection].modInfo.ModTitle);
-        string[] modDescription = (mod.TryLocalize("Mod", "Description") ?? mod.ModInfo.ModDescription).Split('\n');
-        ModDescriptionMessageBox.SetText(modDescription);
+        List<string> modDescription = (mod.TryLocalize("Mod", "Description") ?? mod.ModInfo.ModDescription).Split('\n').ToList();
+        modDescription.Add("");
+        modDescription.Add(mod.ModInfo.GUID);
+        UnityEngine.TextEditor textEditor = new UnityEngine.TextEditor();
+        textEditor.text = mod.ModInfo.GUID;
+        textEditor.SelectAll();
+        textEditor.Copy();
+        ModDescriptionMessageBox.SetText(modDescription.ToArray());
         uiManager.PushWindow(ModDescriptionMessageBox);
     }
 
