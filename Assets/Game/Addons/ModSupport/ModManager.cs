@@ -12,6 +12,7 @@
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 #endif
 using System;
 using System.IO;
@@ -1097,9 +1098,19 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 {
                     if (patchMods.All(x => x.ModInfo.GUID != mod.ModInfo.GUID))
                     {
-                        Debug.Log($"Found patch mod: {mod.Title} {mod.ModInfo.GUID}");
+                        var originalMod = ModManager.Instance.GetModFromGUID(mod.ModInfo.GUID);
+                        Debug.Log($"Patches - Found patch mod: {mod.Title} {mod.ModInfo.GUID} for mod:{originalMod.Title} {originalMod.ModInfo.GUID} ");
                         patchMods.Add(mod);
                     }
+                    else
+                    {
+                        var priorPatchMod = patchMods.FirstOrDefault(x => x.ModInfo.GUID == mod.ModInfo.GUID);
+                        Debug.Log($"Patches - Ignoring patch mod: {mod.Title} {mod.ModInfo.GUID} because another patch was already loaded {priorPatchMod?.Title}.");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"Patches - Ignoring patch mod: {mod.Title} {mod.ModInfo.GUID} because no original mod found.");
                 }
             }
 
@@ -1143,6 +1154,9 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                             if (patchMods == null)
                                 patchMods = new List<Mod>();
                             patchMods.Add(patchMod);
+                            var originalMod = mods.FirstOrDefault(x => x.ModInfo.GUID == modInfo.GUID);
+                            Debug.Log($"Patches - Found patch mod: { modInfo.ModTitle} {modInfo.GUID} for mod:{originalMod.Title} {originalMod.ModInfo.GUID} ");
+
                         }
                         else
                         {
@@ -1151,11 +1165,16 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                         }
                         continue;
                     }
-                    if (modInfo.ModPatch)
+                    if (modInfo.ModPatch && mods.Any(x => x.ModInfo.GUID == modInfo.GUID))
                     {
                         if (patchMods == null)
                             patchMods = new List<Mod>();
-                        patchMods.Add(new Mod(manifestPath, modInfo));
+                        if (modInfo.ModPatch && patchMods.All(x => x.ModInfo.GUID != modInfo.GUID))
+                        {
+                            patchMods.Add(new Mod(manifestPath, modInfo));
+                            var originalMod = mods.FirstOrDefault(x => x.ModInfo.GUID == modInfo.GUID);
+                            Debug.Log($"Patches - Found patch mod: {modInfo.ModTitle} {modInfo.GUID} for mod:{originalMod.Title} {originalMod.ModInfo.GUID} ");
+                        }
                     }
                     else
                         mods.Add(new Mod(manifestPath, modInfo));
