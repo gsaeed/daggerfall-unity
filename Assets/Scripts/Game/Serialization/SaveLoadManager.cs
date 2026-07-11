@@ -329,6 +329,7 @@ namespace DaggerfallWorkshop.Game.Serialization
             File.Delete(Path.Combine(path, screenshotFilename));
             File.Delete(Path.Combine(path, containerDataFilename));
             File.Delete(Path.Combine(path, automapDataFilename));
+            File.Delete(Path.Combine(path, automapBuildingDataFilename));
             File.Delete(Path.Combine(path, questExceptionsFilename));
             File.Delete(Path.Combine(path, conversationDataFilename));
             File.Delete(Path.Combine(path, discoveryDataFilename));
