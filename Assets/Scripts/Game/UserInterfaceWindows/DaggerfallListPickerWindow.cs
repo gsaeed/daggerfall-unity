@@ -98,6 +98,7 @@ namespace DaggerfallWorkshop.Game.UserInterfaceWindows
             scrollBar.Size = new Vector2(5, 82);
             scrollBar.OnScroll += ScrollBar_OnScroll;
             pickerPanel.Components.Add(scrollBar);
+            IsSetup = true;
         }
 
         public override void Update()
