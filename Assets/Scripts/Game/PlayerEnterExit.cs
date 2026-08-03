@@ -9,21 +9,21 @@
 // Notes:
 //
 
-using UnityEngine;
+using DaggerfallConnect;
+using DaggerfallConnect.Arena2;
+using DaggerfallConnect.Utility;
+using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Formulas;
+using DaggerfallWorkshop.Game.MagicAndEffects;
+using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
+using DaggerfallWorkshop.Utility;
+using DaggerfallWorkshop.Utility.AssetInjection;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using DaggerfallWorkshop.Utility;
-using DaggerfallConnect;
-using DaggerfallConnect.Arena2;
-using DaggerfallConnect.Utility;
-using DaggerfallWorkshop.Game.Serialization;
-using DaggerfallWorkshop.Game.UserInterfaceWindows;
-using DaggerfallWorkshop.Game.Entity;
-using DaggerfallWorkshop.Game.MagicAndEffects;
-using DaggerfallWorkshop.Utility.AssetInjection;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace DaggerfallWorkshop.Game
@@ -395,7 +395,9 @@ namespace DaggerfallWorkshop.Game
                     levitateMotor.IsSwimming = true;
                 }
 
-                bool overEncumbered = (GameManager.Instance.PlayerEntity.CarriedWeight * 4 > 250);
+                //bool overEncumbered = (GameManager.Instance.PlayerEntity.CarriedWeight * 4 > 250);
+                bool overEncumbered = FormulaHelper.CheckOverEncumbered(GameManager.Instance.PlayerEntity, false);
+
                 if ((overEncumbered && levitateMotor.IsSwimming) && !displayAfloatMessage && !GameManager.Instance.PlayerEntity.IsWaterWalking)
                 {
                     DaggerfallUI.AddHUDText(TextManager.Instance.GetLocalizedText("cannotFloat"), 1.75f);

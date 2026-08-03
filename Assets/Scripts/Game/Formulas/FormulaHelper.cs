@@ -395,6 +395,16 @@ namespace DaggerfallWorkshop.Game.Formulas
             return false;
         }
 
+        //Returns OverEncumbrance check;
+        public static bool CheckOverEncumbered(PlayerEntity playerEntity, bool playerLevitating)
+        {
+            Func<Entity.PlayerEntity,bool,bool> del;
+            if (TryGetOverride("CheckOverEncumbered", out del))
+                return del(playerEntity, playerLevitating);
+
+            return (playerEntity.CarriedWeight * 4 > 250) && !playerLevitating && !playerEntity.GodMode;
+        }
+
         public static string[] FormulateQuestMessage(int id, string[] source)
         {
             Func<int, string[], string[]> del;

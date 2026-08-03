@@ -9,6 +9,7 @@
 // Notes:
 //
 using System;
+using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
 using UnityEngine;
 
@@ -83,7 +84,8 @@ namespace DaggerfallWorkshop.Game
             // Up/down
             Vector3 upDownVector = new Vector3 (0, 0, 0);
 
-            bool overEncumbered = (GameManager.Instance.PlayerEntity.CarriedWeight * 4 > 250) && !playerLevitating && !GameManager.Instance.PlayerEntity.GodMode;
+            //bool overEncumbered = (GameManager.Instance.PlayerEntity.CarriedWeight * 4 > 250) && !playerLevitating && !GameManager.Instance.PlayerEntity.GodMode;
+            bool overEncumbered = FormulaHelper.CheckOverEncumbered(GameManager.Instance.PlayerEntity, playerLevitating);
             if (playerSwimming && overEncumbered && !climbingMotor.IsClimbing && !GameManager.Instance.PlayerEntity.IsWaterWalking)
                 upDownVector += Vector3.down;
             else if (InputManager.Instance.HasAction(InputManager.Actions.Jump) || InputManager.Instance.HasAction(InputManager.Actions.FloatUp))
