@@ -1120,7 +1120,16 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                             Debug.LogError($"mod {modInfo.ModTitle} could not be loaded because its GUID {modInfo.GUID} is already loaded by another mod.");
                     }
                     else
-                        mods.Add(new Mod(manifestPath, modInfo));
+                    {
+                        if (modInfo.ModPatch && patchMods.All(x => x.ModInfo.GUID != modInfo.GUID))
+                        {
+                            var patchMod = new Mod(manifestPath, modInfo);
+                            if (patchMod.ModInfo.ModPatch)
+                                pendingPatchMod.Add(patchMod);
+                        }
+                        else
+                            mods.Add(new Mod(manifestPath, modInfo));
+                    }
                 }
             }
 #endif
