@@ -1087,6 +1087,43 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                     }
                 }
             }
+
+
+
+#if UNITY_EDITOR
+            if (LoadVirtualMods)
+            {
+                foreach (string manifestPath in Directory.GetFiles(EditorModsDirectory, "*" + MODINFOEXTENSION, SearchOption.AllDirectories))
+                {
+                    ModInfo modInfo = null;
+                    if (ModManager._serializer.TryDeserialize(fsJsonParser.Parse(File.ReadAllText(manifestPath)), ref modInfo).Failed)
+                    {
+                        Debug.LogErrorFormat("Failed to deserialize manifest file {0}", manifestPath);
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(modInfo.ModTitle))
+                    {
+                        Debug.LogError($"Discarded {manifestPath} because it doesn't have a valid title.");
+                        continue;
+                    }
+
+                    if (mods.Any(x => x.ModInfo.GUID == modInfo.GUID))
+                    {
+                        if (modInfo.ModPatch && patchMods.All(x => x.ModInfo.GUID != modInfo.GUID))
+                        {
+                            var patchMod = new Mod(manifestPath, modInfo);
+                            if (patchMod.ModInfo.ModPatch)
+                                pendingPatchMod.Add(patchMod);
+                        }
+                        else
+                            Debug.LogError($"mod {modInfo.ModTitle} could not be loaded because its GUID {modInfo.GUID} is already loaded by another mod.");
+                    }
+                    else
+                        mods.Add(new Mod(manifestPath, modInfo));
+                }
+            }
+#endif
             if (patchMods == null)
                 patchMods = new List<Mod>();
 
@@ -1128,59 +1165,8 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
 
 
-#if UNITY_EDITOR
-            if (LoadVirtualMods)
-            {
-                foreach (string manifestPath in Directory.GetFiles(EditorModsDirectory, "*" + MODINFOEXTENSION, SearchOption.AllDirectories))
-                {
-                    ModInfo modInfo = null;
-                    if (ModManager._serializer.TryDeserialize(fsJsonParser.Parse(File.ReadAllText(manifestPath)), ref modInfo).Failed)
-                    {
-                        Debug.LogErrorFormat("Failed to deserialize manifest file {0}", manifestPath);
-                        continue;
-                    }
 
-                    if (string.IsNullOrWhiteSpace(modInfo.ModTitle))
-                    {
-                        Debug.LogError($"Discarded {manifestPath} because it doesn't have a valid title.");
-                        continue;
-                    }
 
-                    if (mods.Any(x => x.ModInfo.GUID == modInfo.GUID))
-                    {
-                        if (modInfo.ModPatch && patchMods.All(x => x.ModInfo.GUID != modInfo.GUID))
-                        {
-                            var patchMod = new Mod(manifestPath, modInfo);
-                            if (patchMods == null)
-                                patchMods = new List<Mod>();
-                            patchMods.Add(patchMod);
-                            var originalMod = mods.FirstOrDefault(x => x.ModInfo.GUID == modInfo.GUID);
-                            Debug.Log($"Patches - Found patch mod: { modInfo.ModTitle} {modInfo.GUID} for mod:{originalMod.Title} {originalMod.ModInfo.GUID} ");
-
-                        }
-                        else
-                        {
-                            int index = mods.FindIndex(x => x.ModInfo.GUID == modInfo.GUID);
-                            Debug.LogError($"Ignoring virtual mod {modInfo.ModTitle} because release mod is already loaded at index {index}");
-                        }
-                        continue;
-                    }
-                    if (modInfo.ModPatch && mods.Any(x => x.ModInfo.GUID == modInfo.GUID))
-                    {
-                        if (patchMods == null)
-                            patchMods = new List<Mod>();
-                        if (modInfo.ModPatch && patchMods.All(x => x.ModInfo.GUID != modInfo.GUID))
-                        {
-                            patchMods.Add(new Mod(manifestPath, modInfo));
-                            var originalMod = mods.FirstOrDefault(x => x.ModInfo.GUID == modInfo.GUID);
-                            Debug.Log($"Patches - Found patch mod: {modInfo.ModTitle} {modInfo.GUID} for mod:{originalMod.Title} {originalMod.ModInfo.GUID} ");
-                        }
-                    }
-                    else
-                        mods.Add(new Mod(manifestPath, modInfo));
-                }
-            }
-#endif
             foreach (var sourceMod in mods.Where(x => x.AssetBundle != null))
                 sourceMod.LoadSourceCodeFromModBundle();
         }
