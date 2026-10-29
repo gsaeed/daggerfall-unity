@@ -166,7 +166,7 @@ namespace DaggerfallWorkshop.Game
                 baseSpeed = (playerSpeed + dfCrouchBase) / classicToUnitySpeedUnitRatio;
             else if (playerMotor.IsRiding)
             {
-                float rideSpeed = FormulaHelper.RideSpeed(dfCartBase , dfRideBase);
+                float rideSpeed = (GameManager.Instance.TransportManager.TransportMode == TransportModes.Cart) ? dfCartBase : dfRideBase;
                 baseSpeed = (playerSpeed + rideSpeed) / classicToUnitySpeedUnitRatio;
             }
             else

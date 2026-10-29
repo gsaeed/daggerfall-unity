@@ -194,15 +194,6 @@ namespace DaggerfallWorkshop.Game.Formulas
             return (int)Mathf.Floor((float)endurance / 10f) - 5;
         }
 
-        public static float RideSpeed(float dfCartBase, float dfRideBase)
-        {
-            Func<float, float, float> del;
-            if (TryGetOverride("RideSpeed", out del))
-                return del(dfCartBase, dfRideBase);
-
-            return (GameManager.Instance.TransportManager.TransportMode == TransportModes.Cart) ? dfCartBase : dfRideBase; ;
-        }
-
         public static int HealingRateModifier(int endurance)
         {
             Func<int, int> del;
