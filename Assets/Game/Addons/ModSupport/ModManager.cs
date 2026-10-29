@@ -92,7 +92,6 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
             public object go;
         }
 
-
         public static List<ActiveModListComponents> fileActiveModList = new List<ActiveModListComponents>();
         public static List<string> fileBisectRange = new List<string>();
 
@@ -1998,6 +1997,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         public static void RunBisect(IUserInterfaceManager uiManager, bool startOfFirstBisect = false)
         {
+
             ReadAlwaysIncludeModList();
             if (startOfFirstBisect)
             {
@@ -2063,6 +2063,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
         private static void RunBisect_Continue(IUserInterfaceManager uiManager)
         {
+
             ReadActiveModList();
 
             int candidateCount = fileActiveModList.Count(x => !IsAlwaysInclude(x));
@@ -2076,12 +2077,14 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
 
             var messageBox = new DaggerfallMessageBox(uiManager);
             messageBox.EnableVerticalScrolling(80);
-            messageBox.SetText("Was the last test successful?");
+            messageBox.SetText($"Was test # {DaggerfallUnity.Settings.BinarySearch} successful?");
             messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Yes);
             messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.No, true);
             messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.Cancel);
             messageBox.OnButtonClick += (box, button) =>
             {
+                DaggerfallUnity.Settings.BinarySearch += 1;
+                DaggerfallUnity.Settings.SaveSettings();
                 // Only consider non-always-include mods when checking if all indicators are the same
                 var candidates = fileActiveModList.Where(x => !IsAlwaysInclude(x)).ToList();
                 bool allSameIndicator = candidates.Count == 0 ||
@@ -2222,7 +2225,7 @@ namespace DaggerfallWorkshop.Game.Utility.ModSupport
                 1, Mathf.Max(candidatesInRange, 1));
 
             DaggerfallUI.MessageBox(
-                $"Mods have been set for the next Binary search test, There will be about \r{estSteps} tests.  Press Play to begin.");
+                $"Mods have been set for the Binary search test # {DaggerfallUnity.Settings.BinarySearch}, There will be about \r{estSteps} more tests.  Press Play to begin.");
         }
 
         private static void BisectSuccessX()
