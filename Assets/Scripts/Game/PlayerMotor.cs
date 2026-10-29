@@ -49,7 +49,7 @@ namespace DaggerfallWorkshop.Game
         private RappelMotor rappelMotor;
         //private HangingMotor hangingMotor;
         private PlayerHeightChanger heightChanger;
-        private PlayerSpeedChanger speedChanger;
+        public PlayerSpeedChanger speedChanger;
         private FrictionMotor frictionMotor;
         private AcrobatMotor acrobatMotor;
         private PlayerEnterExit playerEnterExit;
