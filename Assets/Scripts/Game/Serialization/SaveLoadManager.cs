@@ -1309,6 +1309,22 @@ namespace DaggerfallWorkshop.Game.Serialization
             saveDataJson = ReadSaveFile(Path.Combine(path, saveDataFilename));
             saveData = Deserialize(typeof(SaveData_v1), saveDataJson) as SaveData_v1;
 
+            // Find mods with duplicate GUIDs
+            string dupString = string.Join(Environment.NewLine,
+                ModManager.Instance.Mods
+                    .GroupBy(m => m.GUID)
+                    .Where(g => g.Count() > 1)
+                    .SelectMany(g => g.Select(m =>
+                        m.ModInfo.ModTitle + " - GUID: " + m.GUID))
+                    .ToArray());
+
+            // True if any duplicate GUIDs were found
+            if (!string.IsNullOrEmpty(dupString))
+            {
+                dupString = $"I cannot load a save because there are duplicate mod GUIDs:\n\n {dupString}";
+                DaggerfallUI.MessageBox(dupString);
+            }
+
             // Use dictionary for faster indexing
             Dictionary<string, Mod> dict = ModManager.Instance.Mods.ToDictionary(m => m.GUID);
             // Need to use a string collection because of MessageBox's SetText method
